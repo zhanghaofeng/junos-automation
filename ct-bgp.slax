@@ -1,0 +1,475 @@
+% cat ct_bgp.slax
+version 1.0;
+
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+
+import "../import/junos.xsl";
+
+var $arguments={
+        <argument> {
+                <name> "as_number";
+                <description> "Required: Customer AS Number";
+        }
+        <argument> {
+                <name> "route_type";
+                <description> "Required: global, domestic, oversea";
+        }
+        <argument> {
+                <name> "is_provider";
+                <description> "Required: yes, no";
+        }
+}
+
+param $as_number;
+param $route_type;
+param $is_provider;
+
+var $policy_in=concat( "rp_C_AS", $as_number, "_in");
+var $policy_out=concat( "rp_C_AS", $as_number, "_out");
+var $community=concat( "cl_C_AS", $as_number);
+var $community_member=concat( $as_number, ":", $as_number);
+
+var $prefix_list=concat( "pl_C_AS", $as_number);
+var $as_deny_term=concat( "AS",$as_number, "Deny");
+var $as_deny_community=concat( "cl_AS",$as_number, "Deny");
+var $as_add1_term=concat( "AS", $as_number, "Add1");
+var $as_add2_term=concat( "AS", $as_number, "Add2");
+var $as_add1_community=concat( "cl_AS", $as_number, "Add1");
+var $as_add2_community=concat( "cl_AS", $as_number, "Add2");
+
+var $as_deny_community_member=concat( $as_number, ":3000");
+var $as_Add1_community_member=concat( $as_number, ":3001");
+var $as_Add2_community_member=concat( $as_number, ":3002");
+
+match / {
+        <op-script-results> {
+                if (($as_number < 1) or ($as_number > 65535)) {
+                        <xnm:error> {
+                                <message> "incorrect as_number, must between 0~65535";
+                        }
+                }
+                else if (($is_provider != "yes") and ($is_provider != "no")) {
+                        <xnm:error> {
+                                <message> "provider type must be yes or no";
+                        }
+                }
+                else if (($route_type != "global") and ($route_type != "domestic") and ($route_type != "oversea")) {
+                        <xnm:error> {
+                                <message> "route_type should be either global, domestic or oversea";
+                        }
+                } else {
+                        var $loadcfg = {
+                                <configuration> {
+                                         <policy-options> {
+                                                <policy-statement> {
+                                                        <name> $policy_in;
+                                                        <term> {
+                                                                <name> "Illegal";
+                                                                <from> {
+                                                                        <route-filter> {
+                                                                                <address> "10.0.0.0/8";
+                                                                                <upto> "/32";
+                                                                        }
+                                                                        <route-filter> {
+                                                                                <address> "127.0.0.0/8";
+                                                                                <upto> "/32";
+                                                                        }
+                                                                        <route-filter> {
+                                                                                <address> "172.16.0.0/12";
+                                                                                <upto> "/32";
+                                                                        }
+                                                                        <route-filter> {
+                                                                                <address> "192.168.0.0/16";
+                                                                                <upto> "/32";
+                                                                        }
+                                                                        <route-filter> {
+                                                                                <address> "192.0.2.0/24";
+                                                                                <upto> "/32";
+                                                                        }
+                                                                        <route-filter> {
+                                                                                <address> "224.0.0.0/4";
+                                                                                <upto> "/32";
+                                                                        }
+                                                                        <route-filter> {
+                                                                                <address> "59.43.0.0/16";
+                                                                                <upto> "/32";
+                                                                        }
+                                                                }
+                                                                <then> {
+                                                                        <reject>;
+                                                                }
+                                                        }
+                                                        <term> {
+                                                                <name> "CN_deny";
+                                                                <from> {
+                                                                        <as-path> "ap_CNdeny";
+                                                                }
+                                                                <then> {
+                                                                        <reject>;
+                                                                }
+                                                        }
+                                                        <term> {
+                                                                <name> "Blackhole";
+                                                                <from> {
+                                                                        <community> "cl_Blackhole";
+                                                                        <route-filter> {
+                                                                                <address> "0.0.0.0/0";
+                                                                                <prefix-length-range> "/32-/32";
+                                                                        }
+                                                                }
+                                                                <then> {
+                                                                        <community> {
+                                                                                <add>;
+                                                                                <community-name> "cl_no-export";
+                                                                        }
+                                                                        <next-hop> {
+                                                                                <address> "172.20.20.1";
+                                                                        }
+                                                                        <accept>;
+                                                                }
+                                                        }
+                                                        <term> {
+                                                                <name> "IntraArea";
+                                                                <from> {
+                                                                        <community> "cl_IntraArea";
+                                                                        if ($is_provider == "no") {
+                                                                                <prefix-list> $prefix_list;
+                                                                        }
+                                                                }
+                                                                <then> {
+                                                                        <metric> "0";
+                                                                        <local-preference> "800";
+                                                                        <community> {
+                                                                                <set>;
+                                                                                <community-name> "cl_CN2_IntraArea";
+                                                                        }
+                                                                        <accept>;
+                                                                }
+                                                        }
+                                                        <term> {
+                                                                <name> "LowLocal";
+                                                                <from> {
+                                                                        <community> "cl_LowLocal";
+                                                                        if ($is_provider == "no") {
+                                                                                <prefix-list> $prefix_list;
+                                                                        }
+                                                                }
+                                                                <then> {
+                                                                        <metric> "0";
+                                                                        <local-preference> "750";
+                                                                        <community> {
+                                                                                <add>;
+                                                                                <community-name> $community;
+                                                                        }
+                                                                        <accept>;
+                                                                }
+                                                        }
+                                                        <term> {
+                                                                <name> "HighLocal";
+                                                                <from> {
+                                                                        <community> "cl_HighLocal";
+                                                                        if ($is_provider == "no" ) {
+                                                                                <prefix-list> $prefix_list;
+                                                                        }
+                                                                }
+                                                                <then> {
+                                                                        <metric> "0";
+                                                                        <local-preference> "850";
+                                                                        <community> {
+                                                                                <add>;
+                                                                                <community-name> $community;
+                                                                        }
+                                                                        <accept>;
+                                                                }
+                                                        }
+                                                        if ($is_provider == "no" ) {
+                                                                <term> {
+                                                                        <name> "Customer";
+                                                                        <from> {
+                                                                                <prefix-list> $prefix_list;
+                                                                        }
+                                                                        <then> {
+                                                                                <metric> "0";
+                                                                                <local-preference> "800";
+                                                                                <community> {
+                                                                                        <add>;
+                                                                                        <community-name> $community;
+                                                                                }
+                                                                                <accept>;
+                                                                        }
+                                                                }
+                                                        }
+                                                        <term> {
+                                                                <name> "Default";
+                                                                <then> {
+                                                                        <reject>;
+                                                                }
+                                                        }
+
+                                                }
+                                                <policy-statement> {
+                                                        <name> $policy_out;
+                                                        <term> {
+                                                                <name> "Illegal";
+                                                                <from> {
+                                                                        <route-filter> {
+                                                                                <address> "10.0.0.0/8";
+                                                                                <upto> "/32";
+                                                                        }
+                                                                        <route-filter> {
+                                                                                <address> "127.0.0.0/8";
+                                                                                <upto> "/32";
+                                                                        }
+                                                                        <route-filter> {
+                                                                                <address> "172.16.0.0/12";
+                                                                                <upto> "/32";
+                                                                        }
+                                                                        <route-filter> {
+                                                                                <address> "192.168.0.0/16";
+                                                                                <upto> "/32";
+                                                                        }
+                                                                        <route-filter> {
+                                                                                <address> "192.0.2.0/24";
+                                                                                <upto> "/32";
+                                                                        }
+                                                                        <route-filter> {
+                                                                                <address> "224.0.0.0/4";
+                                                                                <upto> "/32";
+                                                                        }
+                                                                        <route-filter> {
+                                                                                <address> "59.43.0.0/16";
+                                                                                <upto> "/32";
+                                                                        }
+                                                                }
+                                                                <then> {
+                                                                        <reject>;
+                                                                }
+                                                        }
+                                                        <term> {
+                                                                <name> "DetailRoutes";
+                                                                <from> {
+                                                                        <community> "cl_DetailRoutes";
+                                                                }
+                                                                <then> {
+                                                                        <reject>;
+                                                                }
+                                                        }
+                                                        <term> {
+                                                                <name> $as_deny_term;
+                                                                <from> {
+                                                                        <community> $as_deny_community;
+                                                                }
+                                                                <then> {
+                                                                        <reject>;
+                                                                }
+                                                        }
+                                                        <term> {
+                                                                <name> "CustomerDeny";
+                                                                <from> {
+                                                                        <community> "cl_CustomerDeny";
+                                                                }
+                                                                <then> {
+                                                                        <reject>;
+                                                                }
+                                                        }
+                                                        <term> {
+                                                                <name> "AsiaDeny";
+                                                                <from> {
+                                                                        <community> "cl_AsiaDeny";
+                                                                }
+                                                                <then> {
+                                                                        <reject>;
+                                                                }
+                                                        }
+                                                        <term> {
+                                                                <name> $as_add1_term;
+                                                                <from> {
+                                                                        <community> $as_add1_community;
+                                                                }
+                                                                <then> {
+                                                                        <as-path-prepend> "4809";
+                                                                        <accept>;
+                                                                }
+                                                        }
+                                                        <term> {
+                                                                <name> $as_add2_term;
+                                                                <from> {
+                                                                        <community> $as_add2_community;
+                                                                }
+                                                                <then> {
+                                                                        <as-path-prepend> "4809 4809";
+                                                                        <accept>;
+                                                                }
+                                                        }
+                                                        <term> {
+                                                                <name> "CustomerAdd1";
+                                                                <from> {
+                                                                        <community> "cl_CustomerAdd1";
+                                                                }
+                                                                <then> {
+                                                                        <as-path-prepend> "4809";
+                                                                        <accept>;
+                                                                }
+                                                        }
+                                                        <term> {
+                                                                <name> "CustomerAdd2";
+                                                                <from> {
+                                                                        <community> "cl_CustomerAdd2";
+                                                                }
+                                                                <then> {
+                                                                        <as-path-prepend> "4809 4809";
+                                                                        <accept>;
+                                                                }
+                                                        }
+                                                        if ($route_type == "global") {
+                                                                <term> {
+                                                                        <name> "ToGB_C";
+                                                                        <from> {
+                                                                                <community> "cl_ToGB_C";
+                                                                        }
+                                                                        <then> {
+                                                                                <accept>;
+                                                                        }
+                                                                }
+                                                        }
+                                                        else if ($route_type == "domestic") {
+                                                                <term> {
+                                                                        <name> "ChinaAccess";
+                                                                        <from> {
+                                                                                <community> "cl_ChinaAccess";
+                                                                        }
+                                                                        <then> {
+                                                                                <accept>;
+                                                                        }
+                                                                }
+                                                        }
+                                                        else if ($route_type == "oversea") {
+                                                                <term> {
+                                                                        <name> "ChinaAccess";
+                                                                        <from> {
+                                                                                <community> "cl_ChinaAccess";
+                                                                        }
+                                                                        <then> {
+                                                                                <reject>;
+                                                                        }
+                                                                }
+                                                                <term> {
+                                                                        <name> "Oversea";
+                                                                        <from> {
+                                                                                <community> "cl_Oversea";
+                                                                        }
+                                                                        <then> {
+                                                                                <accept>;
+                                                                        }
+                                                                }
+                                                        }
+                                                }
+                                                <as-path> {
+                                                        <name> "ap_CNdeny";
+                                                        <path> "65535 2100 *";
+                                                }
+                                                <community> {
+                                                        <name> $community;
+                                                        <members> "4809:113";
+                                                        <members> "4809:2313";
+                                                        <members> "4809:1001";
+                                                        <members> $community_member;
+                                                }
+                                                <community> {
+                                                        <name> "cl_LowLocal";
+                                                        <members> "3:3";
+                                                }
+                                                <community> {
+                                                        <name> "cl_HighLocal";
+                                                        <members> "4:4";
+                                                }
+                                                <community> {
+                                                        <name> "cl_Blackhole";
+                                                        <members> "65535:5400";
+                                                }
+                                                <community> {
+                                                        <name> "cl_no-export";
+                                                        <members> "no-export";
+                                                }
+                                                <community> {
+                                                        <name> "cl_IntraArea";
+                                                        <members> "1:1";
+                                                }
+                                                <community> {
+                                                        <name> "cl_CN2_IntraArea";
+                                                        <members> "4837:4837";
+                                                }
+                                                <community> {
+                                                        <name> "cl_DetailRoutes";
+                                                        <members> "5:5";
+                                                }
+                                                <community> {
+                                                        <name> $as_deny_community;
+                                                        <members> $as_deny_community_member;
+                                                }
+                                                <community> {
+                                                        <name> "cl_CustomerDeny";
+                                                        <members> "7:7";
+                                                }
+                                                <community> {
+                                                        <name> "cl_AsiaDeny";
+                                                        <members> "8:8";
+                                                }
+                                                <community> {
+                                                        <name> $as_add1_community;
+                                                        <members> $as_Add1_community_member;
+                                                }
+                                                <community> {
+                                                        <name> $as_add2_community;
+                                                        <members> $as_Add2_community_member;
+                                                }
+                                                <community> {
+                                                        <name> "cl_CustomerAdd1";
+                                                        <members> "a:a";
+                                                }
+                                                <community> {
+                                                        <name> "cl_CustomerAdd2";
+                                                        <members> "b:b";
+                                                }
+                                                <community> {
+                                                        <name> "cl_ToGB_C";
+                                                        <members> ".*";
+                                                }
+                                                <community> {
+                                                        <name> "cl_Oversea";
+                                                        <members> ".*";
+                                                }
+                                                <community> {
+                                                        <name> "cl_ChinaAccess";
+                                                        <members> "(.*:1....)|(4134:20[0-2]52)";
+                                                }
+                                                <prefix-list> {
+                                                        <name> $prefix_list;
+                                                        <prefix-list-item> {
+                                                                <name> "1.1.1.0/24";
+                                                        }
+                                                }
+                                        }
+                                }
+                        }
+                        <output> $loadcfg;
+                        var $con = jcs:open();
+                        if (not($con)) {
+                                <xnm:error> {
+                                        <message> "Uanble to open Configuration mode";
+                                }
+                        }
+                        var $conf-results := {
+                                call jcs:load-configuration($connection=$con, $configuration=$loadcfg);
+                        }
+                        copy-of $conf-results;
+                        if ($conf-results//xnm:error) {
+                                <output> "Script aborted due to errors";
+                        }
+                        expr jcs:close($con);
+
+                }
+        }
+}
