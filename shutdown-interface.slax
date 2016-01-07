@@ -1,0 +1,127 @@
+/*
+ * Author: hfzhang@juniper.net, v20120830
+ * Disable a specified IFD or IFL with syslog option
+ * If Unit is not specified, disable IFD only; otherwise, only disable specified IFL
+ *
+ * Event policy config like this, the whole physical interface is disabled:
+ event-options {
+    policy shutdown-intf {
+        events PING_TEST_FAILED;
+        within 10 events PING_TEST_COMPLETED;
+        then {
+            event-script interface-shutdown.slax {
+                arguments {
+                    interface so-2/3/1;
+                }
+            }
+        }
+    }
+ }
+ * Or also specific a unit number, here we only disable unit 0 instead the whole IFD 
+ event-options {
+    policy shutdown-intf {
+        events PING_TEST_FAILED;
+        within 10 events PING_TEST_COMPLETED;
+        then {
+            event-script interface-shutdown.slax {
+                arguments {
+                    interface so-2/3/1;
+                    unit 0;
+                }
+            }
+        }
+    }
+ }
+ *
+ * following syslog will be logged with USER and WARNING level
+ Aug 30 15:11:42.257 2012  m20-a-re0 cscript: interface-shutdown.slax[Success]: shutdown so-2/3/1
+ Aug 30 15:27:41.672 2012  m20-a-re0 cscript: interface-shutdown.slax[Success]: shutdown so-2/3/1 unit 0
+ * 
+ */
+ 
+version 1.0;
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+ 
+import "../import/junos.xsl";
+ 
+ 
+var $arguments = {
+        <argument> {
+                <name> "interface";
+                <description> "Required. Interface to Disable.";
+        }
+        <argument> {
+                <name> "unit";
+                <description> "Optional. Disable physical interface if not specified";
+        }
+}
+ 
+param $interface;
+param $unit;
+ 
+match / {
+        <op-script-results> {
+                /* $keyword Sanity Check */
+                if ($interface == "") {
+                        <xnm:error> {
+                                <message> "missing mandatory argument 'interface'";      
+                        }
+                }
+                
+                var $con = jcs:open();
+                if (not($con)) {
+                        <xnm:error> {
+                                <message> "Uanble to open Configuration mode";
+                        }
+                }
+                
+                if ($unit == "") {
+                        var $xml = {
+                                <configuration> {
+                                        <interfaces> {
+                                                <interface> {
+                                                        <name> $interface;
+                                                        <disable>;
+                                                }
+                                        }
+                                }
+                        }
+                var $conf-results := {
+                        call jcs:load-configuration($connection=$con, $configuration=$xml);
+                }
+                copy-of $conf-results;
+                if ($conf-results//xnm:error) {
+                        <output> "Script aborted due to errors";
+                } else {
+                        expr jcs:syslog("user.warning", "interface-shutdown.slax[Success]: shutdown ", $interface);
+                }
+                expr jcs:close($con); 
+                } else {
+                        var $xml2 = {
+                                <configuration> {
+                                        <interfaces> {
+                                                <interface> {
+                                                        <name> $interface;
+                                                        <unit> {
+                                                                <name> $unit;
+                                                                <disable>;
+                                                        }
+                                                }
+                                        }
+                                }
+                        }
+                        var $conf-results := {
+                                call jcs:load-configuration($connection=$con, $configuration=$xml2);
+                        }
+                        copy-of $conf-results;
+                        if ($conf-results//xnm:error) {
+                                <output> "Script aborted due to errors";
+                        } else {
+                                expr jcs:syslog("user.warning", "interface-shutdown.slax[Success]: shutdown ", $interface, " unit ", $unit);
+                        }
+                        expr jcs:close($con); 
+                }
+        }
+}  
