@@ -1,0 +1,379 @@
+/*
+ * Author        : Haofeng Zhang
+ * Version       : 1.3
+ * Last Modified : 21 Nov 2013 
+ * Platform      : TXP
+ * Release       : 11.4 and 13.1
+ */
+
+/* 
+- Description
+- file location
+/var/db/scripts/op/pfe-stats-drops.slax
+
+- Required config. You can paste below with "load set terminal" from edit mode.
+set groups re0 event-options generate-event 5minutes time-interval 300
+set groups re0 event-options policy pps-check events 5minutes
+set groups re0 event-options policy pps-check then event-script pfe-stats-drops.slax arguments polling-interval 180
+set groups re0 event-options policy pps-check then event-script pfe-stats-drops.slax arguments pps-threshold 30
+set groups re0 event-options policy pps-check then event-script pfe-stats-drops.slax arguments fabric-threshold 1000
+set groups re0 event-options policy pps-check then event-script pfe-stats-drops.slax arguments sib-walk-for-fabric-drop yes
+set groups re1 event-options generate-event 5minutes time-interval 300
+set groups re1 event-options policy pps-check events 5minutes
+set groups re1 event-options policy pps-check then event-script pfe-stats-drops.slax arguments polling-interval 180
+set groups re1 event-options policy pps-check then event-script pfe-stats-drops.slax arguments pps-threshold 30
+set groups re1 event-options policy pps-check then event-script pfe-stats-drops.slax arguments fabric-threshold 1000
+set groups re1 event-options policy pps-check then event-script pfe-stats-drops.slax arguments sib-walk-for-fabric-drop yes
+set system scripts op file pfe-stats-drops.slax
+
+SNMP mibs used in script can be accessiable from jnxUtilCounter32Value 
+*/
+
+version 1.0;
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+ns str = "http://exslt.org/strings";
+
+import "../import/junos.xsl"; 
+
+var $arguments = {
+  <argument> {
+    <name> "polling-interval";
+    <description> "Polling interval to calculate average. Default 180 seconds";
+  }
+  <argument> {
+    <name> "pps-threshold";
+    <description> "Throughput down threshold. Default is 30%";
+  }
+  <argument> {
+    <name> "fabric-threshold";
+    <description> "Fabric drop increase threshold. Default is 1000 pps";
+  } 
+  <argument> {
+    <name> "sib-walk-for-fabric-drop";
+    <description> "Do SIB walk on huge fabric drop. Default is NO";
+  } 
+}
+
+param $polling-interval = 180;
+param $pps-threshold = 30;
+param $fabric-threshold = 1000;
+param $sib-walk-for-fabric-drop = "no";
+var $con = jcs:open();
+
+match / {
+    <event-script-results> {
+		
+		var $master = { call are-we-master-re();}
+        if ($master == 0 ) { 
+       		<xsl:message terminate="yes"> "Not master."; 
+        }
+	   
+	    /* Get the current polling interval average */          
+        var $baseline = jcs:execute($con, "get-pfe-statistics");
+
+        var $baseinput = $baseline//pfe-statistics/pfe-traffic-statistics/pfe-input-packets;
+        var $baseoutput = $baseline//pfe-statistics/pfe-traffic-statistics/pfe-output-packets;
+        var $base_fabric = $baseline//pfe-statistics/pfe-hardware-discard-statistics/fabric-discard;
+
+        expr jcs:sleep($polling-interval);
+
+        var $present = jcs:execute($con, "get-pfe-statistics");
+
+        var $presentinput = $present//pfe-statistics/pfe-traffic-statistics/pfe-input-packets;
+        var $presentoutput = $present//pfe-statistics/pfe-traffic-statistics/pfe-output-packets;
+        var $present_fabric = $present//pfe-statistics/pfe-hardware-discard-statistics/fabric-discard;
+
+        var $current_pps_average_in = round(($presentinput - $baseinput) div $polling-interval);
+        var $current_pps_average_out = round(($presentoutput - $baseoutput) div $polling-interval);
+        var $current_drop_average = round(($present_fabric - $base_fabric) div $polling-interval);
+
+                /* if any of the above value < 0, somebody must have cleared the PFE stats.
+                 * exit and wait another round
+                 */
+                if ( ($current_pps_average_in < 0) or ($current_pps_average_out < 0) or ($current_drop_average < 0) ) {
+                        <xsl:message terminate="yes"> "Somebody cleared PFE statistics.";
+                }
+                
+                var $items := {
+                        <item> {
+                                <name> "throughput-input";
+                                <mib-name> "jnxUtilCounter32Value.116.104.114.111.117.103.104.112.117.116.45.105.110.112.117.116";
+                                <counter> $current_pps_average_in;
+                        } 
+                        <item> {
+                                <name> "throughput-output";
+                                <mib-name> "jnxUtilCounter32Value.116.104.114.111.117.103.104.112.117.116.45.111.117.116.112.117.116";
+                                <counter> $current_pps_average_out;
+                        }
+                        <item> {
+                                <name> "fabric-drop";
+                                <mib-name> "jnxUtilCounter32Value.102.97.98.114.105.99.45.100.114.111.112";
+                                <counter> $current_drop_average;
+                        }
+                }
+                                
+                for-each ($items/item) {
+                        var $item_name = name;
+                        var $item_mib_name = mib-name;
+                        var $current = counter; /* it's current average */
+                        
+                        var $previous = { call get-snmp($object = $item_mib_name); }
+                        
+                        /* check the previous value stored in SNMP MIB, if the counter is empty, probably due to SNMPD restart 
+                         * or script run for the 1st time, just store the current average into MIB and do nothing
+                         * Otherwise, do the calculation
+                         */                     
+                        if (not (jcs:empty($previous))) {
+                
+                                /* Check throughput, raise alarm if $previous > $current */
+                                if (contains($item_name, "throughput")) {
+                                        /* it's traffic down and need to check whether accross the threshold 
+                                         * if $diff < 0, meaning traffic increasing, do nothing
+                                         */
+                                        var $diff = $previous - $current;                               
+                                        if ( $diff > 0 ) {
+                                                var $diff_rate = $diff div $previous;
+                                                var $diff_rate2 = round($diff_rate * 100);
+                                                <output> $item_name _ " Current: " _ $current _ " Previous: " _ $previous _ " Down: " _ $diff_rate2 _ "%";
+                                                if ( $diff_rate2 > $pps-threshold ) {
+                                                        var $msg1 = $item_name _ " is down " _ $diff_rate2 _ "% cross the setting threshold " _ $pps-threshold _ "%";
+                                                        <output> $msg1;
+                                                        call syslog-trap($msg = $msg1);
+                                                }
+                                        } 
+                                }
+
+                                /* Check fabric drop, raise alarm if $current > 1000pps */
+                                if (contains($item_name, "drop")) {
+                                        if ( $current > $fabric-threshold ) {
+                                                var $msg1 = $item_name _ " current rate " _ $current _ "pps cross the setting threshold " _ $fabric-threshold _ "pps";
+                                                <output> $msg1;
+                                                call syslog-trap($msg = $msg1);
+                                                        
+                                                /* call SIB walk according to config*/
+                                                if ( $sib-walk-for-fabric-drop == "yes" ) {
+                                                        call sib-walk();
+                                                }
+                                        } 
+                                }       
+                        }
+                        
+                        /* update the current value anyway */
+                        call set-snmp($instance = $item_name, $value = $current);               
+                }
+        }
+}
+
+template set-snmp($instance, $value) {
+
+/*      
+        var $clear_rpc = {
+                <request-snmp-utility-mib-clear> {
+                        <instance> $instance;
+                        <object-type> "counter";
+                }
+        }
+        
+        var $clear_res = jcs:execute($con, $clear_rpc);
+*/      
+    var $rpc = {
+        <request-snmp-utility-mib-set> {
+            <instance> $instance;
+            <object-type> "counter";
+            <object-value> $value;
+        }
+    }
+    var $results = jcs:execute($con, $rpc);
+}
+
+template get-snmp($object) {
+    var $rpc = {
+        <get-snmp-object> {
+            <snmp-object-name> $object;
+            <ascii>;
+        }
+    }
+    var $results = jcs:execute($con, $rpc);
+    for-each( $results//self::xnm:error ) {
+        expr jcs:syslog( "daemon.error", "Error reading to Utility MIB: ", message );
+    }
+    expr $results/snmp-object/object-value;
+}
+
+template syslog-trap ($msg) {
+      var $trap-msg = str:replace( $msg, " ", "\\ " );
+      expr jcs:syslog("pfe.err", $msg);
+      var $request-trap-rpc = { <command> "request snmp spoof-trap jnxEventTrap variable-bindings "
+                               _ "jnxEventTrapDescr[0]=Event-trap,"
+                               _ "jnxEventAvAttribute[1]=message,"
+                               _ "jnxEventAvValue[1]=\"" _ $trap-msg _ "\"";
+      }
+      expr jcs:invoke($request-trap-rpc);
+}
+
+template sib-walk() {
+
+        /* if some other script is doing sib-walk, exit to avoid collision*/
+        var $sib_walk_flag = { call get-sib-walk-flag(); }
+        
+        if ( $sib_walk_flag == 1 ) {
+                var $msg0 = "Other script is doing SIB walk. Exit to avoid collision.";
+                call debug($msg = $msg0);
+                <xsl:message terminate="yes"> "Script exit due to other scripts doing SIB walk.";
+        }
+        
+        call set-sib-walk-flag();
+        
+        var $planes := {
+                <sib> 0;
+                <sib> 1;
+                <sib> 2;
+                <sib> 3;
+                <sib> 4;
+        }
+        
+        
+        for-each ($planes/sib) {
+                var $rpc = <command> "show chassis fabric plane sfc 0 " _ sib;
+                var $result = jcs:execute($con, $rpc);
+                var $plane_state = $result//fm-plane-state-information/fmp-plane/state;
+                                
+                if ( $plane_state == "Online" ) {
+                        var $sib_slot = .;      
+                        var $spare_slot = { call spare-sib-slot(); }
+                        call debug($msg = "Work on plane " _ $sib_slot _ ". Spare plane is " _ $spare_slot);
+                        
+                        if ( not (jcs:empty($spare_slot)) ) {
+                                call sib-offline($sib = $sib_slot);
+                        } else {
+                                var $msg1 = "No spare plane available. Exiting SIB walk";
+                                call debug($msg = $msg1);
+                                call clear-sib-walk-flag();
+                                <xsl:message terminate="yes"> "Script exit due to no spare plane to SIB walk.";
+                        }
+                        
+                        expr jcs:sleep("30");
+                        call sib-online($sib = $sib_slot);
+                        expr jcs:sleep("60");
+                        
+                        /* the plane should be spare now (we don't deal with double fault). check it. If yes, proceed SIB walk
+                         * If no, wait another 60 seconds. If still not online, we regard it as plane error and stop SIB walk
+                         */
+                        
+                        var $is_online = { call plane-status($sib = $sib_slot); }
+                        if ( $is_online != "Spare" ) {
+                                expr jcs:sleep("60");
+                                var $is_online2 = { call plane-status($sib = $sib_slot); }
+                                if ( $is_online2 != "Spare" ) {
+                                        var $msg2 = "!!!SIB slot " _ $sib_slot _ " status " _ $is_online _ " after taking offline. possible fault.";
+                                        call debug($msg = $msg2);
+                                        <xsl:message terminate="yes"> "Script exit due to plane cannot online in SIB walk";
+                                }
+                        }
+                        
+                        /* we check fabric drop again, if drop stopped after SIB offline, we log it and terminate the script 
+                         * that's the way we jump out the loop and don't do SIB walk on remaining planes since it's already fixed
+                         */
+                        var $baseline = jcs:execute($con, "get-pfe-statistics");
+                var $base_fabric = $baseline//pfe-statistics/pfe-hardware-discard-statistics/fabric-discard;
+                expr jcs:sleep($polling-interval);
+                var $present = jcs:execute($con, "get-pfe-statistics");
+                var $present_fabric = $present//pfe-statistics/pfe-hardware-discard-statistics/fabric-discard;
+                        var $current = round(($present_fabric - $base_fabric) div $polling-interval);                   
+
+                        if ( $current < $fabric-threshold ) {
+                                var $msg1 = "Fabric drop lower than threshold"  _ $fabric-threshold _ " by SIB walk, current rate " _ $current;
+                                <output> $msg1;
+                                call syslog-trap($msg = $msg1);
+                                <xsl:message terminate="yes"> "Done Successfully.";
+                        } else {
+                                call debug($msg = "Still Traffic down. Continue will another plane");
+                        }
+                        
+                }
+        }
+        
+        /* If goes here, SIB walk doesn't help. So send out trap */
+        var $msg2 = "Fabric drop cannot be covered by SIB walk Need other investigation";
+        call debug($msg = $msg2);
+        call syslog-trap($msg = $msg2);         
+        call clear-sib-walk-flag();
+}
+
+template sib-offline($sib) {
+        var $rpc = <command> "request chassis fabric plane offline all-chassis" _ $sib;
+        var $result = jcs:execute($con, $rpc);
+}
+
+template sib-online($sib) {
+        var $rpc = <command> "request chassis fabric plane online all-chassis" _ $sib;
+        var $result = jcs:execute($con, $rpc);
+}
+
+template offlined-sib-slot($input) {
+        for-each ($input//fm-plane-state-information/fmp-plane) {
+                if ( state == "Offline" ) {
+                        expr slot;
+                }
+        }
+}
+
+template are-we-master-re()
+{
+    /* Retrieve mastership from sysctl */
+    var $mastership= jcs:sysctl("hw.re.mastership","i");
+    expr $mastership;
+
+}
+
+template set-sib-walk-flag() {
+
+    var $rpc = {
+        <request-snmp-utility-mib-set> {
+            <instance> "sib-walk-busy";
+            <object-type> "counter";
+            <object-value> 1;
+        }
+    }
+    var $results = jcs:execute($con, $rpc);
+}
+
+template clear-sib-walk-flag() {
+
+    var $rpc = {
+        <request-snmp-utility-mib-set> {
+            <instance> "sib-walk-busy";
+            <object-type> "counter";
+            <object-value> 0;
+        }
+    }
+    var $results = jcs:execute($con, $rpc);
+}
+
+template get-sib-walk-flag() {
+    var $rpc = {
+        <get-snmp-object> {
+            <snmp-object-name> "jnxUtilCounter32Value.115.105.98.45.119.97.108.107.45.98.117.115.121";
+            <ascii>;
+        }
+    }
+    var $results = jcs:execute($con, $rpc);
+    for-each( $results//self::xnm:error ) {
+        expr jcs:syslog( "daemon.error", "Error reading to Utility MIB: ", message );
+    }
+    expr $results/snmp-object/object-value;
+}
+
+template spare-sib-slot() {
+        
+        var $rpc = <command> "show chassis fabric plane sfc 0";
+        var $input = jcs:execute($con, $rpc);
+        
+        for-each ($input//fm-plane-state-information/fmp-plane) {
+                if ( state == "Spare" ) {
+                        expr slot;
+                }
+        }
+}
