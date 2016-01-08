@@ -8,6 +8,8 @@ import httplib
 import re
 import datetime
 import sys
+import os
+import time
 
 def getDatetimeFromStr(s):
 	format = '%Y-%m-%d %H:%M:%S'
@@ -67,5 +69,27 @@ if __name__ == '__main__':
 	    counter = line.split(',')[-1].replace(' delta: ','')
 	    pps = int(counter)/3600
 	    msg = routername + " Fabric Drop Average PPS: " + str(pps) + "\n\n"
-    if len(msg) != 0:
+	    #call Wilson
+	    os.system('python /home/hfzhang/skype-call.py +8613716045359')
+	    #os.system('python /home/hfzhang/skype-call.py +8618601355602')
+    if len(msg) != 0 and len(msg) <= 2000:
         wechat_send(token, msg, receiver)
+    else:
+	loop = len(msg) // 2000
+	for i in range(loop+1):
+		wechat_send(token, msg[i*2000:(i+1)*2000], receiver)
+    alarmfile.close()
+
+    #sleep 5 minutes to make sure somebody picked up phone. Then call again.
+    alarmfile = open(inputfile)
+    for line in alarmfile:
+	if "Fabric" in line:
+		time.sleep(300)
+		#call hfzhang
+		os.system('python /home/hfzhang/skype-call.py +8618601355602')
+		time.sleep(300)
+		#call Tim
+		os.system('python /home/hfzhang/skype-call.py +8613810090097')
+		#os.system('python /home/hfzhang/skype-call.py +8618601355602')
+    		alarmfile.close()
+		sys.exit(0)
