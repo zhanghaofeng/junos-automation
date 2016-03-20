@@ -1,0 +1,220 @@
+/*
+ * Author        : Haofeng Zhang
+ * Version       : 0.2
+ * Last Modified : Jul 3 2014
+ * Platform      : TXP-3D, and Multi-Chassis ONLY
+ * Release       : 13.1
+ */
+
+/* 
+- Description
+This script will be invoked when the eventd detects "CHASSISD_FM_ERROR_LCC_SIB_HSR_PFE: CRC errors on link from FPC0 PFE1 to SIB01 XF1_1,0 on LCC0 and plane 1" messages from LCC.
+Then the script perse the LCC# and FPC# from the given message, and power off the source FPC if configured so.
+A sample log could be:
+-bash-2.05b$ cat SLM_SLC.log | grep CHASSISD_FM_ERROR
+Jun 20 18:25:01  UNCS-PB-CMNET-RT02-TXP-SFC0.RE0 chassisd[1558]: CHASSISD_FM_ERROR_LCC_SIB_HSR_PFE: CRC errors on link from FPC0 PFE1 to SIB01 XF1_1,0 on LCC0 and plane 1
+Jun 20 18:25:01  UNCS-PB-CMNET-RT02-TXP-SFC0.RE0 chassisd[1558]: CHASSISD_FM_ERROR_LCC_SIB_HSR_PFE: CRC errors on link from FPC0 PFE0 to SIB02 XF1_15,0 on LCC0 and plane 2
+Jun 20 18:25:01  UNCS-PB-CMNET-RT02-TXP-SFC0.RE0 chassisd[1558]: CHASSISD_FM_ERROR_LCC_SIB_HSR_PFE: CRC errors on link from FPC0 PFE1 to SIB02 XF1_1,0 on LCC0 and plane 2
+Jun 20 18:25:01  UNCS-PB-CMNET-RT02-TXP-SFC0.RE0 chassisd[1558]: CHASSISD_FM_ERROR_LCC_SIB_HSR_PFE: CRC errors on link from FPC0 PFE0 to SIB03 XF1_15,0 on LCC0 and plane 3
+Jun 20 18:25:01  UNCS-PB-CMNET-RT02-TXP-SFC0.RE0 chassisd[1558]: CHASSISD_FM_ERROR_LCC_SIB_HSR_PFE: CRC errors on link from FPC0 PFE1 to SIB03 XF1_1,0 on LCC0 and plane 3
+Jun 20 18:25:01  UNCS-PB-CMNET-RT02-TXP-SFC0.RE0 chassisd[1558]: CHASSISD_FM_ERROR_LCC_SIB_HSR_PFE: CRC errors on link from FPC0 PFE1 to SIB04 XF1_1,0 on LCC0 and plane 4
+Jun 20 18:25:01  UNCS-PB-CMNET-RT02-TXP-SFC0.RE0 chassisd[1558]: CHASSISD_FM_ERROR_LCC_SIB_HSR_PFE: CRC errors on link from FPC0 PFE0 to SIB00 XF1_15,0 on LCC0 and plane 0
+Jun 20 18:25:01  UNCS-PB-CMNET-RT02-TXP-SFC0.RE0 chassisd[1558]: CHASSISD_FM_ERROR_LCC_SIB_HSR_PFE: CRC errors on link from FPC0 PFE1 to SIB00 XF1_1,0 on LCC0 and plane 0
+Jun 20 18:25:01  UNCS-PB-CMNET-RT02-TXP-SFC0.RE0 chassisd[1558]: CHASSISD_FM_ERROR: fm_update_links_f_end: High-speed receiver (HSR) link failed (SIB#0, Packet Forwarding Engine 0 on FPC 0)
+-bash-2.05b$       
+
+Note:
+
+with this knob configured:
+fpc-nmi-volt-fail-knob {
+    enable;
+}
+
+config offline-fpc=YES doesn't make sense, because NMI will reset the FPC anyway even after "test chassis fpc slot xx power off".
+In this case offline-fpc-config=YES could make sense, since NMI will not work.
+
+- file location
+/var/run/scripts/op/shutdown-fpc.slax
+
+- Required config. You can paste below with "load set terminal" from edit mode.
+set groups re0 event-options policy policy-shutdown-fpc-ignore events LCC
+set groups re0 event-options policy policy-shutdown-fpc-ignore within 60 events LCC
+set groups re0 event-options policy policy-shutdown-fpc-ignore attributes-match LCC.message matches "CHASSISD_FM_ERROR_LCC_SIB_HSR_PFE: CRC errors on link from"
+set groups re0 event-options policy policy-shutdown-fpc-ignore then ignore
+set groups re0 event-options policy policy-shutdown-fpc events LCC
+set groups re0 event-options policy policy-shutdown-fpc attributes-match LCC.message matches "CHASSISD_FM_ERROR_LCC_SIB_HSR_PFE: CRC errors on link from"
+set groups re0 event-options policy policy-shutdown-fpc then event-script shutdown-fpc.slax arguments message "{$$.message}"
+set groups re0 event-options policy policy-shutdown-fpc then event-script shutdown-fpc.slax arguments offline-fpc-config YES
+
+set groups re1 event-options policy policy-shutdown-fpc-ignore events LCC
+set groups re1 event-options policy policy-shutdown-fpc-ignore within 60 events LCC
+set groups re1 event-options policy policy-shutdown-fpc-ignore attributes-match LCC.message matches "CHASSISD_FM_ERROR_LCC_SIB_HSR_PFE: CRC errors on link from"
+set groups re1 event-options policy policy-shutdown-fpc-ignore then ignore
+set groups re1 event-options policy policy-shutdown-fpc events LCC
+set groups re1 event-options policy policy-shutdown-fpc attributes-match LCC.message matches "CHASSISD_FM_ERROR_LCC_SIB_HSR_PFE: CRC errors on link from"
+set groups re1 event-options policy policy-shutdown-fpc then event-script shutdown-fpc.slax arguments message "{$$.message}"
+set groups re1 event-options policy policy-shutdown-fpc then event-script shutdown-fpc.slax arguments offline-fpc-config YES
+
+set system scripts op file shutdown-fpc.slax
+
+*/
+
+version 1.0;
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+ns str = "http://exslt.org/strings";
+
+import "../import/junos.xsl";
+
+/* This is a special variable that shows in the command-line help */
+var $arguments = {
+  <argument> {
+    <name> "offline-fpc";
+    <description> "If set as YES, the script offlines the FPC in the problematic state. Default NO";
+  }
+  <argument> {
+    <name> "offline-fpc-config";
+    <description> "If set as YES, the script power off the FPC in the configuration. Default NO";
+  }
+  <argument> {
+    <name> "message";
+    <description> "syslog message to be parsed in the script";
+  }
+}
+
+param $offline-fpc = "NO";
+param $offline-fpc-config = "NO";
+param $message;
+
+
+var $con = jcs:open();
+
+template are_we_master_re ()
+{
+    /* Retrieve mastership from sysctl */
+    var $mastership= jcs:sysctl("hw.re.mastership","i");
+    expr $mastership;
+
+}
+
+template syslog_trap ($msg) {
+      var $trap-msg = str:replace( $msg, " ", "\\ " );
+      expr jcs:syslog("daemon.err", $msg);
+      var $request-trap-rpc = { <command> "request snmp spoof-trap jnxEventTrap variable-bindings "
+                               _ "jnxEventTrapDescr[0]=Event-trap,"
+                               _ "jnxEventAvAttribute[1]=message,"
+                               _ "jnxEventAvValue[1]=\"" _ $trap-msg _ "\"";
+      }
+      expr jcs:invoke($request-trap-rpc);
+}
+
+
+template num-of-instance() {
+  var $rpc-request-file-list = <rpc> {
+      <command> "file list /tmp/evt_cmd_*";
+  }
+  var $rpc-result-file-list = jcs:execute($con,$rpc-request-file-list);
+  var $count := {
+    for-each ($rpc-result-file-list//file-information) {
+      var $name = ./file-name;
+      var $rpc-request-file-show = <rpc> {
+          <command> "file show "_ $name;
+      }
+      var $rpc-result-file-show = jcs:execute($con,$rpc-request-file-show);
+      <entry> {
+         if ( contains($rpc-result-file-show, "shutdown-fpc.slax") ) {
+            <instance> 1;
+         } 
+      }
+    }
+  }
+  var $sum-instance = count($count/entry/instance);
+  expr $sum-instance;
+}
+
+template fpc-offline($fpcno) {
+   var $rpc-request-chassis-fpc-restart = <rpc> {
+      <command> "test chassis fpc power off slot " _ $fpcno;
+   }
+   var $result-request-chassis-fpc = jcs:execute($con,$rpc-request-chassis-fpc-restart);
+
+}
+
+/*
+Jun 20 18:25:01  UNCS-PB-CMNET-RT02-TXP-SFC0.RE0 chassisd[1558]: CHASSISD_FM_ERROR_LCC_SIB_HSR_PFE: CRC errors on link from FPC0 PFE1 to SIB01 XF1_1,0 on LCC0 and plane 1
+*/
+
+template fpc-slot-txp($msg) {
+	
+    var $regex1 = "CRC errors on link from FPC([0-7]) ";
+    var $string1 = jcs:regex($regex1, $msg);
+	
+    var $regex2 = "on LCC([0-7]) and plane";
+    var $string2 = jcs:regex($regex2, $msg);
+	
+	
+    var $fpc-tx = $string2[2] * 8 + $string1[2];  /* lcc x 8 + fpc */
+    expr $fpc-tx;
+}
+
+template shutdown_fpc($message) {
+   var $fpcslot = { call fpc-slot-txp($msg=$message); }
+
+   var $message1 = $script _ " Abnormal FPC failure on slot " _ $fpcslot _ ".";
+   call syslog_trap ($msg=$message1);
+   if ( $offline-fpc = "YES") {
+            var $message2 = $script _ ":FPC" _ $fpcslot _ " has been offlined.";
+            call syslog_trap ($msg=$message2);
+            call fpc-offline($fpcno=$fpcslot);
+   }
+   
+   if ( $offline-fpc-config = "YES") {
+		   var $regex1 = "CRC errors on link from FPC([0-7]) ";
+		   var $string1 = jcs:regex($regex1, $message);
+
+		   var $regex2 = "on LCC([0-7]) and plane";
+		   var $string2 = jcs:regex($regex2, $message);
+   
+		   var $lccnum = $string2[2];
+		   var $fpcnum = $string1[2];
+	   
+            var $message3 = $script _ ":FPC" _ $fpcslot _ " has been powered off in configuration.";
+			call syslog_trap ($msg=$message3);
+			var $loadcfg = {
+				<configuration> {
+					<chassis> {
+						<lcc> {
+							<name> $lccnum;
+							<fpc> {
+								<name> $fpcnum;
+								<power> "off";
+							}
+						}
+					}
+				}
+			}
+            var $conf-results := {
+                    call jcs:load-configuration($connection=$con, $configuration=$loadcfg);
+            }
+			copy-of $conf-results;
+            if ($conf-results//xnm:error) {
+                    expr jcs:syslog("daemon.err", "Configuration Change error");
+            }
+   }
+}
+
+match / {
+   <op-script-results> {
+      var $num-of-events = { call num-of-instance();}
+      /* Let's first check if the script is invoked on master or backup RE */
+      var $master = { call are_we_master_re();}
+      if ($master == 0 ) { <xsl:message terminate="yes"> "Not master."; }
+      
+	  if ($num-of-events > 1 ) { 
+		  expr jcs:syslog("daemon.err", "Another script running shutdown-fpc.slax. Exit");
+		  <xsl:message terminate="yes"> "Too much script instances are running. Bailing out"; 
+	  }
+      var $result = { call shutdown_fpc($message); }
+   } 
+}

@@ -1,0 +1,43 @@
+version 1.0;
+ 
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+ 
+/*
+* Author: hfzhang@juniper.net, ver 1.0
+* This script will check current online users every 5 minutes, and force
+* logout users which is idle longer than 30 minutes
+*
+* The event-options to trigger this script are below:
+*
+* > show configuration event-options
+* generate-event {
+*     CHECK_IDLE time-interval 300;
+* }
+* policy CHECK_IDLE_POLICY {
+*     events CHECK_IDLE;
+*     then {
+*         event-script logout.slax;
+*     }
+* }
+*/
+ 
+import "../import/junos.xsl";
+ 
+var $cliTimeout = 1800;
+ 
+match / {
+    <op-script-results> {
+        var $userInfo = jcs:invoke ('get-system-users-information');
+        for-each ($userInfo/uptime-information/user-table/user-entry) {
+            var $idleTime = idle-time/@junos:seconds;
+            if ($idleTime > $cliTimeout) {
+                var $runcmd = <command> "request system logout terminal " _ tty;
+                var $outcmd = jcs:invoke ($runcmd);
+                var $log = "User " _ user _ " with TTY " _ tty _ " forced logout due to idle 30 minutes";
+                expr jcs:syslog("user.warning", $log);
+            }
+        }
+    }
+}

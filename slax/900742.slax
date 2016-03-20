@@ -1,0 +1,669 @@
+/*
+ * Author        : Haofeng Zhang
+ * Version       : 1.8
+ * Last Modified : 20 Nov 2013 
+ * Platform      : TXP
+ * Release       : 11.4 and 13.1
+ * Changelog in 1.7: 
+	1. add the logic to only trigger SIB-walk when total number of wedged FPC across the threshold.
+	2, Make sure to do SIB walk only when FPC wedge happens again after register fix
+	3, support to dump interested cli output to local file
+ * Changelog in 1.8:
+	1, restart FPC to fix wedge, instead of changing register.
+ */
+
+/* 
+- Description
+- file location
+/var/db/scripts/op/900742.slax
+
+- Required config. You can paste below with "load set terminal" from edit mode.
+
+set groups re0 event-options policy ignore events LCC
+set groups re0 event-options policy ignore within 60 events LCC
+set groups re0 event-options policy ignore attributes-match LCC.message matches NWAN
+set groups re0 event-options policy ignore attributes-match LCC.message matches "new CRC error"
+set groups re0 event-options policy ignore then ignore
+set groups re0 event-options policy lchip-wedge events LCC
+set groups re0 event-options policy lchip-wedge attributes-match LCC.message matches NWAN
+set groups re0 event-options policy lchip-wedge attributes-match LCC.message matches "new CRC error"
+set groups re0 event-options policy lchip-wedge then event-script 900742.slax arguments restart-fpc yes
+set groups re1 event-options policy lchip-wedge then event-script 900742.slax arguments wedged-fpc-to-sib-walk 1
+set groups re1 event-options policy ignore events LCC
+set groups re1 event-options policy ignore within 60 events LCC
+set groups re1 event-options policy ignore attributes-match LCC.message matches NWAN
+set groups re1 event-options policy ignore attributes-match LCC.message matches "new CRC error"
+set groups re1 event-options policy ignore then ignore
+set groups re1 event-options policy lchip-wedge events LCC
+set groups re1 event-options policy lchip-wedge attributes-match LCC.message matches NWAN
+set groups re1 event-options policy lchip-wedge attributes-match LCC.message matches "new CRC error"
+set groups re1 event-options policy lchip-wedge then event-script 900742.slax arguments restart-fpc yes
+set groups re1 event-options policy lchip-wedge then event-script 900742.slax arguments wedged-fpc-to-sib-walk 1
+set system scripts op file 900742.slax
+*/
+
+version 1.0;
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+ns str = "http://exslt.org/strings";
+ns exsl extension = "http://exslt.org/common";
+ns date = "http://exslt.org/dates-and-times";
+
+
+/* This is a special variable that shows in the command-line help  */
+var $arguments = {
+	<argument> {
+	  <name> "wedged-fpc-to-sib-walk";
+	  <description> "Wedged FPC number to trigger SIB walk. 0(default value): Disable SIB walk;";
+	}
+	<argument> {
+    	<name> "wait";
+    	<description> "Time to Wait for FPC wedge happens again during SIB walk. Default 900 seconds";
+  	}
+	<argument> {
+    	<name> "register_value";
+    	<description> "Lout register value. Default: any register less than 0x00000030";
+  	}
+	<argument> {
+    	<name> "filename";
+    	<description> "Append dump result to local file. Default /var/tmp/900742.log.";
+  	}
+	<argument> {
+    	<name> "restart-fpc";
+    	<description> "restart FPC to fix wedge. Default no.";
+  	}
+}
+
+param $wedged-fpc-to-sib-walk = 0;
+param $wait = 900;
+param $register_value = "00000030";
+param $restart-fpc = "no";
+param $filename = "/var/tmp/900742.log";
+var $toggle = 1;
+var $con = jcs:open();
+
+match / {
+	<op-script-results> {
+		
+		call debug($msg = "script triggered due to CRC errors");
+		
+		var $dup_events = { call num-of-instance(); }
+		call debug($msg = "Current " _ $dup_events _ " instances running.");
+		if ( $dup_events > 1 ) {
+			call debug($msg = "Another Instance Running. Exit now");
+			<xsl:message terminate="yes"> "Another Instance Running. Exit now";
+		}
+		
+		var $master = { call are-we-master-re(); } 
+		if ($master == 0 ) { 
+			<xsl:message terminate="yes"> "Not master. Exit now"; 
+		}
+		
+		var $wedged := { call fpc-walk(); }
+		var $wedgedno = count($wedged/fpc);	
+			
+		if ( $wedgedno > 0) {
+		
+			/* Dump the register to local file for further reference */
+			call debug($msg = "Dump some CLI outputs to local file");
+			for-each ($wedged/fpc) {
+				var $rpc = {
+					<request-pfe-execute> {
+						<target> "fpc" _ slot;
+						<command> "show lchip 0 lout registers ip hfalloc";		
+					}
+				}
+
+				var $res1 = jcs:execute($con, $rpc);
+				call dump-log($input = "FPC " _ slot _ " lchip 0 register output" );
+				call dump-log($input = $res1 );
+			
+				if ( fru == "T1600-FPC4-ES" ) {
+					var $rpc2 = {
+						<request-pfe-execute> {
+							<target> "fpc" _ slot;
+							<command> "show lchip 1 lout registers ip hfalloc";		
+						}
+					}
+
+					var $res2 = jcs:execute($con, $rpc2);
+					call dump-log($input = "FPC " _ slot _ " lchip 1 register output" );
+					call dump-log($input = $res2 );
+				}
+			}
+			/* Dump over */
+				
+			/* If some FPC wedged, restart FPC to cover */
+			 
+			
+			if ( $restart-fpc == "yes" ) {
+				call debug($msg = "!!!Wedge detected Restart FPCs to fix wedge streams");
+				expr jcs:sleep("10");
+				call restart-fpc($fpc_node_set = $wedged);	
+			} else {
+				call syslog-trap($msg = "FPC wedge detected and no action taken");
+				<xsl:message terminate="yes"> "No attempt to recover wedge. Exit now";
+			}
+			
+			/* Wait for $wait some to check whether FPC wedges again. If no wedge detected, don't bother to SIB walk. 
+			 * But if still some FPCs wedged here, it's eligible to do SIB-walk */
+			 
+			call debug($msg = "Wait " _ $wait _ " seconds and check whether FPC wedges again");
+			expr jcs:sleep($wait); 
+			var $wedged_2nd := { call fpc-walk(); }
+			var $wedgedno_2nd = count($wedged_2nd/fpc);	
+			
+			if (($wedged-fpc-to-sib-walk > 0) and ($wedgedno_2nd >= $wedged-fpc-to-sib-walk)) {
+				call debug($msg = "Number of Wedged FPC " _ $wedgedno_2nd _ " bigger than configured threshold " _ $wedged-fpc-to-sib-walk _ ". Do SIB-walk.");
+				call sib-walk($input = $wedged_2nd);
+			} else {
+				call debug($msg = "SIB walk disable or Number of Wedged FPC " _ $wedgedno_2nd _ " less than threshold " _ $wedged-fpc-to-sib-walk _ ". Exit now.");	
+				expr jcs:close($con);
+			}
+		} else {
+			/* No FPC wedge detected. Exit */
+			expr jcs:close($con);
+		}
+		
+	}
+}
+
+template debug($msg) {
+	if ( $toggle == 1) {
+		expr jcs:output($msg);
+	}
+	expr jcs:syslog("pfe.notice", $msg);
+}
+
+template are-we-master-re()
+{
+    /* Retrieve mastership from sysctl */
+    var $mastership= jcs:sysctl("hw.re.mastership","i");
+    expr $mastership;
+
+}
+
+/* Try to fix all the wedged FPCs on this chassis.
+ * input will be the wedged FPC list (node-set) . no return value
+ * 
+	var wedged_fpc := {
+		<fpc> {
+			<slot> global_fpc_slot;
+			<fru> FPC type;
+		}
+	}
+ * FPC list as input is needed since we need to fix these wedge FPC after every SIB offline 
+ */
+
+template restart-fpc($fpc_node_set) {
+	for-each ($fpc_node_set/fpc) {
+		var $slot = slot;
+		
+		var $rpc = <command> "restart fpc " _ $slot;
+	    var $results = jcs:execute($con, $rpc);
+		var $msg1 = "!!!Restart FPC slot " _ $slot _ " to fix wedge";
+		call debug($msg = $msg1);
+		expr jcs:sleep("900");
+	}
+}
+/*  
+ * Instead of using "show lchip 0 lout registers ip hfalloc", peeklong is used here.
+ * we only focus on 10G ports here: PD-4OC192-SON-XFP, PD-4XGE-XFP, PD-1OC768-SON-SR, PD-5-10XGE-SFPP
+ * Stream mapping for PD-4OC192-SON-XFP: 0/1/2/3
+	lchip 0: 0xc1300c00 0xc1300c04 0xc1300c08 0xc1300c0c
+	lchip 1: 0xc1500c00	0xc1500c04 0xc1500c08 0xc1500c0c
+	
+ * Stream mapping for PD-4XGE-XFP: 0/16/32/48
+	lchip 0: 0xc1300c00 0xc1300c40 0xc1300c80 0xc1300cc0
+	lchip 1: 0xc1500c00	0xc1500c40 0xc1500c80 0xc1500cc0
+
+ * stream mapping for PD-1OC768-SON-SR: 0
+	lchip 0: 0xc1300c00
+	lchip 1: 0xc1500c00
+ * stream mapping for PD-5-10XGE-SFPP: 0/1/2/3/4
+	lchip 0: 0xc1300c00 0xc1300c04 0xc1300c08 0xc1300c0c 0xc1300c10
+	lchip 1: 0xc1500c00	0xc1500c04 0xc1500c08 0xc1500c0c 0xc1500c10 
+
+	hfzhang@t1600-re1> request pfe execute command "peeklong 0xc1300c00" target fpc7    
+	Nov 16 23:22:27
+	SENT: Ukern command: peeklong 0xc1300c00
+	GOT:
+	GOT: 0xc1300c00: 80300030 80300030 80300030 80300030 .0.0.0.0.0.0.0.0
+	GOT: 0xc1300c10: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300c20: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300c30: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300c40: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300c50: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300c60: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300c70: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300c80: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300c90: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300ca0: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300cb0: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300cc0: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300cd0: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300ce0: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300cf0: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300d00: 00000000 00000000 00000000 00000000 ................<== shouldn't use
+	GOT: 0xc1300d10: 00000000 00000000 00000000 00000000 ................<== shouldn't use
+	GOT: 0xc1300d20: 00000000 00000000 00000000 00000000 ................<== shouldn't use
+	GOT: 0xc1300d30: 00000000 00000000 00000000 00000000 ................<== shouldn't use
+	LOCAL: End of file
+
+	hfzhang@t1600-re1> request pfe execute command "show lchip 0 lout registers ip hf" target fpc7 
+	Nov 16 23:30:12
+	SENT: Ukern command: show lchip 0 lout registers ip hf
+	GOT:
+	GOT: SL-Chip 0 IP block Header FIFO allocation registers:
+	GOT:  (0xc1300c00)                    HF_ALLOC[00..03] : 0x80300030
+	GOT:  (0xc1300c10)                    HF_ALLOC[04..63] : 0x80000000
+	LOCAL: End of file
+
+  the return value is a node set including all the wedged streams on this FPC:
+
+  var $return := {
+	<streams> {
+		<lchip> lchip-number; (0-1)
+		<value> stream-number; (0-63)
+    }
+  }
+
+ */
+
+template check-fpc-register( $fpc, $lchip ) {
+		
+	var $rpc = {
+		<request-pfe-execute> {
+			<target> "fpc" _ $fpc;
+			<command> { 
+				if ( $lchip == 0 ) {
+					expr "peeklong 0xc1300c00";
+				} else if ( $lchip == 1 ) {
+					expr "peeklong 0xc1500c00";
+				}
+			}		
+		}
+	}
+
+	var $res = jcs:execute($con, $rpc);
+	var $lines = jcs:break-lines($res);
+
+	for-each ($lines[contains( ., "GOT: 0xc1") ]) {
+		var $line_no = position();
+		var $register_set = substring(., 18, 35);
+		/* Here we get 16 lines of "80300030 80300030 80300030 80300030", 64 registers in total */
+		var $register = str:split($register_set);
+		for-each ($register) {
+			var $register_no = position() - 1;
+			var $stream = ( $line_no - 1 ) * 4 + $register_no;
+			
+			/* To double check. Wait 10 seconds check stream register again. 
+			 * Only when stream is wedge for both times check. we declare it wedge.
+			 */
+			if (( . <= $register_value ) and ( $stream < 64 )) {
+				expr jcs:sleep("10");
+				var $reg_2nd = { call check-register-again($slot = $fpc, $lchip = $lchip, $stream = $stream); }
+				call debug($msg = "!!!possible wedge on FPC " _ $fpc _ " Lchip " _ $lchip _ " Stream " _ $stream _ " Register " _ . _ " and " _ $reg_2nd);
+				if ($reg_2nd <= $register_value) {
+					call debug($msg = "!!!Wedged stream on FPC " _ $fpc _ " Lchip " _ $lchip _ " Stream " _ $stream);
+					<streams> {
+						<lchip> $lchip;
+						<value> $stream;
+					}
+				}
+			}
+		}
+	}
+}
+
+template check-register-again($slot, $lchip, $stream) {
+	
+	var $offset = {
+		if ( $lchip == 0 ) {
+			/* 0xc1300c00 =  3241151488 in Decimal */
+			var $value1 = 3241151488 + ($stream * 4);
+			expr format-number($value1, "#");
+		}
+		if ( $lchip == 1 ) {
+			/* 0xc1500c00 =  3243248640 in Decimal */
+			var $value2 = 3243248640 + ($stream * 4);
+			expr format-number($value2, "#");
+		}
+	}
+	var $rpc = {
+		<request-pfe-execute> {
+			<target> "fpc" _ $slot;
+			<command> "peeklong " _ $offset _ " single";
+		}
+	}
+	
+	var $res = jcs:execute($con, $rpc);
+	var $regex = "Read 0x([0-f]{8}) from";
+	var $string = jcs:regex($regex, $res);
+	expr $string[2];
+}
+
+template dump-log($input) {
+	<exsl:document href = $filename append="yes" method="text"> {
+		expr date:date-time();
+		copy-of $input;
+	}
+
+}
+
+template syslog-trap($msg) {
+      var $trap-msg = str:replace( $msg, " ", "\\ " );
+      expr jcs:syslog("pfe.error", $msg);
+      
+	  var $request-trap-rpc = { <command> "request snmp spoof-trap jnxEventTrap variable-bindings "
+                               _ "jnxEventTrapDescr[0]=Event-trap,"
+                               _ "jnxEventAvAttribute[1]=message,"
+                               _ "jnxEventAvValue[1]=\"" _ $trap-msg _ "\"";
+      }
+      expr jcs:execute($con, $request-trap-rpc);
+	  
+}
+
+template lcc-slot($msg) {
+    var $string = str:split($msg, "-");
+    expr str:replace($string[1], "lcc", "");
+}
+
+template fpc-slot($msg) {
+    var $string = str:split($msg);
+    expr $string[2];
+}
+
+template fpc-slot-txp($lcc, $fpc) {
+    var $fpc-tx = $lcc * 8 + $fpc;  
+    expr $fpc-tx;
+}
+
+template fpc-is-online($fpc) {
+	var $command = <get-fpc-information> {
+		<fpc-slot> $fpc;
+	}
+	var $result = jcs:execute($con, $command);
+	
+	expr $result//fpc-information/fpc/state;
+}
+
+template sib-offline($sib) {
+	var $rpc = <command> "request chassis fabric plane offline all-chassis " _ $sib;
+	var $result = jcs:execute($con, $rpc);
+	
+	var $msg1 = "!!!Plane " _ $sib _ " offlined due to SIB walk";
+	call debug($msg = $msg1);
+}
+
+template sib-online($sib) {
+	var $rpc = <command> "request chassis fabric plane online all-chassis " _ $sib;
+	var $result = jcs:execute($con, $rpc);
+	
+	var $msg1 = "!!!Plane " _ $sib _ " onlined due to SIB walk";
+	call debug($msg = $msg1);
+}
+
+template offlined-sib-slot($input) {
+	for-each ($input//fm-plane-state-information/fmp-plane) {
+		if ( state == "Offline" ) {
+			expr slot;
+		}
+	}
+}
+
+template spare-sib-slot() {
+	
+	var $rpc = <command> "show chassis fabric plane sfc 0";
+	var $input = jcs:execute($con, $rpc);
+	
+	for-each ($input//fm-plane-state-information/fmp-plane) {
+		if ( state == "Spare" ) {
+			expr slot;
+		}
+	}
+}
+
+template plane-status($sib) {
+	var $rpc = <command> "show chassis fabric plane sfc 0 " _ $sib;
+	var $result = jcs:execute($con, $rpc);
+	expr $result//fm-plane-state-information/fmp-plane/state;
+}
+
+/* try to offline SIB one by one, except the spare one, until wedge stopps
+ * input will be the wedged FPC list (node-set) on this TXP chassis 
+ * 
+	var wedged_fpc := {
+		<fpc> {
+			<slot> global_fpc_slot;
+			<fru> FPC type;
+		}
+	}
+ * FPC list as input is needed since we need to fix these wedge FPC after every SIB offline 
+ */
+
+template sib-walk($input) {
+	
+	/* if some other script is doing sib-walk, exit to avoid collision*/
+	var $sib_walk_flag = { call get-sib-walk-flag(); }
+	
+	if ( $sib_walk_flag == 1 ) {
+		var $msg0 = "Other script is doing SIB walk. Exit to avoid collision.";
+		call debug($msg = $msg0);
+		<xsl:message terminate="yes"> "Script exit due to other scripts doing SIB walk.";
+	}
+	
+	call set-sib-walk-flag();
+	
+	var $planes := {
+		<sib> 0;
+		<sib> 1;
+		<sib> 2;
+		<sib> 3;
+		<sib> 4;
+	}
+	
+	for-each ($planes/sib) {
+		var $rpc = <command> "show chassis fabric plane sfc 0 " _ sib;
+		var $result = jcs:execute($con, $rpc);
+		var $plane_state = $result//fm-plane-state-information/fmp-plane/state;
+	
+		if ( $plane_state == "Online" ) {
+			var $sib_slot = .;
+			
+			/* we firstly check whether there is a spare plane. If yes, we can proceed to SIB walk
+			 * if no, we stop and log no spare plane. 
+			 */
+			
+			var $spare_slot = { call spare-sib-slot(); }
+			call debug($msg = "Work on plane " _ $sib_slot _ ". Spare plane is " _ $spare_slot);
+			
+			if ( not (jcs:empty($spare_slot)) ) {
+				call sib-offline($sib = $sib_slot);
+			} else {
+				var $msg1 = "No spare plane available. Exiting SIB walk";
+				call debug($msg = $msg1);
+				call clear-sib-walk-flag();
+				<xsl:message terminate="yes"> "Script exit due to no spare plane to SIB walk.";
+			}
+			
+			expr jcs:sleep("30");
+			call sib-online($sib = $sib_slot);
+			expr jcs:sleep("60");
+			
+			/* the plane should be spare now (we don't deal with double fault). check it. If yes, proceed SIB walk
+			 * If no, wait another 60 seconds. If still not online, we regard it as plane error and stop SIB walk
+			 */
+			
+			var $is_online = { call plane-status($sib = $sib_slot); }
+			if ( $is_online != "Spare" ) {
+				expr jcs:sleep("60");
+				var $is_online2 = { call plane-status($sib = $sib_slot); }
+				if ( $is_online2 != "Spare" ) {
+					var $msg2 = "!!!SIB slot " _ $sib_slot _ " status " _ $is_online _ " after taking offline. possible fault.";
+					call debug($msg = $msg2);
+					<xsl:message terminate="yes"> "Script exit due to plane cannot online in SIB walk";
+				}
+			}
+			
+			
+			/* After SIB offline, fix wedge by changing register */
+			call restart-fpc($fpc_node_set = $input);
+			expr jcs:sleep($wait); 
+						
+			/* we check all FPC again, if no wedge detected after SIB offline, we log it and terminate the script 
+			 * that's the way we jump out the loop and don't do SIB walk on remaining planes since it's already fixed
+			 */
+			var $result2 := { call fpc-walk(); }
+			if ( count($result2/fpc) == 0 ) {
+				var $msg3 = "Wedge solved by SIB walk";
+				call debug($msg = $msg3 _ " possible faulty plane " _ $sib_slot);
+				call syslog-trap($msg = $msg3);
+				<xsl:message terminate="yes"> "Done Successfully.";
+			} else {
+				call debug($msg = "Still FPC wedge. Continue will another plane");
+			}
+		}
+	}
+	
+	/* if code goes here, SIB walk doesn't solve problem. So send out trap*/
+	var $msg4 = "!!!Wedge cannot be covered by SIB walk Need other investigation";
+	call debug($msg = $msg4);
+	call syslog-trap($msg = $msg4);
+	call clear-sib-walk-flag(); 	
+}
+
+/* Use "show chassis hardware" to go through all FPCs which are:
+ * 	1, Stoli FPC type 3 and type 4
+ *	2, FPC state online
+ * Check whether wedge detected on these FPCs.
+ * return value is the node-set of all wedged-fpc on this TXP:
+
+var wedged_fpc := {
+	<fpc> {
+		<slot> global_fpc_slot;
+		<fru> fru; FPC type, needed to identify how many PFEs
+	}
+}
+ */
+template fpc-walk() {
+	
+    var $outcmd = jcs:execute($con, "get-chassis-inventory");
+	  	
+	    for-each ($outcmd//chassis-inventory/chassis/chassis-module) {
+			var $fru = model-number;
+			var $lccname = ../../../re-name;
+			var $fpcname = name;
+			
+			if ( contains($fru, "FPC") ) {
+				
+			/* we check FPC is online or not*/				
+			var $lcc_slot = { call lcc-slot($msg = $lccname); }
+			var $fpc_slot = { call fpc-slot($msg = $fpcname); }
+			var $global_fpc_slot = { call fpc-slot-txp($lcc = $lcc_slot, $fpc = $fpc_slot); }
+			var $fpc_state = { call fpc-is-online($fpc = $global_fpc_slot); }
+
+			call debug($msg = "FPC slot " _ $global_fpc_slot _ " detected, State: " _ $fpc_state _ " Type: " _ $fru);
+			
+			/* we focus on type 4 and type 3 -ES FPC.
+			 */
+			if ( $fpc_state == "Online" ) {				
+				if (($fru == "T1600-FPC4-ES" ) or ($fru == "T640-FPC3-ES" )) {
+					var $counter := { call fpc-is-wedged($slot = $global_fpc_slot , $fru_type = $fru ); }
+					if ($counter > 0) {
+						<fpc> {
+							<slot> $global_fpc_slot;
+							<fru> $fru;
+						}						
+					}
+				}
+			}
+		}
+	}
+}
+
+/* check whether FPC is wedged
+ * input is FPC slot and FPC FRU type, output is total number of wedged streams on this FPC.
+ */
+
+template fpc-is-wedged($slot, $fru_type) {
+	if ($fru_type == "T1600-FPC4-ES") {
+		var $lchip40 := { call check-fpc-register($fpc = $slot , $lchip = "0" ); }
+		var $lchip41 := { call check-fpc-register($fpc = $slot , $lchip = "1" ); }
+		var $counter1 = count($lchip40/streams) + count($lchip41/streams);	
+		call debug($msg = "Total " _ $counter1 _ " streams wedged on this FPC");
+		expr $counter1;		
+	}
+	
+	if ($fru_type == "T640-FPC3-ES") {
+		var $lchip30 := { call check-fpc-register($fpc = $slot, $lchip = "0" ); }
+		var $counter2 = count($lchip30/streams);
+		call debug($msg = "Total " _ $counter2 _ " streams wedged on this FPC");
+		expr $counter2;
+	}
+}
+
+template num-of-instance() {
+  var $rpc-request-file-list = <rpc> {
+      <command> "file list /tmp/evt_cmd_*";
+  }
+  var $rpc-result-file-list = jcs:execute($con,$rpc-request-file-list);
+  var $count := {
+    for-each ($rpc-result-file-list//file-information) {
+      var $name = ./file-name;
+      var $rpc-request-file-show = <rpc> {
+          <command> "file show "_ $name;
+      }
+      var $rpc-result-file-show = jcs:execute($con,$rpc-request-file-show);
+      <entry> {
+         if ( contains($rpc-result-file-show, "900742.slax") ) {
+            <instance> 1;
+         } 
+      }
+    }
+  }
+  var $sum-instance = count($count/entry/instance);
+  expr $sum-instance;
+}
+
+template set-sib-walk-flag() {
+	var $msg1 = "Set sib-walk-flag to 1";
+	call debug($msg = $msg1);
+    var $rpc = {
+        <request-snmp-utility-mib-set> {
+            <instance> "sib-walk-busy";
+            <object-type> "counter";
+            <object-value> 1;
+        }
+    }
+    var $results = jcs:execute($con, $rpc);
+}
+
+template clear-sib-walk-flag() {
+	var $msg1 = "clear sib-walk-flag to 0";
+	call debug($msg = $msg1);
+
+    var $rpc = {
+        <request-snmp-utility-mib-set> {
+            <instance> "sib-walk-busy";
+            <object-type> "counter";
+            <object-value> 0;
+        }
+    }
+    var $results = jcs:execute($con, $rpc);
+}
+
+template get-sib-walk-flag() {
+    var $rpc = {
+        <get-snmp-object> {
+            <snmp-object-name> "jnxUtilCounter32Value.115.105.98.45.119.97.108.107.45.98.117.115.121";
+            <ascii>;
+        }
+    }
+    var $results = jcs:execute($con, $rpc);
+    for-each( $results//self::xnm:error ) {
+        expr jcs:syslog( "daemon.error", "Error reading to Utility MIB: ", message );
+    }
+    expr $results/snmp-object/object-value;
+}
