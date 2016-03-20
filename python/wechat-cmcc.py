@@ -66,6 +66,14 @@ if __name__ == '__main__':
 			dt = re.search(r"(\d+-\d+-\d+ \d+:\d+:\d+)", line).group(1)
 			if getDatetimeFromStr(dt) >= previous_hour():
 				msg = msg + line + "\n"
+		
+		#check et interface down
+		#if re.search(r"Defaulted|et-", line):
+		if "Defaulted" in line and "et-" in  line:
+			routername = line.split()[0]
+			interface = line.split()[1]
+			msg = msg + "路由器" + routername + ", 100G接口" + interface + " LACP状态异常，流量中断\n\n"
+
 		#check Fabric drops
 		if "Fabric drop counter" in line:
 			#enable skype_call flag. set to 1 if needs to call everybody
