@@ -1,0 +1,114 @@
+/*
+ Author: hfzhang@juniper.net
+ Version: Apr 7 2016, used on MX series to accomodate more FPC slots.
+ 
+ how to use:
+ 1. Copy this file to: 
+ /var/run/scripts/op/restart-fpc-on-xm-error.slax
+ on both routing-engines.
+ 
+ syslog to capture:
+ Mar 29 17:10:31  CSR-VM-1.ET1 : %PFE-3: fpc4 CACR6976: XMCHIP(0): DDRIF: Checksum error for FO/WO2 - Channel 1, Address 0xf8146, Checksum Errors 98, Checksum Poison Count 0
+ 
+ 2. Configuration needed:
+set groups re0 event-options policy xm-error events PIC
+set groups re0 event-options policy xm-error attributes-match PIC.message matches "DDRIF: Checksum error"
+set groups re0 event-options policy xm-error then event-script restart-fpc-on-xm-error.slax arguments message "{$$.message}"
+set groups re1 event-options policy xm-error events PIC
+set groups re1 event-options policy xm-error attributes-match PIC.message matches "DDRIF: Checksum error"
+set groups re1 event-options policy xm-error then event-script restart-fpc-on-xm-error.slax arguments message "{$$.message}"
+set system scripts op file restart-fpc-on-xm-error.slax
+ */
+
+
+version 1.0;
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+ns str = "http://exslt.org/strings";
+
+/* This is a special variable that shows in the command-line help */
+var $arguments = {
+  <argument> {
+    <name> "offline-fpc";
+    <description> "If set as YES, the script offlines the FPC in the problematic state. Default YES";
+  }
+   <argument> {
+    <name> "restart-fpc";
+    <description> "If set as YES, the script offlines the FPC in the problematic state. Default NO";
+  }
+  <argument> {
+    <name> "message";
+    <description> "syslog message to be parsed in the script";
+  }
+}
+
+param $offline-fpc = "YES";
+param $restart-fpc = "NO";
+
+var $con = jcs:open();
+match / {
+	<op-script-results> {
+	/* Let's first check if the script is invoked on master or backup RE */
+	var $master = { call are_we_master_re(); }
+	if ($master == 0 ) { <xsl:message terminate="yes"> "Not master."; }
+
+	/* Should set both $offline-fpc and $restart-fpc to YES */
+	if (($restart-fpc = "YES") && ($offline-fpc = "YES")) {
+		<xsl:message terminate="yes"> "Argument Error, restart-fpc and offline-fpc cannot both set to be YES.";
+	}
+	
+	var $fpcslot = { call fpc-slot-raw($msg=$message); }
+	if ( $offline-fpc = "YES") {
+		var $message2 = $script _ ":FPC" _ $fpcslot _ " has been offlined.";
+		call syslog_trap ($msg=$message2);
+		call fpc-offline($fpcno=$fpcslot);
+	}
+	 
+	if ( $restart-fpc = "YES") {
+		var $message2 = $script _ ":FPC" _ $fpcslot _ " has been restarted.";
+		call syslog_trap ($msg=$message2);
+		call fpc-restart($fpcno=$fpcslot);
+	}
+   } 
+}
+
+template are_we_master_re ()
+{
+    /* Retrieve mastership from sysctl */
+    var $mastership= jcs:sysctl("hw.re.mastership","i");
+    expr $mastership;
+
+}
+
+template syslog_trap ($msg) {
+      var $trap-msg = str:replace( $msg, " ", "\\ " );
+      expr jcs:syslog("daemon.err", $msg);
+      var $request-trap-rpc = { <command> "request snmp spoof-trap jnxEventTrap variable-bindings "
+                               _ "jnxEventTrapDescr[0]=Event-trap,"
+                               _ "jnxEventAvAttribute[1]=message,"
+                               _ "jnxEventAvValue[1]=\"" _ $trap-msg _ "\"";
+      }
+      expr jcs:invoke($request-trap-rpc);
+}
+
+template fpc-offline($fpcno) {
+   var $rpc-request-chassis-fpc-restart = <rpc> {
+      <command> "test chassis fpc power off slot " _ $fpcno;
+   }
+   var $result-request-chassis-fpc = jcs:execute($con,$rpc-request-chassis-fpc-restart);
+
+}
+
+template fpc-restart($fpcno) {
+   var $rpc-request-chassis-fpc-restart = <rpc> {
+      <command> "restart fpc " _ $fpcno;
+   }
+   var $result-request-chassis-fpc = jcs:execute($con,$rpc-request-chassis-fpc-restart);
+}
+
+template fpc-slot-raw($msg) {
+    var $regex = "fpc([0-9]{1,2}) ";
+    var $string = jcs:regex($regex, $msg);
+    expr $string[2];
+}

@@ -1,0 +1,65 @@
+/*
+
+Auther: Haofeng Zhang, version 2014-08-08
+JUNOS version 12.2+ needed since we use SLAX version 1.1
+Platform: Should be independent.
+
+This script will enforce the configuration of "maximum-prefixes" under main instance and all VRF instances. Only IPv4 routes are checked. IPv6 is not affected.
+
+It will check:
+1, whether "maximum-prefixes" config exists under main stance and all VRF instances. Commit will fail if anyone missing;
+2, whether the total prefix number exceeds $threshold (800K FIB). Commit will fail if exceeded.
+
+How to use:
+1, change the threshold as you want. By default it's 800K; you can change to 900K
+2, put this script to directory /var/db/scripts/commit, on both routing engines;
+    % pwd
+    /var/db/scripts/commit
+    % ls
+    cs-fib-sanity-check.slax
+
+3, configure the router:
+     set system scripts commit file cs-fib-sanity-check.slax
+*/
+
+version 1.1;
+
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+
+import "../import/junos.xsl";
+
+var $threshold = 800000;
+mvar $total = 0;
+
+match configuration {
+
+    /* Is the protocols/ospf stanza present? */
+    if( jcs:empty( routing-options/maximum-prefixes ) ) {
+        /* Build an error element and write to result tree */
+        <xnm:error> {
+            <message> "Sanity Check Failure: [routing-options/maximum-prefixes] configuration is missing.";
+        }
+        } else {
+                var $current = routing-options/maximum-prefixes/limit;
+                set $total = $total + $current;
+        }
+
+        for-each ( routing-instances/instance ) {
+                if ( jcs:empty( routing-options/maximum-prefixes ) ) {
+                <xnm:error> {
+                    <message> "Sanity Check Failure: " _ name _ " [routing-instances/routing-options/maximum-prefixes] configuration is missing.";
+                }
+                } else {
+                        var $current = routing-options/maximum-prefixes/limit;
+                        set $total = $total + $current;
+                }
+        }
+
+        if ( $total > $threshold ) {
+        <xnm:error> {
+            <message> "Sanity Check Failure: Sum of maximum-prefixes in all instances " _ $total _ " across threshold " _ $threshold;
+        }
+        }
+}

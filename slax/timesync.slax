@@ -1,0 +1,43 @@
+version 1.0;
+ 
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+ 
+/*
+* Author: hfzhang@juniper.net, ver 1.0, platform TXP
+* This script will execute cli commands "set date ntp all-chassis" and syslog action
+* This command needs all LCCs have NTP server reachability, e.g. by a backup-router configuration
+*/
+ 
+import "../import/junos.xsl";
+ 
+match / {
+    <op-script-results> {
+		
+		/* Get em0's source address. It's used when master-only knob used 
+		*/
+		
+		var $em0cmd = {
+			<get-interface-information> {
+				<interface-name> "em0";
+			}
+		}
+		
+		var $em0out = jcs:invoke ($em0cmd);
+		
+		for-each ( $em0out/physical-interface/logical-interface/address-family[address-family-name=="inet"]/interface-address) {
+			var $source = {
+				if (jcs:empty(ifa-flags/ifaf-master-only)) {
+					expr ifa-local;
+				}
+			}
+		}
+			
+			
+        var $runcmd = <command> "set date ntp all-chassis source $source";
+        var $outcmd = jcs:invoke ($runcmd);
+        var $log = "Time synchronized between SFC and LCC";
+        expr jcs:syslog("user.notice", $log);
+    }
+}

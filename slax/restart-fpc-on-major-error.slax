@@ -1,0 +1,190 @@
+/*
+*  Author        : Juniper Networks Resident Engineering Services
+*  Version       :
+*  Platform      :
+*  Release       :
+*  Description   :
+*
+*  Revision History:
+*  0.1  dd/mm/yyy - initial release
+*
+********************************************************************************
+*
+*  Copyright (c) 2016  Juniper Networks. All Rights Reserved.
+*
+*  YOU MUST ACCEPT THE TERMS OF THIS DISCLAIMER TO USE THIS SOFTWARE
+*
+*  JUNIPER IS WILLING TO MAKE THE INCLUDED SCRIPTING SOFTWARE AVAILABLE TO YOU
+*  ONLY UPON THE CONDITION THAT YOU ACCEPT ALL OF THE TERMS CONTAINED IN THIS
+*  DISCLAIMER. PLEASE READ THE TERMS AND CONDITIONS OF THIS DISCLAIMER
+*  CAREFULLY.
+*
+*  THE SOFTWARE CONTAINED IN THIS FILE IS PROVIDED "AS IS." JUNIPER MAKES NO
+*  WARRANTIES OF ANY KIND WHATSOEVER WITH RESPECT TO SOFTWARE. ALL EXPRESS OR
+*  IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING ANY WARRANTY
+*  OF NON-INFRINGEMENT OR WARRANTY OF MERCHANTABILITY OR FITNESS FOR A
+*  PARTICULAR PURPOSE, ARE HEREBY DISCLAIMED AND EXCLUDED TO THE EXTENT
+*  ALLOWED BY APPLICABLE LAW.
+*
+*  IN NO EVENT WILL JUNIPER BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR
+*  FOR DIRECT, SPECIAL, INDIRECT, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE
+*  DAMAGES HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY ARISING
+*  OUT OF THE USE OF OR INABILITY TO USE THE SOFTWARE, EVEN IF JUNIPER HAS
+*  BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+*
+*/
+/*
+ Author: hfzhang@juniper.net
+ Version: Jul 19 2016
+ ChangeLog: Option to configure FPC power off in case of major alarms. Default value: restart-fpc: no; offline-fpc: no; power-off-in-config:yes
+ Platform: MX960 tested. DON'T USE on Multi-Chassis System!!!
+ 
+ syslog to capture:
+ [2016-04-07 15:19:02 CST] <SYSTEM> "Alarm set: FPC color=RED, class=CHASSIS, reason=FPC 2 Major Errors" 
+
+ how to use:
+ 1. Copy this file to: 
+/var/run/scripts/op/restart-fpc-on-major-error.slax
+ on both routing-engines.
+ 
+ 2. Configuration needed:
+set groups re0 event-options policy fpc-error events SYSTEM
+set groups re0 event-options policy fpc-error attributes-match SYSTEM.message matches "Alarm set: FPC color=RED, class=CHASSIS"
+set groups re0 event-options policy fpc-error then event-script restart-fpc-on-major-error.slax arguments message "{$$.message}"
+set groups re1 event-options policy fpc-error events SYSTEM
+set groups re1 event-options policy fpc-error attributes-match SYSTEM.message matches "Alarm set: FPC color=RED, class=CHASSIS"
+set groups re1 event-options policy fpc-error then event-script restart-fpc-on-major-error.slax arguments message "{$$.message}"
+set system scripts op file restart-fpc-on-major-error.slax
+ */
+ 
+version 1.0;
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+ns str = "http://exslt.org/strings";
+import "../import/junos.xsl";
+
+/* This is a special variable that shows in the command-line help */
+var $arguments = {
+  <argument> {
+    <name> "offline-fpc";
+    <description> "If set as YES, the script offlines the FPC in the problematic state. Default NO";
+  }
+   <argument> {
+    <name> "restart-fpc";
+    <description> "If set as YES, the script offlines the FPC in the problematic state. Default NO";
+  }
+  <argument> {
+    <name> "power-off-in-config";
+    <description> "If set as YES, the script sets FPC power into OFF mode in JUNOS configuration. Default YES";
+  }
+  <argument> {
+    <name> "message";
+    <description> "syslog message to be parsed in the script";
+  }
+}
+
+param $offline-fpc = "NO";
+param $restart-fpc = "NO";
+param $power-off-in-config = "YES";
+
+var $con = jcs:open();
+match / {
+	<op-script-results> {
+	/* Let's first check if the script is invoked on master or backup RE */
+	var $master = { call are_we_master_re(); }
+	if ($master == 0 ) { <xsl:message terminate="yes"> "Not master."; }
+
+	/* Shouldnot set both $offline-fpc and $restart-fpc to YES */
+	if (($restart-fpc = "YES") && ($offline-fpc = "YES")) {
+		<xsl:message terminate="yes"> "Argument Error, restart-fpc and offline-fpc cannot both set to be YES.";
+	}
+	
+	var $fpcslot = { call fpc-slot-raw($msg=$message); }
+	if ( $offline-fpc = "YES") {
+		var $message2 = $script _ ":FPC" _ $fpcslot _ " has been offlined.";
+		call syslog_trap ($msg=$message2);
+		call fpc-offline($fpcno=$fpcslot);
+	}
+	 
+	if ( $restart-fpc = "YES") {
+		var $message2 = $script _ ":FPC" _ $fpcslot _ " has been restarted.";
+		call syslog_trap ($msg=$message2);
+		call fpc-restart($fpcno=$fpcslot);
+	}
+	
+	if ( $power-off-in-config = "YES") {
+		var $message2 = $script _ ":FPC" _ $fpcslot _ " has been powered off in configuration.";
+		call syslog_trap ($msg=$message2);
+		call fpc-power-off-in-config($fpcno=$fpcslot);
+	}	
+   } 
+}
+
+template are_we_master_re ()
+{
+    /* Retrieve mastership from sysctl */
+    var $mastership= jcs:sysctl("hw.re.mastership","i");
+    expr $mastership;
+
+}
+
+template syslog_trap ($msg) {
+      var $trap-msg = str:replace( $msg, " ", "\\ " );
+      expr jcs:syslog("daemon.err", $msg);
+      var $request-trap-rpc = { <command> "request snmp spoof-trap jnxEventTrap variable-bindings "
+                               _ "jnxEventTrapDescr[0]=Event-trap,"
+                               _ "jnxEventAvAttribute[1]=message,"
+                               _ "jnxEventAvValue[1]=\"" _ $trap-msg _ "\"";
+      }
+      expr jcs:invoke($request-trap-rpc);
+}
+
+template fpc-offline($fpcno) {
+   var $rpc-request-chassis-fpc-restart = <rpc> {
+      <command> "test chassis fpc power off slot " _ $fpcno;
+   }
+   var $result-request-chassis-fpc = jcs:execute($con,$rpc-request-chassis-fpc-restart);
+
+}
+
+template fpc-restart($fpcno) {
+   var $rpc-request-chassis-fpc-restart = <rpc> {
+      <command> "restart fpc " _ $fpcno;
+   }
+   var $result-request-chassis-fpc = jcs:execute($con,$rpc-request-chassis-fpc-restart);
+}
+
+template fpc-power-off-in-config($fpcno) {
+	var $cfg = {
+            <configuration> {
+                <chassis> {
+                    <fpc> {
+                        <name> $fpcno;
+                        <power> "off";
+                    }
+                }    
+            }		
+	}
+	
+	var $result := { 
+		call jcs:load-configuration($connection=$con, $configuration=$cfg); 
+	}
+     
+    /* Report errors or success */
+    if( $result//self::xnm:error ) {
+        copy-of $result;
+    }
+}
+
+
+/* 
+[2016-04-07 15:19:02 CST] <SYSTEM> "Alarm set: FPC color=RED, class=CHASSIS, reason=FPC 2 Major Errors" 
+ */
+
+template fpc-slot-raw($msg) {
+    var $regex = "FPC color=RED, class=CHASSIS, reason=FPC ([0-9]{1,2}) ";
+    var $string = jcs:regex($regex, $msg);
+	expr jcs:output("FPC slot is: ", $string[2]);
+    expr $string[2];
+}

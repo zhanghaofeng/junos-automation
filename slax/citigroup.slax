@@ -1,0 +1,143 @@
+/*
+*  Author        : Juniper Networks Resident Engineering Services, Haofeng Zhang
+*  Version       : 0.1
+*  Platform      : MX
+*  Release       : 
+*  Description   : Triger SNMP trap and syslog message when PCS bit error counter or PCS error block counter 
+*                  across the configured threshold.
+*                  contact hfzhang@juniper.net for comments
+*
+*  Revision History:
+*  0.1  08/09/2016 - initial release
+*
+********************************************************************************
+*
+*  Copyright (c) 2016  Juniper Networks. All Rights Reserved.
+*
+*  YOU MUST ACCEPT THE TERMS OF THIS DISCLAIMER TO USE THIS SOFTWARE
+*
+*  JUNIPER IS WILLING TO MAKE THE INCLUDED SCRIPTING SOFTWARE AVAILABLE TO YOU
+*  ONLY UPON THE CONDITION THAT YOU ACCEPT ALL OF THE TERMS CONTAINED IN THIS
+*  DISCLAIMER. PLEASE READ THE TERMS AND CONDITIONS OF THIS DISCLAIMER
+*  CAREFULLY.
+*
+*  THE SOFTWARE CONTAINED IN THIS FILE IS PROVIDED "AS IS." JUNIPER MAKES NO
+*  WARRANTIES OF ANY KIND WHATSOEVER WITH RESPECT TO SOFTWARE. ALL EXPRESS OR
+*  IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING ANY WARRANTY
+*  OF NON-INFRINGEMENT OR WARRANTY OF MERCHANTABILITY OR FITNESS FOR A
+*  PARTICULAR PURPOSE, ARE HEREBY DISCLAIMED AND EXCLUDED TO THE EXTENT
+*  ALLOWED BY APPLICABLE LAW.
+*
+*  IN NO EVENT WILL JUNIPER BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR
+*  FOR DIRECT, SPECIAL, INDIRECT, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE
+*  DAMAGES HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY ARISING
+*  OUT OF THE USE OF OR INABILITY TO USE THE SOFTWARE, EVEN IF JUNIPER HAS
+*  BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+*
+*/
+
+/* Sample Config needed:
+set event-options generate-event 5minutes time-interval 300
+set event-options policy PCS-CHECK events 5minutes
+set event-options policy PCS-CHECK then event-script citigroup.slax arguments bit-error-threshold 1000
+set event-options policy PCS-CHECK then event-script citigroup.slax arguments error-block-threshold 1000
+set system scripts op file citigroup.slax 
+*/
+
+version 1.0;
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0"; 
+ns exsl extension = "http://exslt.org/common";
+ns str = "http://exslt.org/strings";
+
+import "../import/junos.xsl";
+
+var $arguments = {
+    <argument> {
+        <name> "bit-error-threshold";
+        <description> "Bit errors threshold under PCS statistics; default value 1000";
+    }
+    <argument> {
+        <name> "error-block-threshold";
+        <description> "Errored blocks counter threshold under PCS statistics; default value 1000";
+    }
+}
+param $bit-error-threshold = 1000;
+param $error-block-threshold = 1000;
+var $con = jcs:open();
+var $local-file = "/var/tmp/interface_pcs_counter.txt";
+ 
+match / {
+    <op-script-results> {
+        var $rpc = <get-interface-information> {
+            <extensive>;
+        }
+        var $out = jcs:execute($con, $rpc);
+        
+        /* Get current PCS counter and store into a node-set*/
+        var $current-pcs-counter := {
+            for-each ($out/physical-interface) {
+                if (ethernet-pcs-statistics) {
+                    var $int-name = name;
+                    var $bit-error = ethernet-pcs-statistics/bit-error-seconds;
+                    var $error-block = ethernet-pcs-statistics/errored-blocks-seconds;
+                    
+                    <pcs-statistics> {
+                        <int-name> $int-name;
+                        <bit-error> $bit-error;
+                        <error-block> $error-block;
+                    }
+                }
+            }
+        }
+        
+        /* Check whether local file exists */
+        var $local-file-exists = { call file-exists($filename=$local-file); }
+        if ($local-file-exists) {
+            var $previous-info = document($local-file);
+            for-each ($current-pcs-counter/pcs-statistics) {
+                var $int-name = int-name;
+                var $bit-error = bit-error;
+                var $error-block = error-block;
+                for-each ($previous-info/stats/pcs-statistics[int-name == $int-name]) {
+                    var $previous-bit-error = bit-error;
+                    var $previous-error-block = error-block;
+                    var $bit-error-diff = $bit-error - $previous-bit-error;
+                    var $error-block-diff = $error-block - $previous-error-block;
+                                        
+                    if (( $bit-error-diff >= $bit-error-threshold ) or ( $error-block-diff >= $error-block-threshold )) {
+                        var $trap-msg = $int-name _ " PCS error cross threshold. PCS bit error diff: " _ $bit-error-diff _ "; PCS error block diff: " _ $error-block-diff;
+                        call syslog-trap($msg = $trap-msg);
+                    }
+                }
+            }
+        }
+        
+        /* write to current stats to local file anyway */
+        <exsl:document href=$local-file indent="yes"> {
+                <stats> {
+                    copy-of $current-pcs-counter;
+                }
+        }
+    }
+}
+
+template syslog-trap ($msg) {
+      var $trap-msg = str:replace( $msg, " ", "\\ " );
+      expr jcs:syslog("pfe.err", $msg);
+      var $request-trap-rpc = { <command> "request snmp spoof-trap jnxEventTrap variable-bindings "
+                               _ "jnxEventTrapDescr[0]=Event-trap,"
+                               _ "jnxEventAvAttribute[1]=message,"
+                               _ "jnxEventAvValue[1]=\"" _ $trap-msg _ "\"";
+      }
+      expr jcs:invoke($request-trap-rpc);
+}
+
+template file-exists($filename) {
+  var $ls_file = <file-list> { <path> $filename; }
+  var $ls_got = jcs:execute( $con, $ls_file );
+  var $retval = boolean( $ls_got//file-information );
+  
+  expr $retval;
+}

@@ -1,0 +1,264 @@
+/*
+*  Author        : Juniper Networks Resident Engineering Services
+*  Version       :
+*  Platform      :
+*  Release       :
+*  Description   :
+*
+*  Revision History:
+*  0.1  dd/mm/yyy - initial release
+*
+********************************************************************************
+*
+*  Copyright (c) 2016  Juniper Networks. All Rights Reserved.
+*
+*  YOU MUST ACCEPT THE TERMS OF THIS DISCLAIMER TO USE THIS SOFTWARE
+*
+*  JUNIPER IS WILLING TO MAKE THE INCLUDED SCRIPTING SOFTWARE AVAILABLE TO YOU
+*  ONLY UPON THE CONDITION THAT YOU ACCEPT ALL OF THE TERMS CONTAINED IN THIS
+*  DISCLAIMER. PLEASE READ THE TERMS AND CONDITIONS OF THIS DISCLAIMER
+*  CAREFULLY.
+*
+*  THE SOFTWARE CONTAINED IN THIS FILE IS PROVIDED "AS IS." JUNIPER MAKES NO
+*  WARRANTIES OF ANY KIND WHATSOEVER WITH RESPECT TO SOFTWARE. ALL EXPRESS OR
+*  IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING ANY WARRANTY
+*  OF NON-INFRINGEMENT OR WARRANTY OF MERCHANTABILITY OR FITNESS FOR A
+*  PARTICULAR PURPOSE, ARE HEREBY DISCLAIMED AND EXCLUDED TO THE EXTENT
+*  ALLOWED BY APPLICABLE LAW.
+*
+*  IN NO EVENT WILL JUNIPER BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR
+*  FOR DIRECT, SPECIAL, INDIRECT, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE
+*  DAMAGES HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY ARISING
+*  OUT OF THE USE OF OR INABILITY TO USE THE SOFTWARE, EVEN IF JUNIPER HAS
+*  BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+*
+*/
+/*
+ Author: hfzhang@juniper.net
+
+ how to use:
+ 1. Copy this file to: 
+ on both routing-engines.
+ 
+ 2. Configuration needed:
+
+ */
+ 
+version 1.0;
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0"; 
+ns exsl extension = "http://exslt.org/common";
+ns str = "http://exslt.org/strings";
+
+import "../import/junos.xsl";
+
+/* This is a special variable that shows in the command-line help */
+
+var $arguments = {
+  <argument> {
+    <name> "threshold";
+    <description> "threshold to config";
+  }
+}
+
+var $con = jcs:open();
+var $local-file = "/var/tmp/mac_table.txt";
+param $threshold = 100;
+
+var $event-definition = {
+    <event-options> {
+        /*
+         * Dampening feature.
+         */
+        <policy> {
+            <name> "mac_dampening";
+            <events> "l2ald_mac_limit_exceeded_ifbd";
+            <within> {
+                <name> "10";
+                <trigger> {
+                    <after> ;
+                    <count> "1";
+                }
+            }
+            <then> {
+                <ignore>;
+            }
+        }
+        <policy> {
+            <name> "mac_limit";
+            <events> "l2ald_mac_limit_exceeded_ifbd";
+            <then> {
+                <event-script> {
+                    <name> "juniper-default.slax";
+                }
+            }
+        }
+    }
+}
+
+match / {
+	<event-script-results> {
+	
+		/* Let's first check if the script is invoked on master or backup RE */
+		var $master = { call are_we_master_re(); }
+		if ($master == 0 ) { <xsl:message terminate="yes"> "Not master."; }
+		
+		var $dup_events = { call num-of-instance(); }
+		if ( $dup_events > 1 ) {
+			<xsl:message terminate="yes"> "Another Instance Running. Exit now";
+		}
+		
+		var $result-mac-table = jcs:execute($con,"get-ethernet-switching-table-information");	
+		var $mac-table-all := {
+			for-each($result-mac-table/l2ng-l2ald-mac-entry-vlan/l2ng-mac-entry) {
+				var $source-mac = l2ng-l2-mac-address;
+				var $source-int = l2ng-l2-mac-logical-interface;
+				
+				<mac-table> {
+					<mac> $source-mac;
+					<interface> $source-int;
+				}
+			}
+		}
+		
+		/* Del local file*/
+		var $del_file = <file-delete> { <path> $local-file; }
+		var $file_result = jcs:execute($con, $del_file);
+		
+		/* Write firewall config to local file*/		
+		for-each($mac-table-all/mac-table) {
+			var $config = "set firewall family ethernet-switching filter limit-mac term 1 from source-mac-address " _ mac _ "/48";
+			<exsl:document href=$local-file append="yes" indent="yes"> {
+				copy-of $config;
+			}
+		}
+		
+		var $other-config = "set firewall family ethernet-switching filter limit-mac term 1 then accept" _ "\n" _ "set firewall family ethernet-switching filter limit-mac term 2 then discard";
+		<exsl:document href=$local-file append="yes" indent="yes"> {
+			copy-of $other-config;
+		}
+		
+		var $cfg = {
+			<configuration> {
+				<firewall> {
+					<family> {
+						<ethernet-switching> {
+							<filter> {
+								<name> "limit-mac";
+								<term> {
+									<name> "1";
+									<from> {
+										for-each($mac-table-all/mac-table) {
+											<source-mac-address> {
+												<name> mac;
+											}
+										}
+									}
+									<then> {
+										<accept>;
+									}
+								}
+								<term> {
+									<name> "2";
+									<then> {
+										<discard>;
+									}
+								}
+							}
+						}
+					}
+				}
+				<interfaces> {
+					var $source-interface := { call interfaces_on_limit(); }
+					for-each($source-interface/interfaces-with-limit) {
+						var $interface_name = { call interface_name1($msg= iff-name-interested); }
+						var $unit_name = { call unit_name1($msg= iff-name-interested); }
+						var $set-filter-interface = "set interfaces " _ $interface_name _ " unit " _ $unit_name _ " family ethernet-switching filter input limit-mac";
+						<exsl:document href=$local-file append="yes" indent="yes"> {
+							copy-of $set-filter-interface;
+						}
+						<interface> {
+							<name> $interface_name;
+							<unit> {
+								<name> $unit_name;
+								<family> {
+									<ethernet-switching> {
+										<filter> {
+											<input> "limit-mac";
+										}
+									}
+								}
+							}
+						}
+					}				
+				}
+			}
+		}
+		
+		var $result := { 
+			call jcs:load-configuration($connection=$con, $configuration=$cfg); 
+		}
+	}
+}
+
+template are_we_master_re ()
+{
+    /* Retrieve mastership from sysctl */
+    var $mastership= jcs:sysctl("hw.re.mastership","i");
+    expr $mastership;
+
+}
+
+template interface_name1($msg) {
+    var $regex1 = "(.*:[0-9]).([0-9]+)";
+    var $ifl-name = jcs:regex($regex1, $msg);
+    expr $ifl-name[2];
+}
+
+template unit_name1($msg) {
+    var $regex1 = "(.*:[0-9]).([0-9]+)";
+    var $ifl-name = jcs:regex($regex1, $msg);
+    expr $ifl-name[3];
+}
+
+
+template interfaces_on_limit() {
+	
+	var $result-int-table = jcs:execute($con,"get-ethernet-switching-interface-information");
+	for-each($result-int-table/l2ng-l2ald-iff-interface-entry) {
+		var $int-name = l2ng-l2ald-iff-interface-entry/l2iff-interface-name;
+		for-each(l2ng-l2ald-iff-interface-entry) {	
+			var $current-mac-limit = l2iff-interface-mac-limit;
+			if ($current-mac-limit == $threshold ) {
+				<interfaces-with-limit> {
+					<iff-name-interested> $int-name;
+					<mac-limit> $current-mac-limit;
+				}
+			}		
+		}	
+	}
+}
+
+template num-of-instance() {
+  var $rpc-request-file-list = <rpc> {
+      <command> "file list /tmp/evt_cmd_*";
+  }
+  var $rpc-result-file-list = jcs:execute($con,$rpc-request-file-list);
+  var $count := {
+    for-each ($rpc-result-file-list//file-information) {
+      var $name = ./file-name;
+      var $rpc-request-file-show = <rpc> {
+          <command> "file show "_ $name;
+      }
+      var $rpc-result-file-show = jcs:execute($con,$rpc-request-file-show);
+      <entry> {
+         if ( contains($rpc-result-file-show, "juniper-default.slax") ) {
+            <instance> 1;
+         } 
+      }
+    }
+  }
+  var $sum-instance = count($count/entry/instance);
+  expr $sum-instance;
+}

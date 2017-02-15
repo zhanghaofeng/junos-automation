@@ -1,0 +1,217 @@
+/*
+*  Author        : Juniper Networks Resident Engineering Services
+*  Version       :
+*  Platform      :
+*  Release       :
+*  Description   :
+*
+*  Revision History:
+*  0.1  dd/mm/yyy - initial release
+*
+********************************************************************************
+*
+*  Copyright (c) 2016  Juniper Networks. All Rights Reserved.
+*
+*  YOU MUST ACCEPT THE TERMS OF THIS DISCLAIMER TO USE THIS SOFTWARE
+*
+*  JUNIPER IS WILLING TO MAKE THE INCLUDED SCRIPTING SOFTWARE AVAILABLE TO YOU
+*  ONLY UPON THE CONDITION THAT YOU ACCEPT ALL OF THE TERMS CONTAINED IN THIS
+*  DISCLAIMER. PLEASE READ THE TERMS AND CONDITIONS OF THIS DISCLAIMER
+*  CAREFULLY.
+*
+*  THE SOFTWARE CONTAINED IN THIS FILE IS PROVIDED "AS IS." JUNIPER MAKES NO
+*  WARRANTIES OF ANY KIND WHATSOEVER WITH RESPECT TO SOFTWARE. ALL EXPRESS OR
+*  IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING ANY WARRANTY
+*  OF NON-INFRINGEMENT OR WARRANTY OF MERCHANTABILITY OR FITNESS FOR A
+*  PARTICULAR PURPOSE, ARE HEREBY DISCLAIMED AND EXCLUDED TO THE EXTENT
+*  ALLOWED BY APPLICABLE LAW.
+*
+*  IN NO EVENT WILL JUNIPER BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR
+*  FOR DIRECT, SPECIAL, INDIRECT, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE
+*  DAMAGES HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY ARISING
+*  OUT OF THE USE OF OR INABILITY TO USE THE SOFTWARE, EVEN IF JUNIPER HAS
+*  BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+*
+*/
+/*
+ * Author        : Haofeng Zhang
+ * Version       : 1.2
+ * Last Modified : 20 Jan 2017
+ * Platform      : TXP-3D
+ * Release       : 13.3 and 13.1
+ 
+ Event to trigger:
+ CHASSISD_SNMP_TRAP10: SNMP trap generated: Fru Offline (jnxFruContentsIndex 14, jnxFruL1Index 4, jnxFruL2Index 0, jnxFruL3Index 0, jnxFruName LCC0 SPMB 1, jnxFruType 10, jnxFruSlot 3, jnxFruOfflineReason 2, jnxFruLastPowerOff 1794, jnxFruLastPowerOn 1264)
+ 
+ Change Log:
+ - Delete GRES check part on both SFC and LCC. Trigger GRES switchover on master SPMB failures.
+ - Delete FPC power off part.
+ 
+ */
+
+/* 
+ 1. Copy this file switchover-on-spmb-failure.slax to /var/db/script/op directory on both SFC RE0 and SFC RE1. No need to do this on LCC REs.
+
+ 2. Enable following config. You can paste below with "load set terminal" from edit mode.
+set event-options policy SPMB_CRASH events CHASSISD_SNMP_TRAP10
+set event-options policy SPMB_CRASH attributes-match chassisd_snmp_trap10.value5 matches SPMB
+set event-options policy SPMB_CRASH attributes-match chassisd_snmp_trap10.trap matches "Fru Offline"
+set event-options policy SPMB_CRASH then event-script switchover-on-spmb-failure.slax arguments fruname "{$$.value5}"
+set event-options policy SPMB_CRASH_LCC events LCC
+set event-options policy SPMB_CRASH_LCC attributes-match LCC.message matches "Fru Offline"
+set event-options policy SPMB_CRASH_LCC attributes-match LCC.message matches SPMB
+set event-options policy SPMB_CRASH_LCC then event-script switchover-on-spmb-failure.slax arguments fruname "{$$.message}"
+set system scripts op file switchover-on-spmb-failure.slax
+
+*/
+
+version 1.0;
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+ns str = "http://exslt.org/strings";
+ns exsl extension = "http://exslt.org/common";
+ns date = "http://exslt.org/dates-and-times";
+
+
+/* This is a special variable that shows in the command-line help  */
+var $arguments = {
+	<argument> {
+		<name> "fruname";
+		<description> "fru name get from chassisd trap10 log";
+	}
+}
+
+
+var $con = jcs:open();
+var $debug = 1;
+
+match / {
+	<op-script-results> {
+		
+		var $dup_events = { call num-of-instance(); }
+		call debug($msg = "Current " _ $dup_events _ " instances running. Received para FRU Name: " _ $fruname);
+		if ( $dup_events > 1 ) {
+			call debug($msg = "Another Instance Running. Exit now");
+			<xsl:message terminate="yes"> "Another Instance Running. Exit now";
+		}
+		
+		var $master = jcs:sysctl("hw.re.mastership","i");
+		if ($master == 0 ) {
+			call debug($msg = "Exit due to we are not master");
+			<xsl:message terminate="yes"> "Not master. Exit now"; 
+		}
+
+		var $lccno = { call lcc-slot($msg = $fruname); }
+		var $spmbno = { call spmb-slot($msg = $fruname); }
+		var $another-spmb = 1 - $spmbno;
+		call debug($msg = "script triggered due to SPMB IPC drop event detected. Chassis number: " _ $lccno _ ". SPMB slot number " _ $spmbno);
+				
+		var $command = <get-spmb-information>;
+		var $result = jcs:execute($con, $command);
+		
+		if ($lccno == "SFC") {
+			for-each($result/multi-routing-engine-item/spmb-information/spmb) {		
+				var $current-re = ../../re-name;		
+				if (contains($current-re, "sfc0")) {
+					if ((slot == $another-spmb) and (state != "Online")) {
+						call debug($msg = "Another spmb slot " _ $another-spmb _ " on SFC state is " _ state);
+						call service-recovery-sfc();
+					} 
+				}
+			}
+		} else {
+			for-each($result/multi-routing-engine-item/spmb-information/spmb) {		
+				var $current-re = ../../re-name;
+				var $lccname = "lcc" _ $lccno;
+				if (contains($current-re, $lccname)) {
+					if ((slot == $another-spmb) and (state != "Online")) {
+						call debug($msg = "Another spmb slot " _ $another-spmb _ " on LCC " _ $lccno _ " state is " _ state);
+						call service-recovery-lcc($lcc=$lccno);
+					} 
+				}
+			}		
+		}
+		expr jcs:close($con);
+	}
+}
+
+template service-recovery-sfc() {
+
+	call debug($msg = "Service recovery on SFC begins");
+
+	var $rpc = <command> "request chassis routing-engine master switch all-chassis no-confirm";
+	call syslog-trap($msg="Alert. GRES switchover triggered due to SPMB crash by script");
+	var $result = jcs:execute($con, $rpc);
+}
+
+
+template service-recovery-lcc($lcc) {
+	call debug($msg = "Service recovery on LCC " _ $lcc _ " begins");
+	var $rpc = <command> "request chassis routing-engine master switch no-confirm lcc " _ $lcc;
+	call syslog-trap($msg="Alert. GRES switchover on LCC triggered due to SPMB crash by script");
+	var $result = jcs:execute($con, $rpc);
+}
+
+template debug($msg) {
+	if ($debug ==1) {
+		expr jcs:syslog("pfe.notice", $msg);
+	}
+}
+
+template syslog-trap($msg) {
+      var $trap-msg = str:replace( $msg, " ", "\\ " );
+      expr jcs:syslog("pfe.error", $msg);
+      
+	  var $request-trap-rpc = { <command> "request snmp spoof-trap jnxEventTrap variable-bindings "
+                               _ "jnxEventTrapDescr[0]=Event-trap,"
+                               _ "jnxEventAvAttribute[1]=message,"
+                               _ "jnxEventAvValue[1]=\"" _ $trap-msg _ "\"";
+      }
+      expr jcs:execute($con, $request-trap-rpc);
+	  
+}
+
+/*LCC0 SPMB 1
+  SFC0 SPMB 0
+*/
+template lcc-slot($msg) {
+
+    var $regex = "(LCC|SFC)([0-7]) SPMB";
+    var $string = jcs:regex($regex, $msg);
+	
+	if (contains($string[2], "SFC")) {
+		expr "SFC";
+	} else {
+		expr $string[3];
+	}
+}
+
+template spmb-slot($msg) {
+    var $regex = "SPMB ([0-1])";
+    var $string = jcs:regex($regex, $msg);
+    expr $string[2];
+}
+
+template num-of-instance() {
+  var $rpc-request-file-list = <rpc> {
+      <command> "file list /tmp/evt_cmd_*";
+  }
+  var $rpc-result-file-list = jcs:execute($con,$rpc-request-file-list);
+  var $count := {
+    for-each ($rpc-result-file-list//file-information) {
+      var $name = ./file-name;
+      var $rpc-request-file-show = <rpc> {
+          <command> "file show "_ $name;
+      }
+      var $rpc-result-file-show = jcs:execute($con,$rpc-request-file-show);
+      <entry> {
+         if ( contains($rpc-result-file-show, "switchover-on-spmb-failure.slax") ) {
+            <instance> 1;
+         } 
+      }
+    }
+  }
+  var $sum-instance = count($count/entry/instance);
+  expr $sum-instance;
+}

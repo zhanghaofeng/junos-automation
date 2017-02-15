@@ -1,0 +1,85 @@
+version 1.0;
+
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns math = "http://exslt.org/math";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+
+import "../import/junos.xsl"; 
+
+match / {
+    <event-script-results>{
+    
+    var $current-psm-status = jcs:invoke("get-environment-psm-information");
+    
+    	if(jcs:empty($current-psm-status)){
+     		<xsl:message terminate="yes"> "No return from show chassis environment psm";    	 
+     		}
+     		else{
+     			for-each ($current-psm-status/environment-component-item) {
+     			
+     			var $current-psm-id = ./name;
+     			
+    				var $dc-feed0 = (./dc-information/dc-feed0-current);
+     				var $dc-feed1 = (./dc-information/dc-feed1-current);
+     				call psm-input-a-compare( $psm-id = $current-psm-id, $psm-active-input-id = "Feed 0", $psm-backup-input-id = "Feed 1" , $psm-active-input-current = $dc-feed0 , $psm-backup-input-current = $dc-feed1 );
+     			}
+     		}
+     	 <xsl:document href = "/var/log/psm-previous-status.xml" indent="yes" method="xml"> {
+     	  	copy-of $current-psm-status;
+     	 	}
+     	}
+}
+
+template psm-input-a-compare ( $psm-id, $psm-active-input-id, $psm-backup-input-id, $psm-active-input-current, $psm-backup-input-current ) {
+   
+    var $previous-psm-status = document("/var/log/psm-previous-status.xml");
+   
+    for-each($previous-psm-status//*[local-name() == "environment-component-item"]) {
+    
+    var $previous-psm-status-item = .;
+    var $previous-psm-name = $previous-psm-status-item/*[local-name() == "name"];
+    var $previous-psm-dc-information = $previous-psm-status-item/*[local-name() == "dc-information"];
+    var $previous-psm-input0-current = $previous-psm-dc-information/*[local-name() == "dc-feed0-current"];
+    var $previous-psm-input1-current = $previous-psm-dc-information/*[local-name() == "dc-feed1-current"];
+    
+    if ($previous-psm-name = $psm-id ){
+    	if ($previous-psm-input0-current > 0 ) {
+    	    if ($psm-active-input-current = 0 ) {
+    			expr jcs:syslog( 146 , $psm-id ," Feed A has no input , please check power source." );
+    		}
+    		else if ($psm-active-input-current > 0 ) {
+    		}
+    	}
+    	else if ( $previous-psm-input0-current = 0 ) {
+    		if ($psm-active-input-current > 0 ) { 
+    		}
+    		else if ($psm-active-input-current = 0) {
+    		}
+    	}
+    }
+    if ($previous-psm-name = $psm-id ){
+    	if($previous-psm-input1-current > 0 ) {
+    	   if ($psm-backup-input-current = 0 ) {
+    	   		expr jcs:syslog( 146 , $psm-id ," Feed B has no input , please check power source." );
+    	   	}
+    	   	else if ($psm-backup-input-current > 0 ) {
+    	   	}
+    	   }
+    	else if ( $previous-psm-input1-current = 0 ) {
+    	     	if ($psm-backup-input-current > 0 ) {
+    	 		}
+    	 	else if ($psm-backup-input-current = 0) {
+    	 	        }
+            } 
+        }
+    var $summary = math:abs($psm-active-input-current - $psm-backup-input-current);
+   	 	   
+    	if($summary = 0){
+   			expr jcs:syslog( 146 , "PSM Currnet input 0 and 1 failed: " , ./name);
+   			}
+   	else{
+   	 		expr jcs:syslog( 150 , "PSM Currnet normal: " , ./name);
+   	 		}
+   	}
+}

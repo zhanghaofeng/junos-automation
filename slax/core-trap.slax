@@ -1,0 +1,43 @@
+version 1.0;
+
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+ns date = "http://exslt.org/dates-and-times";
+
+import "../import/junos.xsl";
+
+var $connection = jcs:open();
+var $datetime = date:date-time();
+
+match / {
+	<event-script-results> {
+
+		var $get-core-rpc = <get-system-core-dumps>;
+
+		var $get-core-result = jcs:invoke( $get-core-rpc );
+
+		for-each( $get-core-result//directory/file-information ){
+
+			var $filename = ./file-name;
+			var $filesize = ./file-size;
+
+			call generate-trap( $connection, $filename, $filesize );
+
+
+		}
+	}
+}
+
+template generate-trap( $connection, $filename, $filesize ) {
+
+    var $rpc = <request-snmp-spoof-trap> {
+       <trap> "jnxEventTrap";
+       <variable-bindings> "jnxEventTrapDescr[0]='coredump\\ file\\ found\\ trap'," 
+       _ "jnxEventAvAttribute[1]='file\\ name\\ '," 
+       _ "jnxEventAvValue[1]='" _ $filename _ "',"
+       _ "jnxEventAvAttribute[2]='file\\ size\\ ',"
+       _ "jnxEventAvValue[2]='" _ $filesize _ "'";
+   }
+   var $res = jcs:invoke($rpc);
+}

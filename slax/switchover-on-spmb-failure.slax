@@ -1,0 +1,257 @@
+/*
+ * Author        : Haofeng Zhang
+ * Version       : 1.8
+ * Last Modified : 20 Nov 2013 
+ * Platform      : TXP
+ * Release       : 11.4 and 13.1
+ */
+
+/* 
+CHASSISD_SNMP_TRAP10: SNMP trap generated: Fru Offline (jnxFruContentsIndex 14, jnxFruL1Index 4, jnxFruL2Index 0, jnxFruL3Index 0, jnxFruName LCC0 SPMB 1, jnxFruType 10, jnxFruSlot 3, jnxFruOfflineReason 2, jnxFruLastPowerOff 1794, jnxFruLastPowerOn 1264)
+- Required config. You can paste below with "load set terminal" from edit mode.
+*/
+
+version 1.0;
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+ns str = "http://exslt.org/strings";
+ns exsl extension = "http://exslt.org/common";
+ns date = "http://exslt.org/dates-and-times";
+
+
+/* This is a special variable that shows in the command-line help  */
+var $arguments = {
+	<argument> {
+		<name> "fruname";
+		<description> "fru name get from chassisd trap10 log";
+	}
+	<argument> {
+		<name> "power-on-all-fpcs";
+		<description> "set to yes to Power on all FPCs.";
+	}
+
+}
+
+
+var $con = jcs:open();
+var $debug = 1;
+param $power-on-all-fpcs = "no";
+
+match / {
+	<op-script-results> {
+		
+		var $dup_events = { call num-of-instance(); }
+		call debug($msg = "Current " _ $dup_events _ " instances running. Received para FRU Name: " _ $fruname);
+		if ( $dup_events > 1 ) {
+			call debug($msg = "Another Instance Running. Exit now");
+			<xsl:message terminate="yes"> "Another Instance Running. Exit now";
+		}
+		
+		var $master = jcs:sysctl("hw.re.mastership","i");
+		if ($master == 0 ) {
+			call debug($msg = "Exit due to we are not master");
+			<xsl:message terminate="yes"> "Not master. Exit now"; 
+		}
+		
+		if ( $power-on-all-fpcs == "yes" ) {
+			call power-on-fpcs();
+			<xsl:message terminate="yes"> "This command is to power FPCs only, not to trigger script. Exit now"; 
+		}
+
+		var $lccno = { call lcc-slot($msg = $fruname); }
+		var $spmbno = { call spmb-slot($msg = $fruname); }
+		var $another-spmb = 1 - $spmbno;
+		call debug($msg = "script triggered due to SPMB IPC drop event detected. Chassis number: " _ $lccno _ ". SPMB slot number " _ $spmbno);
+				
+		var $command = <get-spmb-information>;
+		var $result = jcs:execute($con, $command);
+		
+		if ($lccno == "SFC") {
+			for-each($result/multi-routing-engine-item/spmb-information/spmb) {		
+				var $current-re = ../../re-name;		
+				if (contains($current-re, "sfc0")) {
+					if ((slot == $another-spmb) and (state != "Online")) {
+						call debug($msg = "Another spmb slot " _ $another-spmb _ " on SFC state is " _ state);
+						call service-recovery-sfc();
+					} else {
+						call debug($msg="Another spmb slot status is " _ state);
+					}
+				}
+			}
+		} else {
+			for-each($result/multi-routing-engine-item/spmb-information/spmb) {		
+				var $current-re = ../../re-name;
+				var $lccname = "lcc" _ $lccno;
+				if (contains($current-re, $lccname)) {
+					if ((slot == $another-spmb) and (state != "Online")) {
+						call debug($msg = "Another spmb slot " _ $another-spmb _ " on LCC " _ $lccno _ " state is " _ state);
+						call service-recovery-lcc($lcc=$lccno);
+					} else {
+						call debug($msg="Another spmb slot status is " _ state);
+					}
+				}
+			}		
+		}
+		expr jcs:close($con);
+	}
+}
+
+template service-recovery-sfc() {
+
+	call debug($msg = "Service recovery on SFC begins");
+	var $gres_ready = jcs:sysctl("net.pfe.slave_re_switchover_ready","i");
+
+	if ( $gres_ready == 1 ) {
+		var $rpc = <command> "request chassis routing-engine master switch all-chassis no-confirm";
+		call syslog-trap($msg="Alert. GRES switchover triggered due to SPMB crash by script");
+		var $result = jcs:execute($con, $rpc);
+		
+		expr jcs:sleep("5");
+		var $master = jcs:sysctl("hw.re.mastership","i");
+		if ($master == 1) {
+			call debug($msg="switchover failure. power Off FPC now.");
+			var $command = <get-fpc-information>;
+			var $fpcresult = jcs:execute($con, $command);
+						
+			for-each ($fpcresult/multi-routing-engine-item/fpc-information/fpc) {
+				var $fpc-status = state;
+				var $fpc-slot = slot;
+				var $rename = ../../re-name;
+				var $regex = "lcc([0-7])-re";
+				var $string = jcs:regex($regex, $rename);
+				call debug($msg="LCC " _ $string[2] _ " FPC slot " _ slot _ " state is: " _ state);
+
+				if ($fpc-status == "Online") {
+					call fpc-poweroff($fpcno=$fpc-slot, $lccno=$string[2]);
+				}
+			}
+		}
+		
+	} else {
+		/* GRES not ready. So Mark all FPCs power off */
+		var $command = <get-fpc-information>;
+		var $fpcresult = jcs:execute($con, $command);
+		for-each ($fpcresult/multi-routing-engine-item/fpc-information/fpc) {
+			var $fpc-status = state;
+			var $fpc-slot = slot;
+			var $rename = ../../re-name;
+			var $regex = "lcc([0-7])-re";
+			var $string = jcs:regex($regex, $rename);
+			call debug($msg="LCC " _ $string[2] _ " FPC slot " _ slot _ " state is: " _ state);
+
+			
+			if ($fpc-status == "Online") {
+				call fpc-poweroff($fpcno=$fpc-slot, $lccno=$string[2]);
+			}
+		}
+	}
+}
+
+template power-on-fpcs() {
+	var $command = <get-fpc-information>;
+	var $result = jcs:execute($con, $command);
+	for-each ($result/multi-routing-engine-item/fpc-information/fpc) {
+		var $fpc-slot = slot;
+		var $rename = ../../re-name;
+		var $regex = "lcc([0-7])-re";
+		var $string = jcs:regex($regex, $rename);
+		call fpc-poweron($fpcno=$fpc-slot, $lccno=$string[2]);
+	}
+}
+
+template service-recovery-lcc($lcc) {
+	call debug($msg = "Service recovery on LCC " _ $lcc _ " begins");
+	var $command = <command> "show chassis fpc lcc " _ $lcc;
+	var $result = jcs:execute($con, $command);
+		for-each ($result/multi-routing-engine-item/fpc-information/fpc) {
+			call debug($msg="FPC slot " _ slot _ " state is: " _ state);
+			var $fpc-status = state;
+			var $fpc-slot = slot;
+			var $rename = ../../re-name;
+			var $regex = "lcc([0-7])-re";
+			var $string = jcs:regex($regex, $rename);
+			call debug($msg="LCC " _ $string[2] _ " FPC slot " _ slot _ " state is: " _ state);
+
+			if ($fpc-status == "Online") {
+				call fpc-poweroff($fpcno=$fpc-slot, $lccno=$string[2]);
+			}
+		}
+}
+
+template debug($msg) {
+	if ($debug ==1) {
+		expr jcs:syslog("pfe.notice", $msg);
+	}
+}
+
+template syslog-trap($msg) {
+      var $trap-msg = str:replace( $msg, " ", "\\ " );
+      expr jcs:syslog("pfe.error", $msg);
+      
+	  var $request-trap-rpc = { <command> "request snmp spoof-trap jnxEventTrap variable-bindings "
+                               _ "jnxEventTrapDescr[0]=Event-trap,"
+                               _ "jnxEventAvAttribute[1]=message,"
+                               _ "jnxEventAvValue[1]=\"" _ $trap-msg _ "\"";
+      }
+      expr jcs:execute($con, $request-trap-rpc);
+	  
+}
+
+template fpc-poweron($fpcno, $lccno) {
+   var $rpc-request-chassis-fpc-restart = <rpc> {
+      <command> "test chassis fpc power on slot " _ $fpcno _ " lcc " _ $lccno;
+   }
+   var $result-request-chassis-fpc = jcs:execute($con,$rpc-request-chassis-fpc-restart);
+}
+
+template fpc-poweroff($fpcno, $lccno) {
+   var $rpc-request-chassis-fpc-restart = <rpc> {
+      <command> "test chassis fpc power off slot " _ $fpcno _ " lcc " _ $lccno;
+   }
+   var $result-request-chassis-fpc = jcs:execute($con,$rpc-request-chassis-fpc-restart);
+}
+
+/*LCC0 SPMB 1
+  SFC0 SPMB 0
+*/
+template lcc-slot($msg) {
+
+    var $regex = "(LCC|SFC)([0-7]) SPMB";
+    var $string = jcs:regex($regex, $msg);
+	
+	if (contains($string[2], "SFC")) {
+		expr "SFC";
+	} else {
+		expr $string[3];
+	}
+}
+
+template spmb-slot($msg) {
+    var $regex = "SPMB ([0-1])";
+    var $string = jcs:regex($regex, $msg);
+    expr $string[2];
+}
+
+template num-of-instance() {
+  var $rpc-request-file-list = <rpc> {
+      <command> "file list /tmp/evt_cmd_*";
+  }
+  var $rpc-result-file-list = jcs:execute($con,$rpc-request-file-list);
+  var $count := {
+    for-each ($rpc-result-file-list//file-information) {
+      var $name = ./file-name;
+      var $rpc-request-file-show = <rpc> {
+          <command> "file show "_ $name;
+      }
+      var $rpc-result-file-show = jcs:execute($con,$rpc-request-file-show);
+      <entry> {
+         if ( contains($rpc-result-file-show, "switchover-on-spmb-failure.slax") ) {
+            <instance> 1;
+         } 
+      }
+    }
+  }
+  var $sum-instance = count($count/entry/instance);
+  expr $sum-instance;
+}

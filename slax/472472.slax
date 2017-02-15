@@ -1,0 +1,482 @@
+/*
+ * Author        : Haofeng Zhang
+ * Version       : 2.4
+ * Last Modified : 2 Apr 2013 
+ * Platform      : TXP-4.
+ * Release       : 10.4 
+ */
+
+/* 
+- Description
+- file location
+/var/run/scripts/op/472472.slax
+
+- Required config. You can paste below with "load set terminal" from edit mode.
+
+*/
+
+version 1.0;
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+ns str = "http://exslt.org/strings";
+
+/* This is a special variable that shows in the command-line help */
+var $arguments = {
+  <argument> {
+    <name> "wait";
+    <description> "Wait second for 2nd register checking. Default 5 seconds";
+  }
+  <argument> {
+    <name> "interval";
+    <description> "Check interval, Default is 300 seconds";
+  }
+  <argument> {
+    <name> "fix";
+    <description> "If set as YES, the script will try to fix the register. Default NO";
+  }
+}
+
+param $fix = "NO";
+param $wait = 10;
+param $interval = 300;
+
+template debug($msg) {
+	var $toggle = 1;
+	if ( $toggle == 1) {
+		<output> $msg;
+	}
+}
+
+template are-we-master-re()
+{
+    /* Retrieve mastership from sysctl */
+    var $mastership= jcs:sysctl("hw.re.mastership","i");
+    expr $mastership;
+
+}
+
+template fix-register-fpc($fpc, $lchip, $stream) {
+	
+	if ($lchip == 0) {
+	    var $rpc = {
+	        <request-pfe-execute> {
+	            <target> "fpc" _ $fpc;
+	            <command> "bringup jspec write l_t0 register lout ip hf_alloc count $stream 0x80300030";
+	        }
+	    }		
+	}
+	
+	if ($lchip == 1) {
+	    var $rpc = {
+	        <request-pfe-execute> {
+	            <target> "fpc" _ $fpc;
+	            <command> "bringup jspec write l_b0 register lout ip hf_alloc count $stream 0x80300030";
+	        }
+	    }		
+	}
+    var $results = jcs:invoke($rpc);
+}
+
+template is-fpc-wedge($fpcslot, $input) {
+	for-each ($input[contains( ., "GOT: 0xc13") ]) {
+		
+		/* we only care 64 streams per PFE, which is the first 16 lines register*/
+		var $line_no = position();
+		if ( $line_no < 16 ) and ( contains( ., "00000030" ) ) {
+			expr 1;
+		}
+	}	 
+}
+
+/*  
+ * Instead of using "show lchip 0 lout registers ip hfalloc", peeklong is used here.
+ * we only focus on 10G ports here: PD-4OC192-SON-XFP, PD-4XGE-XFP, PD-1OC768-SON-SR, PD-5-10XGE-SFPP
+ * Stream mapping for PD-4OC192-SON-XFP: 0/1/2/3
+	lchip 0: 0xc1300c00 0xc1300c04 0xc1300c08 0xc1300c0c
+	lchip 1: 0xc1500c00	0xc1500c04 0xc1500c08 0xc1500c0c
+	
+ * Stream mapping for PD-4XGE-XFP: 0/16/32/48
+	lchip 0: 0xc1300c00 0xc1300c40 0xc1300c80 0xc1300cc0
+	lchip 1: 0xc1500c00	0xc1500c40 0xc1500c80 0xc1500cc0
+
+ * stream mapping for PD-1OC768-SON-SR: 0
+	lchip 0: 0xc1300c00
+	lchip 1: 0xc1500c00
+ * stream mapping for PD-5-10XGE-SFPP: 0/1/2/3/4
+	lchip 0: 0xc1300c00 0xc1300c04 0xc1300c08 0xc1300c0c 0xc1300c10
+	lchip 1: 0xc1500c00	0xc1500c04 0xc1500c08 0xc1500c0c 0xc1500c10 
+
+	hfzhang@t1600-re1> request pfe execute command "peeklong 0xc1300c00" target fpc7    
+	Nov 16 23:22:27
+	SENT: Ukern command: peeklong 0xc1300c00
+	GOT:
+	GOT: 0xc1300c00: 80300030 80300030 80300030 80300030 .0.0.0.0.0.0.0.0
+	GOT: 0xc1300c10: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300c20: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300c30: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300c40: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300c50: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300c60: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300c70: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300c80: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300c90: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300ca0: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300cb0: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300cc0: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300cd0: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300ce0: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300cf0: 80000000 80000000 80000000 80000000 ................
+	GOT: 0xc1300d00: 00000000 00000000 00000000 00000000 ................
+	GOT: 0xc1300d10: 00000000 00000000 00000000 00000000 ................
+	GOT: 0xc1300d20: 00000000 00000000 00000000 00000000 ................
+	GOT: 0xc1300d30: 00000000 00000000 00000000 00000000 ................
+	LOCAL: End of file
+
+	hfzhang@t1600-re1> request pfe execute command "show lchip 0 lout registers ip hf" target fpc7 
+	Nov 16 23:30:12
+	SENT: Ukern command: show lchip 0 lout registers ip hf
+	GOT:
+	GOT: SL-Chip 0 IP block Header FIFO allocation registers:
+	GOT:  (0xc1300c00)                    HF_ALLOC[00..03] : 0x80300030
+	GOT:  (0xc1300c10)                    HF_ALLOC[04..63] : 0x80000000
+	LOCAL: End of file
+
+ */
+
+template check-fpc3( $fpc ) {
+	
+	/* Work on Lchip 0 */
+	var $rpc = {
+		<request-pfe-execute> {
+			<target> "fpc" _ $fpc;
+			<command> "peeklong 0xc1300c00";
+		}
+	}
+
+	var $res = jcs:invoke($rpc);
+	var $lines = jcs:break-lines($res);
+
+	/*
+	for-each ($lines[contains( ., "GOT: 0xc13") ]) {
+		
+		 * Each register_set value contains 4 streams
+		 * 80300030 80300030 80300030 80300030
+		 * we have 64 streams in total
+		 
+		
+		var $line_no = position();
+		
+		var $register_set = substring(., 18, 35);
+		call debug($register_set);
+		
+		var $register = str:split($register_set);
+		for-each ($register) {
+			var $register_no = position() - 1;
+			
+			var $stream = ( $line_no - 1 ) * 4 + $register_no;
+			if ( . == "00000030") {
+				var $msg = "Wedge detected on FPC " _ $fpc _ " Stream " _ $stream _ " Register:" _ .;
+				call debug($msg);
+				call fix-register-fpc($fpc, $lchip, $stream);
+				expr 1;
+			}
+		}
+		*/
+		var $res1 := {
+			for-each ($lines[contains( ., "GOT: 0xc13") ]) {
+				var $line_no = position();
+						var $register_set = substring(., 18, 35);
+		
+				var $register = str:split($register_set);
+				for-each ($register) {
+					var $register_no = position() - 1;
+					var $stream = ( $line_no - 1 ) * 4 + $register_no;
+					if (( . == "80300030" ) and ( $stream < 64 )) {
+						<streams> {
+							<lchip> 0;
+							<value> $stream;
+						}
+					}
+				}
+			}
+		}
+		
+		for-each ($res1/streams) {
+			<output> lchip;
+			<output> value;
+		}
+	}
+}
+
+template check-fpc4( $fpc ) {
+	
+	/* Work on Lchip 0 */
+	var $lchip = 0;
+	var $rpc = {
+		<request-pfe-execute> {
+			<target> "fpc" _ $fpc;
+			<command> "peeklong 0xc1300c00";
+		}
+	}
+
+	var $results = jcs:invoke($rpc);
+	var $lines = jcs:break-lines($results);
+
+	for-each ($lines[contains( ., "GOT: 0xc13") ]) {
+		
+		/* Each register_set value contains 4 streams
+		 * 80300030 80300030 80300030 80300030
+		 * we have 64 streams in total
+		 */
+		
+		var $line_no = position();
+		
+		var $register_set = substring(., 18, 35);
+		call debug($register_set);
+		
+		var $register = str:split($register_set);
+		for-each ($register) {
+			var $register_no = position() - 1;
+			
+			var $stream = ( $line_no - 1 ) * 4 + $register_no;
+			if ( . == "00000030") {
+				var $msg = "Wedge detected on FPC " _ $fpc _ " Stream " _ $stream _ " Register:" _ .;
+				call debug($msg);
+				
+				/* Fix it by setting the register to 0x80300030 */
+				call fix-register-fpc($fpc, $lchip, $stream);
+				expr 1;
+			}
+		}
+	}
+	
+	/* Work on Lchip 1 */
+	var $lchip1 = 1;
+	
+	var $rpc = {
+		<request-pfe-execute> {
+			<target> "fpc" _ $fpc;
+			<command> "peeklong 0xc1500c00";
+		}
+	}
+
+	var $results = jcs:invoke($rpc);
+	var $lines = jcs:break-lines($results);
+
+	for-each ($lines[contains( ., "GOT: 0xc15") ]) {
+		
+		/* Each register_set value contains 4 streams
+		 * 80300030 80300030 80300030 80300030
+		 * we have 64 streams in total
+		 */
+		
+		var $line_no = position();
+		
+		var $register_set = substring(., 18, 35);
+		call debug($register_set);
+		
+		var $register = str:split($register_set);
+		for-each ($register) {
+			var $register_no = position() - 1;
+			
+			var $stream = ( $line_no - 1 ) * 4 + $register_no;
+			if ( . == "00000030") {
+				var $msg = "Wedge detected on FPC " _ $fpc _ " Stream " _ $stream _ " Register:" _ .;
+				call debug($msg);
+				
+				/* Fix it by setting the register to 0x80300030 */
+				call fix-register-fpc($fpc, $lchip1, $stream);
+				expr 1;
+			}
+		}
+	}
+}
+
+/* Don't use this any more
+template check-fpc4 ($fpc) {
+	
+	var $rpc = {
+        <request-pfe-execute> {
+            <target> "fpc" _ $fpc;
+            <command> "show lchip 0 lout registers ip hfalloc";
+        }
+    }
+    
+    var $results = jcs:invoke($rpc);
+    
+    var $lines = jcs:break_lines($results);
+    
+    for-each($lines) {
+        var $test = current();
+        if(contains($test, "HF_ALLOC")) {
+            var $pattern = "GOT:[ ]+(0x[0-9a-f]+)[ ]+HF_ALLOC\[.*\] : 0x[0-9a-f]+";
+            var $split = jcs:regex($pattern, $test);
+            if ( $split[2] == "0x00000030" ) {
+				expr jcs:syslog("pfe.notice", "Possible wedge detected on FPC $fpc, Lchip 0 stream $split[1]")
+				call fix-register-fpc($fpc, $lchip, $stream);
+			};
+        }
+    } 
+	
+	var $rpc = {
+        <request-pfe-execute> {
+            <target> "fpc" _ $fpc;
+            <command> "show lchip 1 lout registers ip hfalloc";
+        }
+    }
+    
+    var $results = jcs:invoke($rpc);
+    var $lines = jcs:break_lines($results);
+    
+    for-each($lines) {
+        var $test = current();
+        if(contains($test, "HF_ALLOC")) {
+            var $pattern = "GOT:[ ]+(0x[0-9a-f]+)[ ]+HF_ALLOC\[.*\] : 0x[0-9a-f]+";
+            var $split = jcs:regex($pattern, $test);
+            if ( $split[2] == "0x00000030" ) {
+				expr jcs:syslog("pfe.notice", "Possible wedge detected on FPC $fpc, Lchip 0 stream $split[1]")
+				call fix-register-fpc($fpc, $lchip, $stream);
+			};
+        }
+    } 
+	
+}
+*/
+
+template syslog-trap ($msg) {
+      var $trap-msg = str:replace( $msg, " ", "\\ " );
+      expr jcs:syslog("daemon.err", $msg);
+}
+
+template lcc-slot($msg) {
+    var $regex = "lcc:([0-7])";
+    var $string = jcs:regex($regex, $msg);
+    expr $string[1];
+}
+
+template fpc-slot($msg) {
+    var $regex = "FPC ([0-7])";
+    var $string = jcs:regex($regex, $msg);
+    expr $string[1];
+}
+
+template fpc-slot-txp($lcc, $fpc) {
+    var $fpc-tx = $lcc * 8 + $fpc;  
+    expr $fpc-tx;
+}
+
+template fpc-is-online($fpc) {
+	var command = <command> "show chassis fpc $fpc"
+	var result = jcs:invoke($command);
+	
+	expr $result/multi-routing-engine-results/multi-routing-engine-item/fpc-information/fpc/state;
+}
+
+template fpc-slot-raw($msg) {
+    var $regex = "(FPC[0-7])_";
+    var $string = jcs:regex($regex, $msg);
+    expr $string[2];
+}
+
+template sib-offline($sib_slot) {
+	var $rpc = <command> "request chassis fabric plane offline all-chassis" _ $sib_slot;
+	var $result = jcs:invoke($rpc);
+}
+
+template sib-online($sib_slot) {
+	var $rpc = <command> "request chassis fabric plane online all-chassis" _ $sib_slot;
+	var $result = jcs:invoke($rpc);
+}
+
+template offlined-sib-slot($input) {
+	for-each ($input//fm-plane-state-information/fmp-plane) {
+		if ( state == "Offline" ) {
+			expr slot;
+		}
+	}
+}
+
+template sib-walk() {
+
+	var $rpc = <command> "show chassis fabric plane sfc 0";
+	var $result = jcs:invoke($rpc);
+	
+	for-each ($result//fm-plane-state-information/fmp-plane) {		
+		var $continue = { call fpc-walk(); }		
+		
+		if ( $continue == 1 and state == "Online" ) {
+			var $sib_slot = slot;
+			/* firstly online the offlined slot*/
+			var $offlined_slot = { call offlined-sib-slot($result); }
+			call sib-online($offlined_slot);
+			expr jcs:sleep("10");
+			
+			var $online_planes = count(./state[contains(., "Online")])
+			if ( $online_planes == 4 ) {
+				call sib-offline($sib_slot);
+			}
+			
+			expr jcs:sleep("300");
+		}
+	}
+	
+	if ( $wedge_detected == 1 ) {
+		var $msg = "Wedge cannot be covered by SIB walk. Need other investigation";
+		call syslog-trap($msg);
+	} else {
+		var $msg = "Wedge solved by SIB walk";
+		call syslog-trap($msg);
+	}
+		
+}
+
+template fpc-walk() {
+	
+	var $runcmd = <command> "show chassis hardware";
+    var $outcmd = jcs:invoke($runcmd);
+  
+    for-each ($outcmd/multi-routing-engine-results/multi-routing-engine-item/chassis-inventory/chassis-module) {
+		var $fru = model-number;
+		var $lccname = ../../re-name;
+		var $fpcname = name;
+
+		/* we check FPC is online or not*/
+		var $lcc_slot = { call lcc-slot($lccname); }
+		var $fpc_slot = { call fpc-slot($fpcname); }
+		var $global_fpc_slot = { call fpc-slot-txp($lcc_slot, $fpc_slot); }
+		var $fpc_state = { call fpc-is-online($global_fpc_slot); }
+
+		/* we focus on type 4 and type 3 -ES FPC. 
+		 * we check all the streams on all Lchips, once detected a possible wedge we fixed right away
+		 */
+		if ( $fpc_state == "Online" ) {
+			if ($fru == "T1600-FPC4-ES" ) {
+				var wedge_type3 = { call check-fpc4($global_fpc_slot); }
+			} 
+			else if ($fru == "T640-FPC3-ES" ) {
+				var wedge_type4 = { call check-fpc3($global_fpc_slot); }
+			}		
+		}
+	}
+	
+	if (( $wedge_type3 == 1 ) or ( $wedge_type4 == 1)) {
+		expr 1;
+	} else {
+		expr 0;
+	}
+}
+
+match / {
+	<op-script-results> {
+		var $master = { call are-we-master-re();}
+	    if ($master == 0 ) { 
+			<xsl:message terminate="yes"> "Not master."; 
+	    }
+	
+		var $wedge_detected = { call fpc-walk(); }
+		if ( $wedge_detected == 1 ) {
+			call sib-walk();
+		}
+	}
+}

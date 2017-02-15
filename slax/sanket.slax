@@ -1,0 +1,40 @@
+version 1.0;
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+ns ext = "http://xmlsoft.org/XSLT/namespace";
+ 
+match / {
+	<op-script-results>
+	{
+		var $conn = jcs:open();
+		var $interfaces = jcs:invoke("get-interface-information");
+ 
+		
+		var $result1 := {
+			for-each ($interfaces/physical-interface/logical-interface) {
+				<interfaces> {
+					<name> ./name;
+					<input> ./traffic-statistics/input-packets;
+				}
+			}
+		}
+		
+		expr jcs:sleep(5);
+ 
+		var $interfaces1 = jcs:invoke("get-interface-information");
+ 
+		for-each ($interfaces1/physical-interface/logical-interface) {
+			var $info1 = ./traffic-statistics/input-packets;
+			var $insta1 = ./name;
+			
+			for-each ($result1/interfaces) {
+				if ( $insta1 == name ) {
+					var $diff = $info1 - input;
+					<output> "Interface Name: " _ $insta1 _ " 2st: " _ $info1 _ " 1nd: " _ input _ " Diff: " _ $diff;
+				}
+			}
+		}
+	}
+}
+ 

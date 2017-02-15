@@ -1,0 +1,312 @@
+/*
+ * Author        : Naotaka Fujita (JTAC)
+ * Version       : 1.4
+ * Last Modified : 17 May 2014
+ * Platform      : TXP-4
+ * Release       : 10.4R10.7
+ *
+ *
+ * License       : BSD-Style
+ *  Copyright (c) 2011 Junper Networks. All Rights Reserved.
+ *  Redistribution and use in source and binary forms, with or without modification,
+ *  are permitted provided that the following conditions are met:
+ *  1. Redistributions of source code must retain the above copyright notice, this
+ *  list of conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright notice,
+ *  this list of conditions and the following disclaimer in the documentation and/or
+ *  other materials provided with the distribution.
+ *  3. The name of the author may not be used to endorse or promote products derived
+ *  from this software without specific prior written permission.
+ *  THIS SOFTWARE IS PROVIDED BY THE AUTHOR AS IS AND ANY EXPRESS OR IMPLIED
+ *  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ *  AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE
+ *  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ *  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ *  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+ *  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/*
+- Description
+This script will be invoked when the eventd detects "CHASSISD_FM_ERROR: fm_update_links_f_end:" messages from LCC.
+After $delay sec (default 5 sec), and checks following error conditions
+
+ o (OPTIONAL) "show chassis fabric error lcc sib" exposes recent 30 sec fabric CRC error for the given FPC.
+   Above checking is disabled by default. controled by check-crc-history. 
+ o "show chassis ethernet switch lcc" exposes the FPC facing port is DOWN state. (not seen in output)
+
+Once both condition met, the script takes a remedy action based on configuration knob.
+ o offline-fpc = YES
+   - Issues "test chassis fpc slot x power off" cmd
+ o restart-fpc = YES
+   - Issues "test chassis fpc slot x power on" cmd
+
+ From our assumptions, to recover from traffic blackholing, we have to perform both (power off , then power on) actions.
+
+
+
+
+- file location
+/var/run/scripts/op/reset-fpc-on-pwr-fail.slax
+
+- Required config. You can paste followings with "load set terminal" from edit mode.
+set groups re0 event-options policy reset-fpc-on-pwr-fail events LCC
+set groups re0 event-options policy reset-fpc-on-pwr-fail within 3 trigger on
+set groups re0 event-options policy reset-fpc-on-pwr-fail within 3 trigger 1
+set groups re0 event-options policy reset-fpc-on-pwr-fail attributes-match LCC.message matches "CHASSISD_FM_ERROR: fm_update_links_f_end:"
+set groups re0 event-options policy reset-fpc-on-pwr-fail then event-script reset-fpc-on-pwr-fail.slax arguments message "{$$.message}"
+set groups re1 event-options policy reset-fpc-on-pwr-fail events LCC
+set groups re1 event-options policy reset-fpc-on-pwr-fail within 3 trigger on
+set groups re1 event-options policy reset-fpc-on-pwr-fail within 3 trigger 1
+set groups re1 event-options policy reset-fpc-on-pwr-fail attributes-match LCC.message matches "CHASSISD_FM_ERROR: fm_update_links_f_end:"
+set groups re1 event-options policy reset-fpc-on-pwr-fail then event-script reset-fpc-on-pwr-fail.slax arguments message "{$$.message}"
+set system scripts op file reset-fpc-on-pwr-fail.slax
+
+*/
+
+version 1.0;
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+ns str = "http://exslt.org/strings";
+
+/* This is a special variable that shows in the command-line help */
+var $arguments = {
+  <argument> {
+    <name> "offline-fpc";
+    <description> "YES for the script to offlines the FPC in the problematic state. Default YES";
+  }
+  <argument> {
+    <name> "restart-fpc";
+    <description> "YES for the script to restart the FPC after it brings the FPC offline. Default YES";
+  }
+  <argument> {
+    <name> "message";
+    <description> "syslog message to be parsed in the script";
+  }
+  <argument> {
+    <name> "check-crc-history YES for the script to check the CRC error history. Default NO";
+    <description> "If YES";
+  }
+  <argument> {
+    <name> "delay";
+    <description> "delay until the script starts  error checking. Default 5 sec.";
+  }
+}
+
+param $offline-fpc = "YES";
+param $restart-fpc = "YES";
+param $message;
+param $delay = 5;
+param $check-crc-history = "NO";
+
+var $con = jcs:open();
+
+template are_we_master_re ()
+{
+    /* Retrieve mastership from sysctl */
+    var $mastership= jcs:sysctl("hw.re.mastership","i");
+    expr $mastership;
+
+}
+
+template syslog_trap ($msg) {
+      var $trap-msg = str:replace( $msg, " ", "\\ " );
+      expr jcs:syslog("daemon.err", $msg);
+      var $request-trap-rpc = { <command> "request snmp spoof-trap jnxEventTrap variable-bindings "
+                               _ "jnxEventTrapDescr[0]=Event-trap,"
+                               _ "jnxEventAvAttribute[1]=message,"
+                               _ "jnxEventAvValue[1]=\"" _ $trap-msg _ "\"";
+      }
+      expr jcs:invoke($request-trap-rpc);
+}
+
+
+template num-of-instance() {
+  var $fpc-slot-raw = { call fpc-slot-raw($msg=$message); }
+  var $lcc-slot = { call lcc-slot($msg=$message); }
+  var $lcc-name = "lcc" _ $lcc-slot;
+  var $rpc-request-file-list = <rpc> {
+      <command> "file list /tmp/evt_cmd_*";
+  }
+  var $rpc-result-file-list = jcs:execute($con,$rpc-request-file-list);
+  var $count := {
+    for-each ($rpc-result-file-list//file-information) {
+      var $name = ./file-name;
+      var $rpc-request-file-show = <rpc> {
+          <command> "file show "_$name;
+      }
+      var $rpc-result-file-show = jcs:execute($con,$rpc-request-file-show);
+      <entry> {
+         if ( contains($rpc-result-file-show, "reset-fpc-on-pwr-fail") ) {
+            <instance>1;
+         } else {
+            <instance>0;
+         }
+         if ( contains($rpc-result-file-show, $fpc-slot-raw) and contains($rpc-result-file-show,$lcc-name) ) {
+            <dupfpc>1;
+         } else {
+            <dupfpc>0;
+         }
+      }
+    }
+  }
+  var $sum-fpcdup = sum($count/entry/dupfpc);
+  if ($sum-fpcdup > 2 ) {
+     <xsl:message terminate="yes"> "checking for same fpc is already running. Bailing out";
+  }
+  var $sum-instance = sum($count/entry/instance);
+  expr $sum-instance;
+}
+
+template fpc-offline($fpcno) {
+   var $rpc-request-chassis-fpc-restart = <rpc> {
+      <command> "test chassis fpc power off slot " _ $fpcno;
+   }
+   var $result-request-chassis-fpc = jcs:execute($con,$rpc-request-chassis-fpc-restart);
+
+}
+
+template fpc-online($fpcno) {
+   var $rpc-request-chassis-fpc-restart = <rpc> {
+      <command> "test chassis fpc power on slot " _ $fpcno;
+   }
+   var $result-request-chassis-fpc = jcs:execute($con,$rpc-request-chassis-fpc-restart);
+
+}
+
+
+template lcc-slot($msg) {
+    var $regex = "lcc([0-3])-master";
+    var $string = jcs:regex($regex, $msg);
+    expr $string[2];
+}
+
+template fpc-slot-txp($msg) {
+    var $regex = "lcc([0-3])-master .+ FPC ([0-7])";
+    var $string = jcs:regex($regex, $msg);
+    var $fpc-tx = $string[2] * 8 + $string[3];  /* lcc x 8 + fpc */
+    expr $fpc-tx;
+}
+
+template fpc-slot-raw($msg) {
+    var $regex = " FPC ([0-7])";
+    var $string = jcs:regex($regex, $msg);
+    expr "FPC" _ $string[2];
+}
+
+
+template check-fpc() {
+ /* parse message , get LCC#, FPC#. */
+   var $fpcslot = { call fpc-slot-txp($msg=$message); }
+   var $lccslot = { call lcc-slot($msg=$message); }
+   var $fpc-slot-raw = { call fpc-slot-raw($msg=$message); }
+   /* get current time*/
+   var $rpc-sys-uptime = {
+     <command> "show system uptime sfc 0";
+   }
+   var $res-sys-uptime = jcs:execute($con,$rpc-sys-uptime);
+   var $cur-sec = $res-sys-uptime//system-uptime-information/current-time/date-time/@junos:seconds;
+   var $cur-30sec = $cur-sec - 30;
+   /* get SIB list from the lcc */
+   var $rpc-show-sib = <rpc> {
+      <command> "show chassis sibs lcc " _ $lccslot;
+   }
+   var $result = jcs:execute($con,$rpc-show-sib);
+   /* check fabric error history, bail out if there is no error reported in pase 30 seconds */
+   if ($check-crc-history == "YES") {
+     var $fabric-err-str = {
+       for-each ($result//sib-information/sib/slot) {
+         var $sib-slot = .;
+         var $rpc-fab-err = <rpc> {
+           <command> "show chassis fabric errors sib lcc " _ $lccslot _ " " _ $sib-slot;
+         }
+         var $res-fab-err =  jcs:execute($con,$rpc-fab-err);
+         <xsl:document href="/var/tmp/res-fab-err.out" _ $sib-slot indent="yes"> {
+            copy-of $res-fab-err;
+         }
+         var $err-cnt = count($res-fab-err//fm-fru-errors/fm-first-error-ln[fm-first-error-time/@junos:seconds > $cur-30sec]);
+         var $fst-err-str = {
+           for-each ($res-fab-err//fm-fru-errors/fm-first-error-ln[fm-first-error-time/@junos:seconds > $cur-30sec]) {
+             var $fm-first-error-detail = ./fm-first-error-detail;
+             if (contains( $fm-first-error-detail , $fpc-slot-raw)) {
+               expr 1;
+             }
+           }
+         }
+         var $fst-err-cnt = string-length($fst-err-str);
+  
+         var $lst-err-str = {
+           for-each ($res-fab-err//fm-fru-errors/fm-last-error-ln[fm-last-error-time/@junos:seconds > $cur-30sec]) {
+             var $fm-last-error-detail = ./fm-last-error-detail;
+             if (contains($fm-last-error-detail , $fpc-slot-raw)) {
+               expr 1;
+             }
+           }
+         }
+         var $lst-err-cnt = string-length($lst-err-str);
+         if (($fst-err-cnt > 0) or ($lst-err-cnt > 0)) {
+           expr 1;
+         }
+       }
+     }
+     if (string-length($fabric-err-str) = 0) {
+       var $message = $script _ ":fpc" _ $fpcslot _ " :LCC" _ $lccslot _ "-"  _ $fpc-slot-raw _ ":Bail out no CRC error history found on SIB. ";
+       call syslog_trap ($msg=$message);
+       <xsl:message terminate="yes"> "Bail out no CRC error history found on SIB.";
+     }
+  }
+  /* check show chassis ethernet-switch lcc X, bail out if the port is still UP for the given FPC */
+   var $rpc-ether-swi = {
+     <command> "show chassis ethernet-switch lcc " _ $lccslot;
+   }
+   var $res-ether-swi =  jcs:execute($con,$rpc-ether-swi);
+   var $brk-ether-swi = jcs:break-lines($res-ether-swi//output);
+      <xsl:document href="/var/tmp/res-ether-swi.out" indent="yes"> {
+         copy-of $res-ether-swi;
+      }
+   var $str-eth-cnt = {
+     for-each ($brk-ether-swi) {
+       var $line = .;
+       if (contains($line ,$fpc-slot-raw)) {
+         expr 1;
+       }
+     }
+   }
+   if (string-length($str-eth-cnt) > 0) {
+     var $message = $script _ ":fpc" _ $fpcslot _ " :LCC" _ $lccslot _ "-"  _ $fpc-slot-raw _
+                    "Bailing out as internal ethernet sw port if UP for the FPC";
+     call syslog_trap ($msg=$message);
+     <xsl:message terminate="yes"> "Bailing out as internal ethernet sw port if UP for the FPC";
+   }
+   /* condition met, try remedy action */
+   if ($offline-fpc=="YES") {
+     var $message2 = $script _ ":fpc" _ $fpcslot _ " :LCC" _ $lccslot _ "-"  _ $fpc-slot-raw _ " has been offlined due to power failure.";
+     call syslog_trap ($msg=$message2);
+     call fpc-offline($fpcno=$fpcslot);
+   }
+   if ($restart-fpc=="YES") {
+     var $message3 = $script _ ":fpc" _ $fpcslot _ " :LCC" _ $lccslot _ "-"  _ $fpc-slot-raw _ " has been restarted for recovering.";
+     call syslog_trap ($msg=$message3);
+     call fpc-online($fpcno=$fpcslot);
+    /*Dummy message to trigger subsequent script. */
+      var $rpc-req-msg = <rpc> {
+         <command> "request message user dummy message \"" _ $script _ "FPC" _ $fpcslot _ " has been powered on.";
+      }
+     expr jcs:execute($con,$rpc-req-msg);
+   }
+}
+
+match / {
+   <op-script-results> {
+      expr jcs:sleep($delay);
+      var $num-of-events = { call num-of-instance();}
+      if ($num-of-events > 1 ) { <xsl:message terminate="yes"> "Too much script instances are running. Bailing out"; }
+      /* Let's first check if the script is invoked on master or backup RE */
+      var $master = { call are_we_master_re();}
+      if ($master == 0 ) { <xsl:message terminate="yes"> "Not master."; }
+      var $result = { call check-fpc($message); }
+   }
+}
