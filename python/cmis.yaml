@@ -1,0 +1,5987 @@
+--- 
+jaas: 
+  params: /volume/systest-proj/RBU/ajuttuga/TOBY_SCRIPTS/CMIS/RCT_branch/Cloud_MPLS_Infra_Services_tb1.params
+  plite: /volume/systest-proj/RBU/ajuttuga/TOBY_SCRIPTS/CMIS/RCT_branch/Cloud_MPLS_Infra_Services_tb1.params.plite
+t: 
+  framework_variables: 
+    fv-core-check: enable
+    fv-load-baseline-config-from: default
+    fv-monitoring-engine: interval=5:infile=/volume/regressions/toby/test-suites/pdt/cloud/edge_infrastructure_edge_and_peering/cloud_mpls_infrastructure_services/RCT_Branch/Cloud_MPLS_Infra_Services_monitor.yaml
+  resources: 
+    host1: 
+      interfaces: 
+        r0-host1-1: 
+          link: r0-host1-1
+          management: 0
+          name: enp69s0f1
+          pic: enp69s0f1
+          type: 
+            - enp
+        r1-host1-1: 
+          link: r1-host1-1
+          management: 0
+          name: enp69s0f0
+          pic: enp69s0f0
+          type: 
+            - enp
+      system: 
+        primary: 
+          controllers: 
+            re0: 
+              con-ip: 10.48.103.153
+              domain: englab.juniper.net
+              hostname: ocst-1-geo
+              isoaddr: 47.0005.80ff.f800.0000.0108.0001.0102.5501.5030.00
+              loop-ip: 10.255.15.30
+              loop-ipv6: abcd::10:255:15:30
+              mgt-intf-name: eth0
+              mgt-ip: 10.48.46.138
+              mgt-ipv6: abcd::10:48:46:138
+              osname: linux
+          make: iXSystems
+          model: ix-22x4
+          name: ocst-1-geo
+          osname: linux
+          role: 'null'
+    host2: 
+      interfaces: 
+        r0-host2-1: 
+          link: r0-host2-1
+          management: 0
+          name: enp69s0f1
+          pic: enp69s0f1
+          type: 
+            - enp
+        r1-host2-1: 
+          link: r1-host2-1
+          management: 0
+          name: enp69s0f0
+          pic: enp69s0f0
+          type: 
+            - enp
+      system: 
+        primary: 
+          controllers: 
+            re0: 
+              con-ip: 10.48.103.154
+              domain: englab.juniper.net
+              hostname: ocst-2-geo
+              isoaddr: 47.0005.80ff.f800.0000.0108.0001.0102.5502.4189.00
+              loop-ip: 10.255.24.189
+              loop-ipv6: abcd::10:255:24:189
+              mgt-intf-name: eth0
+              mgt-ip: 10.48.46.139
+              mgt-ipv6: abcd::10:48:46:139
+              osname: linux
+          make: iXSystems
+          model: ix-22x4
+          name: ocst-2-geo
+          osname: linux
+          role: 'null'
+    r0: 
+      interfaces: 
+        r0-ae0-1: 
+          link: r0-r2-ae0-1
+          management: 0
+          name: xe-1/0/0.0
+          pic: xe-1/0/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r0-ae0-2: 
+          link: r0-r2-ae0-2
+          management: 0
+          name: xe-1/0/1.0
+          pic: xe-1/0/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r0-ae0-3: 
+          link: r0-r2-ae0-3
+          management: 0
+          name: xe-1/0/2.0
+          pic: xe-1/0/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r0-ae0-4: 
+          link: r0-r2-ae0-4
+          management: 0
+          name: xe-1/0/3.0
+          pic: xe-1/0/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r0-ae1-1: 
+          link: r0-r3-ae1-1
+          management: 0
+          name: xe-1/1/0.0
+          pic: xe-1/1/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r0-ae1-2: 
+          link: r0-r3-ae1-2
+          management: 0
+          name: xe-1/1/1.0
+          pic: xe-1/1/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r0-ae1-3: 
+          link: r0-r3-ae1-3
+          management: 0
+          name: xe-1/1/2.0
+          pic: xe-1/1/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r0-ae1-4: 
+          link: r0-r3-ae1-4
+          management: 0
+          name: xe-1/1/3.0
+          pic: xe-1/1/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r0-host1-1: 
+          link: r0-host1-1
+          management: 0
+          name: xe-2/3/5.0
+          pic: xe-2/3/5
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r0-host2-1: 
+          link: r0-host2-1
+          management: 0
+          name: xe-2/3/6.0
+          pic: xe-2/3/6
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r0-rt0-1: 
+          link: r0-rt0-1
+          management: 0
+          name: xe-2/3/7.0
+          pic: xe-2/3/7
+          type: 
+            - ether
+            - xe
+          unit: 0
+      system: 
+        primary: 
+          controllers: 
+            re0: 
+              con-ip: 10.48.103.73
+              domain: englab.juniper.net
+              hostname: sup-tb1-geodc-1-mx240
+              isoaddr: 47.0005.80ff.f800.0000.0108.0001.0102.5518.5034.00
+              loop-ip: 10.255.185.34
+              loop-ipv6: abcd::10:255:185:34
+              mgt-intf-name: fxp0.0
+              mgt-ip: 10.48.46.228
+              mgt-ipv6: abcd::10:48:46:228
+              osname: JunOS
+          make: juniper
+          model: mx240
+          name: sup-tb1-geodc-1-mx240
+          osname: JunOS
+          re_type: RE-S-1800x4
+          role: 'null'
+          scb: Enhanced MX SCB 2
+    r1: 
+      interfaces: 
+        r1-ae2-1: 
+          link: r1-r2-ae2-1
+          management: 0
+          name: xe-0/3/4.0
+          pic: xe-0/3/4
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r1-ae2-2: 
+          link: r1-r2-ae2-2
+          management: 0
+          name: xe-0/3/5.0
+          pic: xe-0/3/5
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r1-ae2-3: 
+          link: r1-r2-ae2-3
+          management: 0
+          name: xe-0/3/6.0
+          pic: xe-0/3/6
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r1-ae2-4: 
+          link: r1-r2-ae2-4
+          management: 0
+          name: xe-0/3/7.0
+          pic: xe-0/3/7
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r1-ae3-1: 
+          link: r1-r3-ae3-1
+          management: 0
+          name: xe-0/0/0.0
+          pic: xe-0/0/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r1-ae3-2: 
+          link: r1-r3-ae3-2
+          management: 0
+          name: xe-0/0/1.0
+          pic: xe-0/0/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r1-ae3-3: 
+          link: r1-r3-ae3-3
+          management: 0
+          name: xe-0/0/2.0
+          pic: xe-0/0/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r1-ae3-4: 
+          link: r1-r3-ae3-4
+          management: 0
+          name: xe-0/0/3.0
+          pic: xe-0/0/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r1-host1-1: 
+          link: r1-host1-1
+          management: 0
+          name: xe-0/2/1.0
+          pic: xe-0/2/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r1-host2-1: 
+          link: r1-host2-1
+          management: 0
+          name: xe-0/2/0.0
+          pic: xe-0/2/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r1-rt0-1: 
+          link: r1-rt0-1
+          management: 0
+          name: xe-0/2/7.0
+          pic: xe-0/2/7
+          type: 
+            - ether
+            - xe
+          unit: 0
+      system: 
+        primary: 
+          controllers: 
+            re0: 
+              con-ip: 10.48.103.209
+              domain: englab.juniper.net
+              hostname: sup-tb1-geodc-1-mx480
+              isoaddr: 47.0005.80ff.f800.0000.0108.0001.0102.5502.4209.00
+              loop-ip: 10.255.24.209
+              loop-ipv6: abcd::10:255:24:209
+              mgt-intf-name: fxp0.0
+              mgt-ip: 10.48.46.114
+              mgt-ipv6: abcd::10:48:46:114
+              osname: JunOS
+            re1: 
+              con-ip: 10.48.103.210
+              domain: englab.juniper.net
+              hostname: sup-tb1-geodc-1-mx480-1
+              isoaddr: 47.0005.80ff.f800.0000.0108.0001.0102.5502.4209.00
+              loop-ip: 10.255.24.209
+              loop-ipv6: abcd::10:255:24:209
+              mgt-intf-name: fxp0.0
+              mgt-ip: 10.48.46.152
+              mgt-ipv6: abcd::10:48:46:152
+              osname: JunOS
+          make: juniper
+          model: mx480
+          name: sup-tb1-geodc-1-mx480
+          osname: JunOS
+          role: 'null'
+    r2: 
+      interfaces: 
+        r2-ae0-1: 
+          link: r0-r2-ae0-1
+          management: 0
+          name: xe-14/0/0.0
+          pic: xe-14/0/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae0-2: 
+          link: r0-r2-ae0-2
+          management: 0
+          name: xe-14/0/1.0
+          pic: xe-14/0/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae0-3: 
+          link: r0-r2-ae0-3
+          management: 0
+          name: xe-14/0/2.0
+          pic: xe-14/0/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae0-4: 
+          link: r0-r2-ae0-4
+          management: 0
+          name: xe-14/0/3.0
+          pic: xe-14/0/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae100-1: 
+          link: r2-r4-ae100-1
+          management: 0
+          name: xe-6/0/0.0
+          pic: xe-6/0/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae100-10: 
+          link: r2-r4-ae100-10
+          management: 0
+          name: xe-8/0/1.0
+          pic: xe-8/0/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae100-11: 
+          link: r2-r4-ae100-11
+          management: 0
+          name: xe-8/0/2.0
+          pic: xe-8/0/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae100-12: 
+          link: r2-r4-ae100-12
+          management: 0
+          name: xe-8/0/3.0
+          pic: xe-8/0/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae100-2: 
+          link: r2-r4-ae100-2
+          management: 0
+          name: xe-6/0/1.0
+          pic: xe-6/0/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae100-3: 
+          link: r2-r4-ae100-3
+          management: 0
+          name: xe-6/0/2.0
+          pic: xe-6/0/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae100-4: 
+          link: r2-r4-ae100-4
+          management: 0
+          name: xe-6/0/3.0
+          pic: xe-6/0/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae100-5: 
+          link: r2-r4-ae100-5
+          management: 0
+          name: xe-7/0/0.0
+          pic: xe-7/0/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae100-6: 
+          link: r2-r4-ae100-6
+          management: 0
+          name: xe-7/0/1.0
+          pic: xe-7/0/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae100-7: 
+          link: r2-r4-ae100-7
+          management: 0
+          name: xe-7/0/2.0
+          pic: xe-7/0/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae100-8: 
+          link: r2-r4-ae100-8
+          management: 0
+          name: xe-7/0/3.0
+          pic: xe-7/0/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae100-9: 
+          link: r2-r4-ae100-9
+          management: 0
+          name: xe-8/0/0.0
+          pic: xe-8/0/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae2-1: 
+          link: r1-r2-ae2-1
+          management: 0
+          name: xe-0/1/0.0
+          pic: xe-0/1/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae2-2: 
+          link: r1-r2-ae2-2
+          management: 0
+          name: xe-0/1/1.0
+          pic: xe-0/1/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae2-3: 
+          link: r1-r2-ae2-3
+          management: 0
+          name: xe-0/1/2.0
+          pic: xe-0/1/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae2-4: 
+          link: r1-r2-ae2-4
+          management: 0
+          name: xe-0/1/3.0
+          pic: xe-0/1/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae50-1: 
+          link: r2-r3-ae50-1
+          management: 0
+          name: xe-0/0/0.0
+          pic: xe-0/0/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae50-2: 
+          link: r2-r3-ae50-2
+          management: 0
+          name: xe-0/0/1.0
+          pic: xe-0/0/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae50-3: 
+          link: r2-r3-ae50-3
+          management: 0
+          name: xe-0/0/2.0
+          pic: xe-0/0/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae50-4: 
+          link: r2-r3-ae50-4
+          management: 0
+          name: xe-0/0/3.0
+          pic: xe-0/0/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae50-5: 
+          link: r2-r3-ae50-5
+          management: 0
+          name: xe-9/0/0.0
+          pic: xe-9/0/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae50-6: 
+          link: r2-r3-ae50-6
+          management: 0
+          name: xe-9/0/1.0
+          pic: xe-9/0/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae50-7: 
+          link: r2-r3-ae50-7
+          management: 0
+          name: xe-9/0/2.0
+          pic: xe-9/0/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae50-8: 
+          link: r2-r3-ae50-8
+          management: 0
+          name: xe-9/0/3.0
+          pic: xe-9/0/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae51-1: 
+          link: r2-r3-ae51-1
+          management: 0
+          name: xe-10/0/0.0
+          pic: xe-10/0/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae51-2: 
+          link: r2-r3-ae51-2
+          management: 0
+          name: xe-10/0/1.0
+          pic: xe-10/0/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae51-3: 
+          link: r2-r3-ae51-3
+          management: 0
+          name: xe-10/0/2.0
+          pic: xe-10/0/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae51-4: 
+          link: r2-r3-ae51-4
+          management: 0
+          name: xe-10/0/3.0
+          pic: xe-10/0/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae51-5: 
+          link: r2-r3-ae51-5
+          management: 0
+          name: xe-11/0/0.0
+          pic: xe-11/0/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae51-6: 
+          link: r2-r3-ae51-6
+          management: 0
+          name: xe-11/0/1.0
+          pic: xe-11/0/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae51-7: 
+          link: r2-r3-ae51-7
+          management: 0
+          name: xe-11/0/2.0
+          pic: xe-11/0/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae51-8: 
+          link: r2-r3-ae51-8
+          management: 0
+          name: xe-11/0/3.0
+          pic: xe-11/0/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae52-1: 
+          link: r2-r4-ae52-1
+          management: 0
+          name: xe-2/0/0.0
+          pic: xe-2/0/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae52-10: 
+          link: r2-r4-ae52-10
+          management: 0
+          name: xe-4/0/1.0
+          pic: xe-4/0/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae52-11: 
+          link: r2-r4-ae52-11
+          management: 0
+          name: xe-4/0/2.0
+          pic: xe-4/0/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae52-12: 
+          link: r2-r4-ae52-12
+          management: 0
+          name: xe-4/0/3.0
+          pic: xe-4/0/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae52-2: 
+          link: r2-r4-ae52-2
+          management: 0
+          name: xe-2/0/1.0
+          pic: xe-2/0/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae52-3: 
+          link: r2-r4-ae52-3
+          management: 0
+          name: xe-2/0/2.0
+          pic: xe-2/0/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae52-4: 
+          link: r2-r4-ae52-4
+          management: 0
+          name: xe-2/0/3.0
+          pic: xe-2/0/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae52-5: 
+          link: r2-r4-ae52-5
+          management: 0
+          name: xe-3/0/0.0
+          pic: xe-3/0/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae52-6: 
+          link: r2-r4-ae52-6
+          management: 0
+          name: xe-3/0/1.0
+          pic: xe-3/0/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae52-7: 
+          link: r2-r4-ae52-7
+          management: 0
+          name: xe-3/0/2.0
+          pic: xe-3/0/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae52-8: 
+          link: r2-r4-ae52-8
+          management: 0
+          name: xe-3/0/3.0
+          pic: xe-3/0/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae52-9: 
+          link: r2-r4-ae52-9
+          management: 0
+          name: xe-4/0/0.0
+          pic: xe-4/0/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae53-1: 
+          link: r2-r5-ae53-1
+          management: 0
+          name: xe-15/0/1:0.0
+          pic: xe-15/0/1:0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae53-10: 
+          link: r2-r5-ae53-10
+          management: 0
+          name: xe-11/1/1.0
+          pic: xe-11/1/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae53-11: 
+          link: r2-r5-ae53-11
+          management: 0
+          name: xe-11/1/2.0
+          pic: xe-11/1/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae53-12: 
+          link: r2-r5-ae53-12
+          management: 0
+          name: xe-11/1/3.0
+          pic: xe-11/1/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae53-13: 
+          link: r2-r5-ae53-13
+          management: 0
+          name: xe-12/1/0.0
+          pic: xe-12/1/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae53-14: 
+          link: r2-r5-ae53-14
+          management: 0
+          name: xe-12/1/1.0
+          pic: xe-12/1/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae53-15: 
+          link: r2-r5-ae53-15
+          management: 0
+          name: xe-12/1/2.0
+          pic: xe-12/1/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae53-16: 
+          link: r2-r5-ae53-16
+          management: 0
+          name: xe-12/1/3.0
+          pic: xe-12/1/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae53-2: 
+          link: r2-r5-ae53-2
+          management: 0
+          name: xe-15/0/1:1.0
+          pic: xe-15/0/1:1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae53-3: 
+          link: r2-r5-ae53-3
+          management: 0
+          name: xe-15/0/1:2.0
+          pic: xe-15/0/1:2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae53-4: 
+          link: r2-r5-ae53-4
+          management: 0
+          name: xe-15/0/1:3.0
+          pic: xe-15/0/1:3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae53-5: 
+          link: r2-r5-ae53-5
+          management: 0
+          name: xe-15/0/2:0.0
+          pic: xe-15/0/2:0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae53-6: 
+          link: r2-r5-ae53-6
+          management: 0
+          name: xe-15/0/2:1.0
+          pic: xe-15/0/2:1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae53-7: 
+          link: r2-r5-ae53-7
+          management: 0
+          name: xe-15/0/2:2.0
+          pic: xe-15/0/2:2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae53-8: 
+          link: r2-r5-ae53-8
+          management: 0
+          name: xe-15/0/2:3.0
+          pic: xe-15/0/2:3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae53-9: 
+          link: r2-r5-ae53-9
+          management: 0
+          name: xe-11/1/0.0
+          pic: xe-11/1/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae54-1: 
+          link: r2-r5-ae54-1
+          management: 0
+          name: xe-15/0/3:0.0
+          pic: xe-15/0/3:0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae54-10: 
+          link: r2-r5-ae54-10
+          management: 0
+          name: xe-16/1/1.0
+          pic: xe-16/1/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae54-11: 
+          link: r2-r5-ae54-11
+          management: 0
+          name: xe-16/1/2.0
+          pic: xe-16/1/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae54-12: 
+          link: r2-r5-ae54-12
+          management: 0
+          name: xe-16/1/3.0
+          pic: xe-16/1/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae54-13: 
+          link: r2-r5-ae54-13
+          management: 0
+          name: xe-17/1/0.0
+          pic: xe-17/1/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae54-14: 
+          link: r2-r5-ae54-14
+          management: 0
+          name: xe-17/1/1.0
+          pic: xe-17/1/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae54-15: 
+          link: r2-r5-ae54-15
+          management: 0
+          name: xe-17/1/2.0
+          pic: xe-17/1/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae54-16: 
+          link: r2-r5-ae54-16
+          management: 0
+          name: xe-17/1/3.0
+          pic: xe-17/1/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae54-2: 
+          link: r2-r5-ae54-2
+          management: 0
+          name: xe-15/0/3:1.0
+          pic: xe-15/0/3:1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae54-3: 
+          link: r2-r5-ae54-3
+          management: 0
+          name: xe-15/0/3:2.0
+          pic: xe-15/0/3:2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae54-4: 
+          link: r2-r5-ae54-4
+          management: 0
+          name: xe-15/0/3:3.0
+          pic: xe-15/0/3:3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae54-5: 
+          link: r2-r5-ae54-5
+          management: 0
+          name: xe-15/0/4:0.0
+          pic: xe-15/0/4:0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae54-6: 
+          link: r2-r5-ae54-6
+          management: 0
+          name: xe-15/0/4:1.0
+          pic: xe-15/0/4:1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae54-7: 
+          link: r2-r5-ae54-7
+          management: 0
+          name: xe-15/0/4:2.0
+          pic: xe-15/0/4:2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae54-8: 
+          link: r2-r5-ae54-8
+          management: 0
+          name: xe-15/0/4:3.0
+          pic: xe-15/0/4:3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-ae54-9: 
+          link: r2-r5-ae54-9
+          management: 0
+          name: xe-16/1/0.0
+          pic: xe-16/1/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-rt0-1: 
+          link: r2-rt0-1
+          management: 0
+          name: xe-8/1/23.0
+          pic: xe-8/1/23
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r2-rt0-2: 
+          link: r2-rt0-2
+          management: 0
+          name: xe-9/1/23.0
+          pic: xe-9/1/23
+          type: 
+            - ether
+            - xe
+          unit: 0
+      system: 
+        primary: 
+          controllers: 
+            re0: 
+              con-ip: 10.48.103.184
+              domain: englab.juniper.net
+              hostname: sup-tb1-geodc-1-mx2020
+              isoaddr: 47.0005.80ff.f800.0000.0108.0001.0102.5502.4157.00
+              loop-ip: 10.255.24.157
+              loop-ipv6: abcd::10:255:24:157
+              mgt-intf-name: fxp0.0
+              mgt-ip: 10.48.46.116
+              mgt-ipv6: abcd::10:48:46:116
+              osname: JunOS
+            re1: 
+              con-ip: 10.48.103.186
+              domain: englab.juniper.net
+              hostname: sup-tb1-geodc-1-mx2020-1
+              isoaddr: 47.0005.80ff.f800.0000.0108.0001.0102.5502.4157.00
+              loop-ip: 10.255.24.157
+              loop-ipv6: abcd::10:255:24:157
+              mgt-intf-name: fxp0.0
+              mgt-ip: 10.48.46.117
+              mgt-ipv6: abcd::10:48:46:117
+              osname: JunOS
+          fv-connect-controllers: all
+          fv-tags: dut
+          make: juniper
+          model: mx2020
+          name: sup-tb1-geodc-1-mx2020
+          osname: JunOS
+          role: 'null'
+    r3: 
+      interfaces: 
+        r3-ae1-1: 
+          link: r0-r3-ae1-1
+          management: 0
+          name: et-0/0/58:0.0
+          pic: et-0/0/58:0
+          type: 
+            - et
+          unit: 0
+        r3-ae1-2: 
+          link: r0-r3-ae1-2
+          management: 0
+          name: et-0/0/58:1.0
+          pic: et-0/0/58:1
+          type: 
+            - et
+          unit: 0
+        r3-ae1-3: 
+          link: r0-r3-ae1-3
+          management: 0
+          name: et-0/0/58:2.0
+          pic: et-0/0/58:2
+          type: 
+            - et
+          unit: 0
+        r3-ae1-4: 
+          link: r0-r3-ae1-4
+          management: 0
+          name: et-0/0/58:3.0
+          pic: et-0/0/58:3
+          type: 
+            - et
+          unit: 0
+        r3-ae101-1: 
+          link: r3-r5-ae101-1
+          management: 0
+          name: et-0/0/1.0
+          pic: et-0/0/1
+          type: 
+            - et
+          unit: 0
+        r3-ae101-10: 
+          link: r3-r5-ae101-10
+          management: 0
+          name: et-0/0/31.0
+          pic: et-0/0/31
+          type: 
+            - et
+          unit: 0
+        r3-ae101-2: 
+          link: r3-r5-ae101-2
+          management: 0
+          name: et-0/0/5.0
+          pic: et-0/0/5
+          type: 
+            - et
+          unit: 0
+        r3-ae101-3: 
+          link: r3-r5-ae101-3
+          management: 0
+          name: et-0/0/11.0
+          pic: et-0/0/11
+          type: 
+            - et
+          unit: 0
+        r3-ae101-4: 
+          link: r3-r5-ae101-4
+          management: 0
+          name: et-0/0/13.0
+          pic: et-0/0/13
+          type: 
+            - et
+          unit: 0
+        r3-ae101-5: 
+          link: r3-r5-ae101-5
+          management: 0
+          name: et-0/0/17.0
+          pic: et-0/0/17
+          type: 
+            - et
+          unit: 0
+        r3-ae101-6: 
+          link: r3-r5-ae101-6
+          management: 0
+          name: et-0/0/19.0
+          pic: et-0/0/19
+          type: 
+            - et
+          unit: 0
+        r3-ae101-7: 
+          link: r3-r5-ae101-7
+          management: 0
+          name: et-0/0/23.0
+          pic: et-0/0/23
+          type: 
+            - et
+          unit: 0
+        r3-ae101-8: 
+          link: r3-r5-ae101-8
+          management: 0
+          name: et-0/0/25.0
+          pic: et-0/0/25
+          type: 
+            - et
+          unit: 0
+        r3-ae101-9: 
+          link: r3-r5-ae101-9
+          management: 0
+          name: et-0/0/29.0
+          pic: et-0/0/29
+          type: 
+            - et
+          unit: 0
+        r3-ae3-1: 
+          link: r1-r3-ae3-1
+          management: 0
+          name: et-0/0/69:0.0
+          pic: et-0/0/69:0
+          type: 
+            - et
+          unit: 0
+        r3-ae3-2: 
+          link: r1-r3-ae3-2
+          management: 0
+          name: et-0/0/69:1.0
+          pic: et-0/0/69:1
+          type: 
+            - et
+          unit: 0
+        r3-ae3-3: 
+          link: r1-r3-ae3-3
+          management: 0
+          name: et-0/0/69:2.0
+          pic: et-0/0/69:2
+          type: 
+            - et
+          unit: 0
+        r3-ae3-4: 
+          link: r1-r3-ae3-4
+          management: 0
+          name: et-0/0/69:3.0
+          pic: et-0/0/69:3
+          type: 
+            - et
+          unit: 0
+        r3-ae50-1: 
+          link: r2-r3-ae50-1
+          management: 0
+          name: et-0/0/70:0.0
+          pic: et-0/0/70:0
+          type: 
+            - et
+          unit: 0
+        r3-ae50-2: 
+          link: r2-r3-ae50-2
+          management: 0
+          name: et-0/0/70:1.0
+          pic: et-0/0/70:1
+          type: 
+            - et
+          unit: 0
+        r3-ae50-3: 
+          link: r2-r3-ae50-3
+          management: 0
+          name: et-0/0/70:2.0
+          pic: et-0/0/70:2
+          type: 
+            - et
+          unit: 0
+        r3-ae50-4: 
+          link: r2-r3-ae50-4
+          management: 0
+          name: et-0/0/70:3.0
+          pic: et-0/0/70:3
+          type: 
+            - et
+          unit: 0
+        r3-ae50-5: 
+          link: r2-r3-ae50-5
+          management: 0
+          name: et-0/0/51:0.0
+          pic: et-0/0/51:0
+          type: 
+            - et
+          unit: 0
+        r3-ae50-6: 
+          link: r2-r3-ae50-6
+          management: 0
+          name: et-0/0/51:1.0
+          pic: et-0/0/51:1
+          type: 
+            - et
+          unit: 0
+        r3-ae50-7: 
+          link: r2-r3-ae50-7
+          management: 0
+          name: et-0/0/51:2.0
+          pic: et-0/0/51:2
+          type: 
+            - et
+          unit: 0
+        r3-ae50-8: 
+          link: r2-r3-ae50-8
+          management: 0
+          name: et-0/0/51:3.0
+          pic: et-0/0/51:3
+          type: 
+            - et
+          unit: 0
+        r3-ae51-1: 
+          link: r2-r3-ae51-1
+          management: 0
+          name: et-0/0/52:0.0
+          pic: et-0/0/52:0
+          type: 
+            - et
+          unit: 0
+        r3-ae51-2: 
+          link: r2-r3-ae51-2
+          management: 0
+          name: et-0/0/52:1.0
+          pic: et-0/0/52:1
+          type: 
+            - et
+          unit: 0
+        r3-ae51-3: 
+          link: r2-r3-ae51-3
+          management: 0
+          name: et-0/0/52:2.0
+          pic: et-0/0/52:2
+          type: 
+            - et
+          unit: 0
+        r3-ae51-4: 
+          link: r2-r3-ae51-4
+          management: 0
+          name: et-0/0/52:3.0
+          pic: et-0/0/52:3
+          type: 
+            - et
+          unit: 0
+        r3-ae51-5: 
+          link: r2-r3-ae51-5
+          management: 0
+          name: et-0/0/53:0.0
+          pic: et-0/0/53:0
+          type: 
+            - et
+          unit: 0
+        r3-ae51-6: 
+          link: r2-r3-ae51-6
+          management: 0
+          name: et-0/0/53:1.0
+          pic: et-0/0/53:1
+          type: 
+            - et
+          unit: 0
+        r3-ae51-7: 
+          link: r2-r3-ae51-7
+          management: 0
+          name: et-0/0/53:2.0
+          pic: et-0/0/53:2
+          type: 
+            - et
+          unit: 0
+        r3-ae51-8: 
+          link: r2-r3-ae51-8
+          management: 0
+          name: et-0/0/53:3.0
+          pic: et-0/0/53:3
+          type: 
+            - et
+          unit: 0
+        r3-ae55-1: 
+          link: r3-r4-ae55-1
+          management: 0
+          name: et-0/0/49:0.0
+          pic: et-0/0/49:0
+          type: 
+            - et
+          unit: 0
+        r3-ae55-2: 
+          link: r3-r4-ae55-2
+          management: 0
+          name: et-0/0/49:1.0
+          pic: et-0/0/49:1
+          type: 
+            - et
+          unit: 0
+        r3-ae55-3: 
+          link: r3-r4-ae55-3
+          management: 0
+          name: et-0/0/49:2.0
+          pic: et-0/0/49:2
+          type: 
+            - et
+          unit: 0
+        r3-ae55-4: 
+          link: r3-r4-ae55-4
+          management: 0
+          name: et-0/0/49:3.0
+          pic: et-0/0/49:3
+          type: 
+            - et
+          unit: 0
+        r3-ae55-5: 
+          link: r3-r4-ae55-5
+          management: 0
+          name: et-0/0/55:0.0
+          pic: et-0/0/55:0
+          type: 
+            - et
+          unit: 0
+        r3-ae55-6: 
+          link: r3-r4-ae55-6
+          management: 0
+          name: et-0/0/55:1.0
+          pic: et-0/0/55:1
+          type: 
+            - et
+          unit: 0
+        r3-ae55-7: 
+          link: r3-r4-ae55-7
+          management: 0
+          name: et-0/0/55:2.0
+          pic: et-0/0/55:2
+          type: 
+            - et
+          unit: 0
+        r3-ae55-8: 
+          link: r3-r4-ae55-8
+          management: 0
+          name: et-0/0/55:3.0
+          pic: et-0/0/55:3
+          type: 
+            - et
+          unit: 0
+        r3-ae56-1: 
+          link: r3-r4-ae56-1
+          management: 0
+          name: et-0/0/56:0.0
+          pic: et-0/0/56:0
+          type: 
+            - et
+          unit: 0
+        r3-ae56-2: 
+          link: r3-r4-ae56-2
+          management: 0
+          name: et-0/0/56:1.0
+          pic: et-0/0/56:1
+          type: 
+            - et
+          unit: 0
+        r3-ae56-3: 
+          link: r3-r4-ae56-3
+          management: 0
+          name: et-0/0/56:2.0
+          pic: et-0/0/56:2
+          type: 
+            - et
+          unit: 0
+        r3-ae56-4: 
+          link: r3-r4-ae56-4
+          management: 0
+          name: et-0/0/56:3.0
+          pic: et-0/0/56:3
+          type: 
+            - et
+          unit: 0
+        r3-ae56-5: 
+          link: r3-r4-ae56-5
+          management: 0
+          name: et-0/0/61:0.0
+          pic: et-0/0/61:0
+          type: 
+            - et
+          unit: 0
+        r3-ae56-6: 
+          link: r3-r4-ae56-6
+          management: 0
+          name: et-0/0/61:1.0
+          pic: et-0/0/61:1
+          type: 
+            - et
+          unit: 0
+        r3-ae56-7: 
+          link: r3-r4-ae56-7
+          management: 0
+          name: et-0/0/61:2.0
+          pic: et-0/0/61:2
+          type: 
+            - et
+          unit: 0
+        r3-ae56-8: 
+          link: r3-r4-ae56-8
+          management: 0
+          name: et-0/0/61:3.0
+          pic: et-0/0/61:3
+          type: 
+            - et
+          unit: 0
+        r3-ae57-1: 
+          link: r3-r5-ae57-1
+          management: 0
+          name: et-0/0/48:0.0
+          pic: et-0/0/48:0
+          type: 
+            - et
+          unit: 0
+        r3-ae57-2: 
+          link: r3-r5-ae57-2
+          management: 0
+          name: et-0/0/48:1.0
+          pic: et-0/0/48:1
+          type: 
+            - et
+          unit: 0
+        r3-ae57-3: 
+          link: r3-r5-ae57-3
+          management: 0
+          name: et-0/0/48:2.0
+          pic: et-0/0/48:2
+          type: 
+            - et
+          unit: 0
+        r3-ae57-4: 
+          link: r3-r5-ae57-4
+          management: 0
+          name: et-0/0/48:3.0
+          pic: et-0/0/48:3
+          type: 
+            - et
+          unit: 0
+        r3-ae57-5: 
+          link: r3-r5-ae57-5
+          management: 0
+          name: et-0/0/54:0.0
+          pic: et-0/0/54:0
+          type: 
+            - et
+          unit: 0
+        r3-ae57-6: 
+          link: r3-r5-ae57-6
+          management: 0
+          name: et-0/0/54:1.0
+          pic: et-0/0/54:1
+          type: 
+            - et
+          unit: 0
+        r3-ae57-7: 
+          link: r3-r5-ae57-7
+          management: 0
+          name: et-0/0/54:2.0
+          pic: et-0/0/54:2
+          type: 
+            - et
+          unit: 0
+        r3-ae57-8: 
+          link: r3-r5-ae57-8
+          management: 0
+          name: et-0/0/54:3.0
+          pic: et-0/0/54:3
+          type: 
+            - et
+          unit: 0
+        r3-rt0-1: 
+          link: r3-rt0-1
+          management: 0
+          name: et-0/0/65:0.0
+          pic: et-0/0/65:0
+          type: 
+            - et
+          unit: 0
+        r3-rt0-2: 
+          link: r3-rt0-2
+          management: 0
+          name: et-0/0/65:1.0
+          pic: et-0/0/65:1
+          type: 
+            - et
+          unit: 0
+      system: 
+        primary: 
+          controllers: 
+            re0: 
+              con-ip: 10.48.103.178
+              domain: englab.juniper.net
+              hostname: sup-tb1-geodc-1-ptx1k
+              isoaddr: 47.0005.80ff.f800.0000.0108.0001.0102.5502.4151.00
+              loop-ip: 10.255.24.151
+              loop-ipv6: abcd::10:255:24:151
+              mgt-intf-name: em0.0
+              mgt-ip: 10.48.46.110
+              mgt-ipv6: abcd::10:48:46:110
+              osname: JunOS
+          fv-tags: dut
+          make: juniper
+          model: ptx1000
+          name: sup-tb1-geodc-1-ptx1k
+          osname: JunOS
+          role: 'null'
+    r4: 
+      interfaces: 
+        r4-ae100-1: 
+          link: r2-r4-ae100-1
+          management: 0
+          name: et-0/0/13:0.0
+          pic: et-0/0/13:0
+          type: 
+            - et
+          unit: 0
+        r4-ae100-10: 
+          link: r2-r4-ae100-10
+          management: 0
+          name: et-2/0/13:1.0
+          pic: et-2/0/13:1
+          type: 
+            - et
+          unit: 0
+        r4-ae100-11: 
+          link: r2-r4-ae100-11
+          management: 0
+          name: et-2/0/13:2.0
+          pic: et-2/0/13:2
+          type: 
+            - et
+          unit: 0
+        r4-ae100-12: 
+          link: r2-r4-ae100-12
+          management: 0
+          name: et-2/0/13:3.0
+          pic: et-2/0/13:3
+          type: 
+            - et
+          unit: 0
+        r4-ae100-2: 
+          link: r2-r4-ae100-2
+          management: 0
+          name: et-0/0/13:1.0
+          pic: et-0/0/13:1
+          type: 
+            - et
+          unit: 0
+        r4-ae100-3: 
+          link: r2-r4-ae100-3
+          management: 0
+          name: et-0/0/13:2.0
+          pic: et-0/0/13:2
+          type: 
+            - et
+          unit: 0
+        r4-ae100-4: 
+          link: r2-r4-ae100-4
+          management: 0
+          name: et-0/0/13:3.0
+          pic: et-0/0/13:3
+          type: 
+            - et
+          unit: 0
+        r4-ae100-5: 
+          link: r2-r4-ae100-5
+          management: 0
+          name: et-1/0/13:0.0
+          pic: et-1/0/13:0
+          type: 
+            - et
+          unit: 0
+        r4-ae100-6: 
+          link: r2-r4-ae100-6
+          management: 0
+          name: et-1/0/13:1.0
+          pic: et-1/0/13:1
+          type: 
+            - et
+          unit: 0
+        r4-ae100-7: 
+          link: r2-r4-ae100-7
+          management: 0
+          name: et-1/0/13:2.0
+          pic: et-1/0/13:2
+          type: 
+            - et
+          unit: 0
+        r4-ae100-8: 
+          link: r2-r4-ae100-8
+          management: 0
+          name: et-1/0/13:3.0
+          pic: et-1/0/13:3
+          type: 
+            - et
+          unit: 0
+        r4-ae100-9: 
+          link: r2-r4-ae100-9
+          management: 0
+          name: et-2/0/13:0.0
+          pic: et-2/0/13:0
+          type: 
+            - et
+          unit: 0
+        r4-ae102-1: 
+          link: r4-r5-ae102-1
+          management: 0
+          name: et-0/0/0.0
+          pic: et-0/0/0
+          type: 
+            - et
+          unit: 0
+        r4-ae102-10: 
+          link: r4-r5-ae102-10
+          management: 0
+          name: et-4/1/0.0
+          pic: et-4/1/0
+          type: 
+            - et
+          unit: 0
+        r4-ae102-11: 
+          link: r4-r5-ae102-11
+          management: 0
+          name: et-7/0/0.0
+          pic: et-7/0/0
+          type: 
+            - et
+          unit: 0
+        r4-ae102-12: 
+          link: r4-r5-ae102-12
+          management: 0
+          name: et-7/1/0.0
+          pic: et-7/1/0
+          type: 
+            - et
+          unit: 0
+        r4-ae102-2: 
+          link: r4-r5-ae102-2
+          management: 0
+          name: et-0/1/0.0
+          pic: et-0/1/0
+          type: 
+            - et
+          unit: 0
+        r4-ae102-3: 
+          link: r4-r5-ae102-3
+          management: 0
+          name: et-1/0/0.0
+          pic: et-1/0/0
+          type: 
+            - et
+          unit: 0
+        r4-ae102-4: 
+          link: r4-r5-ae102-4
+          management: 0
+          name: et-1/1/0.0
+          pic: et-1/1/0
+          type: 
+            - et
+          unit: 0
+        r4-ae102-5: 
+          link: r4-r5-ae102-5
+          management: 0
+          name: et-2/0/0.0
+          pic: et-2/0/0
+          type: 
+            - et
+          unit: 0
+        r4-ae102-6: 
+          link: r4-r5-ae102-6
+          management: 0
+          name: et-2/1/0.0
+          pic: et-2/1/0
+          type: 
+            - et
+          unit: 0
+        r4-ae102-7: 
+          link: r4-r5-ae102-7
+          management: 0
+          name: et-3/0/0.0
+          pic: et-3/0/0
+          type: 
+            - et
+          unit: 0
+        r4-ae102-8: 
+          link: r4-r5-ae102-8
+          management: 0
+          name: et-3/1/0.0
+          pic: et-3/1/0
+          type: 
+            - et
+          unit: 0
+        r4-ae102-9: 
+          link: r4-r5-ae102-9
+          management: 0
+          name: et-4/0/0.0
+          pic: et-4/0/0
+          type: 
+            - et
+          unit: 0
+        r4-ae103-1: 
+          link: r4-r6-ae103-1
+          management: 0
+          name: et-0/0/1.0
+          pic: et-0/0/1
+          type: 
+            - et
+          unit: 0
+        r4-ae103-10: 
+          link: r4-r6-ae103-10
+          management: 0
+          name: et-4/1/1.0
+          pic: et-4/1/1
+          type: 
+            - et
+          unit: 0
+        r4-ae103-11: 
+          link: r4-r6-ae103-11
+          management: 0
+          name: et-7/0/1.0
+          pic: et-7/0/1
+          type: 
+            - et
+          unit: 0
+        r4-ae103-12: 
+          link: r4-r6-ae103-12
+          management: 0
+          name: et-7/1/1.0
+          pic: et-7/1/1
+          type: 
+            - et
+          unit: 0
+        r4-ae103-2: 
+          link: r4-r6-ae103-2
+          management: 0
+          name: et-0/1/1.0
+          pic: et-0/1/1
+          type: 
+            - et
+          unit: 0
+        r4-ae103-3: 
+          link: r4-r6-ae103-3
+          management: 0
+          name: et-1/0/1.0
+          pic: et-1/0/1
+          type: 
+            - et
+          unit: 0
+        r4-ae103-4: 
+          link: r4-r6-ae103-4
+          management: 0
+          name: et-1/1/1.0
+          pic: et-1/1/1
+          type: 
+            - et
+          unit: 0
+        r4-ae103-5: 
+          link: r4-r6-ae103-5
+          management: 0
+          name: et-2/0/1.0
+          pic: et-2/0/1
+          type: 
+            - et
+          unit: 0
+        r4-ae103-6: 
+          link: r4-r6-ae103-6
+          management: 0
+          name: et-2/1/1.0
+          pic: et-2/1/1
+          type: 
+            - et
+          unit: 0
+        r4-ae103-7: 
+          link: r4-r6-ae103-7
+          management: 0
+          name: et-3/0/1.0
+          pic: et-3/0/1
+          type: 
+            - et
+          unit: 0
+        r4-ae103-8: 
+          link: r4-r6-ae103-8
+          management: 0
+          name: et-3/1/1.0
+          pic: et-3/1/1
+          type: 
+            - et
+          unit: 0
+        r4-ae103-9: 
+          link: r4-r6-ae103-9
+          management: 0
+          name: et-4/0/1.0
+          pic: et-4/0/1
+          type: 
+            - et
+          unit: 0
+        r4-ae52-1: 
+          link: r2-r4-ae52-1
+          management: 0
+          name: et-7/1/12:0.0
+          pic: et-7/1/12:0
+          type: 
+            - et
+          unit: 0
+        r4-ae52-10: 
+          link: r2-r4-ae52-10
+          management: 0
+          name: et-4/1/12:1.0
+          pic: et-4/1/12:1
+          type: 
+            - et
+          unit: 0
+        r4-ae52-11: 
+          link: r2-r4-ae52-11
+          management: 0
+          name: et-4/1/12:2.0
+          pic: et-4/1/12:2
+          type: 
+            - et
+          unit: 0
+        r4-ae52-12: 
+          link: r2-r4-ae52-12
+          management: 0
+          name: et-4/1/12:3.0
+          pic: et-4/1/12:3
+          type: 
+            - et
+          unit: 0
+        r4-ae52-2: 
+          link: r2-r4-ae52-2
+          management: 0
+          name: et-7/1/12:1.0
+          pic: et-7/1/12:1
+          type: 
+            - et
+          unit: 0
+        r4-ae52-3: 
+          link: r2-r4-ae52-3
+          management: 0
+          name: et-7/1/12:2.0
+          pic: et-7/1/12:2
+          type: 
+            - et
+          unit: 0
+        r4-ae52-4: 
+          link: r2-r4-ae52-4
+          management: 0
+          name: et-7/1/12:3.0
+          pic: et-7/1/12:3
+          type: 
+            - et
+          unit: 0
+        r4-ae52-5: 
+          link: r2-r4-ae52-5
+          management: 0
+          name: et-3/1/12:0.0
+          pic: et-3/1/12:0
+          type: 
+            - et
+          unit: 0
+        r4-ae52-6: 
+          link: r2-r4-ae52-6
+          management: 0
+          name: et-3/1/12:1.0
+          pic: et-3/1/12:1
+          type: 
+            - et
+          unit: 0
+        r4-ae52-7: 
+          link: r2-r4-ae52-7
+          management: 0
+          name: et-3/1/12:2.0
+          pic: et-3/1/12:2
+          type: 
+            - et
+          unit: 0
+        r4-ae52-8: 
+          link: r2-r4-ae52-8
+          management: 0
+          name: et-3/1/12:3.0
+          pic: et-3/1/12:3
+          type: 
+            - et
+          unit: 0
+        r4-ae52-9: 
+          link: r2-r4-ae52-9
+          management: 0
+          name: et-4/1/12:0.0
+          pic: et-4/1/12:0
+          type: 
+            - et
+          unit: 0
+        r4-ae55-1: 
+          link: r3-r4-ae55-1
+          management: 0
+          name: et-0/0/6:0.0
+          pic: et-0/0/6:0
+          type: 
+            - et
+          unit: 0
+        r4-ae55-2: 
+          link: r3-r4-ae55-2
+          management: 0
+          name: et-0/0/6:1.0
+          pic: et-0/0/6:1
+          type: 
+            - et
+          unit: 0
+        r4-ae55-3: 
+          link: r3-r4-ae55-3
+          management: 0
+          name: et-0/0/6:2.0
+          pic: et-0/0/6:2
+          type: 
+            - et
+          unit: 0
+        r4-ae55-4: 
+          link: r3-r4-ae55-4
+          management: 0
+          name: et-0/0/6:3.0
+          pic: et-0/0/6:3
+          type: 
+            - et
+          unit: 0
+        r4-ae55-5: 
+          link: r3-r4-ae55-5
+          management: 0
+          name: et-2/0/12:0.0
+          pic: et-2/0/12:0
+          type: 
+            - et
+          unit: 0
+        r4-ae55-6: 
+          link: r3-r4-ae55-6
+          management: 0
+          name: et-2/0/12:1.0
+          pic: et-2/0/12:1
+          type: 
+            - et
+          unit: 0
+        r4-ae55-7: 
+          link: r3-r4-ae55-7
+          management: 0
+          name: et-2/0/12:2.0
+          pic: et-2/0/12:2
+          type: 
+            - et
+          unit: 0
+        r4-ae55-8: 
+          link: r3-r4-ae55-8
+          management: 0
+          name: et-2/0/12:3.0
+          pic: et-2/0/12:3
+          type: 
+            - et
+          unit: 0
+        r4-ae56-1: 
+          link: r3-r4-ae56-1
+          management: 0
+          name: et-3/0/12:0.0
+          pic: et-3/0/12:0
+          type: 
+            - et
+          unit: 0
+        r4-ae56-2: 
+          link: r3-r4-ae56-2
+          management: 0
+          name: et-3/0/12:1.0
+          pic: et-3/0/12:1
+          type: 
+            - et
+          unit: 0
+        r4-ae56-3: 
+          link: r3-r4-ae56-3
+          management: 0
+          name: et-3/0/12:2.0
+          pic: et-3/0/12:2
+          type: 
+            - et
+          unit: 0
+        r4-ae56-4: 
+          link: r3-r4-ae56-4
+          management: 0
+          name: et-3/0/12:3.0
+          pic: et-3/0/12:3
+          type: 
+            - et
+          unit: 0
+        r4-ae56-5: 
+          link: r3-r4-ae56-5
+          management: 0
+          name: et-4/0/12:0.0
+          pic: et-4/0/12:0
+          type: 
+            - et
+          unit: 0
+        r4-ae56-6: 
+          link: r3-r4-ae56-6
+          management: 0
+          name: et-4/0/12:1.0
+          pic: et-4/0/12:1
+          type: 
+            - et
+          unit: 0
+        r4-ae56-7: 
+          link: r3-r4-ae56-7
+          management: 0
+          name: et-4/0/12:2.0
+          pic: et-4/0/12:2
+          type: 
+            - et
+          unit: 0
+        r4-ae56-8: 
+          link: r3-r4-ae56-8
+          management: 0
+          name: et-4/0/12:3.0
+          pic: et-4/0/12:3
+          type: 
+            - et
+          unit: 0
+        r4-ae58-1: 
+          link: r4-r6-ae58-1
+          management: 0
+          name: et-0/1/13:0.0
+          pic: et-0/1/13:0
+          type: 
+            - et
+          unit: 0
+        r4-ae58-10: 
+          link: r4-r6-ae58-10
+          management: 0
+          name: et-2/1/12:1.0
+          pic: et-2/1/12:1
+          type: 
+            - et
+          unit: 0
+        r4-ae58-11: 
+          link: r4-r6-ae58-11
+          management: 0
+          name: et-2/1/12:2.0
+          pic: et-2/1/12:2
+          type: 
+            - et
+          unit: 0
+        r4-ae58-12: 
+          link: r4-r6-ae58-12
+          management: 0
+          name: et-2/1/12:3.0
+          pic: et-2/1/12:3
+          type: 
+            - et
+          unit: 0
+        r4-ae58-13: 
+          link: r4-r6-ae58-13
+          management: 0
+          name: et-3/0/13:0.0
+          pic: et-3/0/13:0
+          type: 
+            - et
+          unit: 0
+        r4-ae58-14: 
+          link: r4-r6-ae58-14
+          management: 0
+          name: et-3/0/13:1.0
+          pic: et-3/0/13:1
+          type: 
+            - et
+          unit: 0
+        r4-ae58-15: 
+          link: r4-r6-ae58-15
+          management: 0
+          name: et-3/0/13:2.0
+          pic: et-3/0/13:2
+          type: 
+            - et
+          unit: 0
+        r4-ae58-16: 
+          link: r4-r6-ae58-16
+          management: 0
+          name: et-3/0/13:3.0
+          pic: et-3/0/13:3
+          type: 
+            - et
+          unit: 0
+        r4-ae58-17: 
+          link: r4-r6-ae58-17
+          management: 0
+          name: et-4/0/13:0.0
+          pic: et-4/0/13:0
+          type: 
+            - et
+          unit: 0
+        r4-ae58-18: 
+          link: r4-r6-ae58-18
+          management: 0
+          name: et-4/0/13:1.0
+          pic: et-4/0/13:1
+          type: 
+            - et
+          unit: 0
+        r4-ae58-19: 
+          link: r4-r6-ae58-19
+          management: 0
+          name: et-4/0/13:2.0
+          pic: et-4/0/13:2
+          type: 
+            - et
+          unit: 0
+        r4-ae58-2: 
+          link: r4-r6-ae58-2
+          management: 0
+          name: et-0/1/13:1.0
+          pic: et-0/1/13:1
+          type: 
+            - et
+          unit: 0
+        r4-ae58-20: 
+          link: r4-r6-ae58-20
+          management: 0
+          name: et-4/0/13:3.0
+          pic: et-4/0/13:3
+          type: 
+            - et
+          unit: 0
+        r4-ae58-21: 
+          link: r4-r6-ae58-21
+          management: 0
+          name: et-7/0/13:0.0
+          pic: et-7/0/13:0
+          type: 
+            - et
+          unit: 0
+        r4-ae58-22: 
+          link: r4-r6-ae58-22
+          management: 0
+          name: et-7/0/13:1.0
+          pic: et-7/0/13:1
+          type: 
+            - et
+          unit: 0
+        r4-ae58-23: 
+          link: r4-r6-ae58-23
+          management: 0
+          name: et-7/0/13:2.0
+          pic: et-7/0/13:2
+          type: 
+            - et
+          unit: 0
+        r4-ae58-24: 
+          link: r4-r6-ae58-24
+          management: 0
+          name: et-7/0/13:3.0
+          pic: et-7/0/13:3
+          type: 
+            - et
+          unit: 0
+        r4-ae58-3: 
+          link: r4-r6-ae58-3
+          management: 0
+          name: et-0/1/13:2.0
+          pic: et-0/1/13:2
+          type: 
+            - et
+          unit: 0
+        r4-ae58-4: 
+          link: r4-r6-ae58-4
+          management: 0
+          name: et-0/1/13:3.0
+          pic: et-0/1/13:3
+          type: 
+            - et
+          unit: 0
+        r4-ae58-5: 
+          link: r4-r6-ae58-5
+          management: 0
+          name: et-1/1/13:0.0
+          pic: et-1/1/13:0
+          type: 
+            - et
+          unit: 0
+        r4-ae58-6: 
+          link: r4-r6-ae58-6
+          management: 0
+          name: et-1/1/13:1.0
+          pic: et-1/1/13:1
+          type: 
+            - et
+          unit: 0
+        r4-ae58-7: 
+          link: r4-r6-ae58-7
+          management: 0
+          name: et-1/1/13:2.0
+          pic: et-1/1/13:2
+          type: 
+            - et
+          unit: 0
+        r4-ae58-8: 
+          link: r4-r6-ae58-8
+          management: 0
+          name: et-1/1/13:3.0
+          pic: et-1/1/13:3
+          type: 
+            - et
+          unit: 0
+        r4-ae58-9: 
+          link: r4-r6-ae58-9
+          management: 0
+          name: et-2/1/12:0.0
+          pic: et-2/1/12:0
+          type: 
+            - et
+          unit: 0
+        r4-ae59-1: 
+          link: r4-r7-ae59-1
+          management: 0
+          name: et-0/0/14:0.0
+          pic: et-0/0/14:0
+          type: 
+            - et
+          unit: 0
+        r4-ae59-10: 
+          link: r4-r7-ae59-10
+          management: 0
+          name: et-3/1/13:1.0
+          pic: et-3/1/13:1
+          type: 
+            - et
+          unit: 0
+        r4-ae59-11: 
+          link: r4-r7-ae59-11
+          management: 0
+          name: et-3/1/13:2.0
+          pic: et-3/1/13:2
+          type: 
+            - et
+          unit: 0
+        r4-ae59-12: 
+          link: r4-r7-ae59-12
+          management: 0
+          name: et-3/1/13:3.0
+          pic: et-3/1/13:3
+          type: 
+            - et
+          unit: 0
+        r4-ae59-2: 
+          link: r4-r7-ae59-2
+          management: 0
+          name: et-0/0/14:1.0
+          pic: et-0/0/14:1
+          type: 
+            - et
+          unit: 0
+        r4-ae59-3: 
+          link: r4-r7-ae59-3
+          management: 0
+          name: et-0/0/14:2.0
+          pic: et-0/0/14:2
+          type: 
+            - et
+          unit: 0
+        r4-ae59-4: 
+          link: r4-r7-ae59-4
+          management: 0
+          name: et-0/0/14:3.0
+          pic: et-0/0/14:3
+          type: 
+            - et
+          unit: 0
+        r4-ae59-5: 
+          link: r4-r7-ae59-5
+          management: 0
+          name: et-2/1/13:0.0
+          pic: et-2/1/13:0
+          type: 
+            - et
+          unit: 0
+        r4-ae59-6: 
+          link: r4-r7-ae59-6
+          management: 0
+          name: et-2/1/13:1.0
+          pic: et-2/1/13:1
+          type: 
+            - et
+          unit: 0
+        r4-ae59-7: 
+          link: r4-r7-ae59-7
+          management: 0
+          name: et-2/1/13:2.0
+          pic: et-2/1/13:2
+          type: 
+            - et
+          unit: 0
+        r4-ae59-8: 
+          link: r4-r7-ae59-8
+          management: 0
+          name: et-2/1/13:3.0
+          pic: et-2/1/13:3
+          type: 
+            - et
+          unit: 0
+        r4-ae59-9: 
+          link: r4-r7-ae59-9
+          management: 0
+          name: et-3/1/13:0.0
+          pic: et-3/1/13:0
+          type: 
+            - et
+          unit: 0
+        r4-rt0-1: 
+          link: r4-rt0-1
+          management: 0
+          name: et-0/0/2.0
+          pic: et-0/0/2
+          type: 
+            - et
+          unit: 0
+        r4-rt0-2: 
+          link: r4-rt0-2
+          management: 0
+          name: et-0/0/10:0.0
+          pic: et-0/0/10:0
+          type: 
+            - et
+          unit: 0
+      system: 
+        primary: 
+          controllers: 
+            re0: 
+              con-ip: 10.48.103.177
+              domain: englab.juniper.net
+              hostname: sup-tb1-geodc-1-ptx5k
+              isoaddr: 47.0005.80ff.f800.0000.0108.0001.0102.5502.4150.00
+              loop-ip: 10.255.24.150
+              loop-ipv6: abcd::10:255:24:150
+              mgt-intf-name: em0.0
+              mgt-ip: 10.48.46.107
+              mgt-ipv6: abcd::10:48:46:107
+              osname: JunOS
+            re1: 
+              con-ip: 10.48.103.185
+              domain: englab.juniper.net
+              hostname: sup-tb1-geodc-1-ptx5k1
+              isoaddr: 47.0005.80ff.f800.0000.0108.0001.0102.5502.4150.00
+              loop-ip: 10.255.24.150
+              loop-ipv6: abcd::10:255:24:150
+              mgt-intf-name: em0.0
+              mgt-ip: 10.48.46.109
+              mgt-ipv6: abcd::10:48:46:109
+              osname: JunOS
+          fv-connect-controllers: all
+          make: juniper
+          model: ptx5000
+          name: sup-tb1-geodc-1-ptx5k
+          osname: JunOS
+          role: 'null'
+    r5: 
+      interfaces: 
+        r5-ae101-1: 
+          link: r3-r5-ae101-1
+          management: 0
+          name: et-0/0/1.0
+          pic: et-0/0/1
+          type: 
+            - et
+          unit: 0
+        r5-ae101-10: 
+          link: r3-r5-ae101-10
+          management: 0
+          name: et-5/0/1.0
+          pic: et-5/0/1
+          type: 
+            - et
+          unit: 0
+        r5-ae101-2: 
+          link: r3-r5-ae101-2
+          management: 0
+          name: et-0/0/5.0
+          pic: et-0/0/5
+          type: 
+            - et
+          unit: 0
+        r5-ae101-3: 
+          link: r3-r5-ae101-3
+          management: 0
+          name: et-1/0/5.0
+          pic: et-1/0/5
+          type: 
+            - et
+          unit: 0
+        r5-ae101-4: 
+          link: r3-r5-ae101-4
+          management: 0
+          name: et-2/0/1.0
+          pic: et-2/0/1
+          type: 
+            - et
+          unit: 0
+        r5-ae101-5: 
+          link: r3-r5-ae101-5
+          management: 0
+          name: et-2/0/5.0
+          pic: et-2/0/5
+          type: 
+            - et
+          unit: 0
+        r5-ae101-6: 
+          link: r3-r5-ae101-6
+          management: 0
+          name: et-3/0/1.0
+          pic: et-3/0/1
+          type: 
+            - et
+          unit: 0
+        r5-ae101-7: 
+          link: r3-r5-ae101-7
+          management: 0
+          name: et-3/0/5.0
+          pic: et-3/0/5
+          type: 
+            - et
+          unit: 0
+        r5-ae101-8: 
+          link: r3-r5-ae101-8
+          management: 0
+          name: et-4/0/1.0
+          pic: et-4/0/1
+          type: 
+            - et
+          unit: 0
+        r5-ae101-9: 
+          link: r3-r5-ae101-9
+          management: 0
+          name: et-4/0/5.0
+          pic: et-4/0/5
+          type: 
+            - et
+          unit: 0
+        r5-ae102-1: 
+          link: r4-r5-ae102-1
+          management: 0
+          name: et-1/0/7.0
+          pic: et-1/0/7
+          type: 
+            - et
+          unit: 0
+        r5-ae102-10: 
+          link: r4-r5-ae102-10
+          management: 0
+          name: et-0/0/13.0
+          pic: et-0/0/13
+          type: 
+            - et
+          unit: 0
+        r5-ae102-11: 
+          link: r4-r5-ae102-11
+          management: 0
+          name: et-2/0/11.0
+          pic: et-2/0/11
+          type: 
+            - et
+          unit: 0
+        r5-ae102-12: 
+          link: r4-r5-ae102-12
+          management: 0
+          name: et-3/0/13.0
+          pic: et-3/0/13
+          type: 
+            - et
+          unit: 0
+        r5-ae102-2: 
+          link: r4-r5-ae102-2
+          management: 0
+          name: et-3/0/11.0
+          pic: et-3/0/11
+          type: 
+            - et
+          unit: 0
+        r5-ae102-3: 
+          link: r4-r5-ae102-3
+          management: 0
+          name: et-2/0/7.0
+          pic: et-2/0/7
+          type: 
+            - et
+          unit: 0
+        r5-ae102-4: 
+          link: r4-r5-ae102-4
+          management: 0
+          name: et-4/0/11.0
+          pic: et-4/0/11
+          type: 
+            - et
+          unit: 0
+        r5-ae102-5: 
+          link: r4-r5-ae102-5
+          management: 0
+          name: et-3/0/7.0
+          pic: et-3/0/7
+          type: 
+            - et
+          unit: 0
+        r5-ae102-6: 
+          link: r4-r5-ae102-6
+          management: 0
+          name: et-5/0/11.0
+          pic: et-5/0/11
+          type: 
+            - et
+          unit: 0
+        r5-ae102-7: 
+          link: r4-r5-ae102-7
+          management: 0
+          name: et-4/0/7.0
+          pic: et-4/0/7
+          type: 
+            - et
+          unit: 0
+        r5-ae102-8: 
+          link: r4-r5-ae102-8
+          management: 0
+          name: et-6/0/11.0
+          pic: et-6/0/11
+          type: 
+            - et
+          unit: 0
+        r5-ae102-9: 
+          link: r4-r5-ae102-9
+          management: 0
+          name: et-5/0/7.0
+          pic: et-5/0/7
+          type: 
+            - et
+          unit: 0
+        r5-ae104-1: 
+          link: r5-r7-ae104-1
+          management: 0
+          name: et-4/0/13.0
+          pic: et-4/0/13
+          type: 
+            - et
+          unit: 0
+        r5-ae104-2: 
+          link: r5-r7-ae104-2
+          management: 0
+          name: et-5/0/13.0
+          pic: et-5/0/13
+          type: 
+            - et
+          unit: 0
+        r5-ae104-3: 
+          link: r5-r7-ae104-3
+          management: 0
+          name: et-7/0/26.0
+          pic: et-7/0/26
+          type: 
+            - et
+          unit: 0
+        r5-ae104-4: 
+          link: r5-r7-ae104-4
+          management: 0
+          name: et-7/0/27.0
+          pic: et-7/0/27
+          type: 
+            - et
+          unit: 0
+        r5-ae53-1: 
+          link: r2-r5-ae53-1
+          management: 0
+          name: et-7/0/1:0.0
+          pic: et-7/0/1:0
+          type: 
+            - et
+          unit: 0
+        r5-ae53-10: 
+          link: r2-r5-ae53-10
+          management: 0
+          name: et-4/0/31:1.0
+          pic: et-4/0/31:1
+          type: 
+            - et
+          unit: 0
+        r5-ae53-11: 
+          link: r2-r5-ae53-11
+          management: 0
+          name: et-4/0/31:2.0
+          pic: et-4/0/31:2
+          type: 
+            - et
+          unit: 0
+        r5-ae53-12: 
+          link: r2-r5-ae53-12
+          management: 0
+          name: et-4/0/31:3.0
+          pic: et-4/0/31:3
+          type: 
+            - et
+          unit: 0
+        r5-ae53-13: 
+          link: r2-r5-ae53-13
+          management: 0
+          name: et-0/0/32:0.0
+          pic: et-0/0/32:0
+          type: 
+            - et
+          unit: 0
+        r5-ae53-14: 
+          link: r2-r5-ae53-14
+          management: 0
+          name: et-0/0/32:1.0
+          pic: et-0/0/32:1
+          type: 
+            - et
+          unit: 0
+        r5-ae53-15: 
+          link: r2-r5-ae53-15
+          management: 0
+          name: et-0/0/32:2.0
+          pic: et-0/0/32:2
+          type: 
+            - et
+          unit: 0
+        r5-ae53-16: 
+          link: r2-r5-ae53-16
+          management: 0
+          name: et-0/0/32:3.0
+          pic: et-0/0/32:3
+          type: 
+            - et
+          unit: 0
+        r5-ae53-2: 
+          link: r2-r5-ae53-2
+          management: 0
+          name: et-7/0/1:1.0
+          pic: et-7/0/1:1
+          type: 
+            - et
+          unit: 0
+        r5-ae53-3: 
+          link: r2-r5-ae53-3
+          management: 0
+          name: et-7/0/1:2.0
+          pic: et-7/0/1:2
+          type: 
+            - et
+          unit: 0
+        r5-ae53-4: 
+          link: r2-r5-ae53-4
+          management: 0
+          name: et-7/0/1:3.0
+          pic: et-7/0/1:3
+          type: 
+            - et
+          unit: 0
+        r5-ae53-5: 
+          link: r2-r5-ae53-5
+          management: 0
+          name: et-7/0/3:0.0
+          pic: et-7/0/3:0
+          type: 
+            - et
+          unit: 0
+        r5-ae53-6: 
+          link: r2-r5-ae53-6
+          management: 0
+          name: et-7/0/3:1.0
+          pic: et-7/0/3:1
+          type: 
+            - et
+          unit: 0
+        r5-ae53-7: 
+          link: r2-r5-ae53-7
+          management: 0
+          name: et-7/0/3:2.0
+          pic: et-7/0/3:2
+          type: 
+            - et
+          unit: 0
+        r5-ae53-8: 
+          link: r2-r5-ae53-8
+          management: 0
+          name: et-7/0/3:3.0
+          pic: et-7/0/3:3
+          type: 
+            - et
+          unit: 0
+        r5-ae53-9: 
+          link: r2-r5-ae53-9
+          management: 0
+          name: et-4/0/31:0.0
+          pic: et-4/0/31:0
+          type: 
+            - et
+          unit: 0
+        r5-ae54-1: 
+          link: r2-r5-ae54-1
+          management: 0
+          name: et-7/0/4:0.0
+          pic: et-7/0/4:0
+          type: 
+            - et
+          unit: 0
+        r5-ae54-10: 
+          link: r2-r5-ae54-10
+          management: 0
+          name: et-3/0/32:1.0
+          pic: et-3/0/32:1
+          type: 
+            - et
+          unit: 0
+        r5-ae54-11: 
+          link: r2-r5-ae54-11
+          management: 0
+          name: et-3/0/32:2.0
+          pic: et-3/0/32:2
+          type: 
+            - et
+          unit: 0
+        r5-ae54-12: 
+          link: r2-r5-ae54-12
+          management: 0
+          name: et-3/0/32:3.0
+          pic: et-3/0/32:3
+          type: 
+            - et
+          unit: 0
+        r5-ae54-13: 
+          link: r2-r5-ae54-13
+          management: 0
+          name: et-4/0/30:0.0
+          pic: et-4/0/30:0
+          type: 
+            - et
+          unit: 0
+        r5-ae54-14: 
+          link: r2-r5-ae54-14
+          management: 0
+          name: et-4/0/30:1.0
+          pic: et-4/0/30:1
+          type: 
+            - et
+          unit: 0
+        r5-ae54-15: 
+          link: r2-r5-ae54-15
+          management: 0
+          name: et-4/0/30:2.0
+          pic: et-4/0/30:2
+          type: 
+            - et
+          unit: 0
+        r5-ae54-16: 
+          link: r2-r5-ae54-16
+          management: 0
+          name: et-4/0/30:3.0
+          pic: et-4/0/30:3
+          type: 
+            - et
+          unit: 0
+        r5-ae54-2: 
+          link: r2-r5-ae54-2
+          management: 0
+          name: et-7/0/4:1.0
+          pic: et-7/0/4:1
+          type: 
+            - et
+          unit: 0
+        r5-ae54-3: 
+          link: r2-r5-ae54-3
+          management: 0
+          name: et-7/0/4:2.0
+          pic: et-7/0/4:2
+          type: 
+            - et
+          unit: 0
+        r5-ae54-4: 
+          link: r2-r5-ae54-4
+          management: 0
+          name: et-7/0/4:3.0
+          pic: et-7/0/4:3
+          type: 
+            - et
+          unit: 0
+        r5-ae54-5: 
+          link: r2-r5-ae54-5
+          management: 0
+          name: et-7/0/2:0.0
+          pic: et-7/0/2:0
+          type: 
+            - et
+          unit: 0
+        r5-ae54-6: 
+          link: r2-r5-ae54-6
+          management: 0
+          name: et-7/0/2:1.0
+          pic: et-7/0/2:1
+          type: 
+            - et
+          unit: 0
+        r5-ae54-7: 
+          link: r2-r5-ae54-7
+          management: 0
+          name: et-7/0/2:2.0
+          pic: et-7/0/2:2
+          type: 
+            - et
+          unit: 0
+        r5-ae54-8: 
+          link: r2-r5-ae54-8
+          management: 0
+          name: et-7/0/2:3.0
+          pic: et-7/0/2:3
+          type: 
+            - et
+          unit: 0
+        r5-ae54-9: 
+          link: r2-r5-ae54-9
+          management: 0
+          name: et-3/0/32:0.0
+          pic: et-3/0/32:0
+          type: 
+            - et
+          unit: 0
+        r5-ae57-1: 
+          link: r3-r5-ae57-1
+          management: 0
+          name: et-0/0/30:0.0
+          pic: et-0/0/30:0
+          type: 
+            - et
+          unit: 0
+        r5-ae57-2: 
+          link: r3-r5-ae57-2
+          management: 0
+          name: et-0/0/30:1.0
+          pic: et-0/0/30:1
+          type: 
+            - et
+          unit: 0
+        r5-ae57-3: 
+          link: r3-r5-ae57-3
+          management: 0
+          name: et-0/0/30:2.0
+          pic: et-0/0/30:2
+          type: 
+            - et
+          unit: 0
+        r5-ae57-4: 
+          link: r3-r5-ae57-4
+          management: 0
+          name: et-0/0/30:3.0
+          pic: et-0/0/30:3
+          type: 
+            - et
+          unit: 0
+        r5-ae57-5: 
+          link: r3-r5-ae57-5
+          management: 0
+          name: et-1/0/30:0.0
+          pic: et-1/0/30:0
+          type: 
+            - et
+          unit: 0
+        r5-ae57-6: 
+          link: r3-r5-ae57-6
+          management: 0
+          name: et-1/0/30:1.0
+          pic: et-1/0/30:1
+          type: 
+            - et
+          unit: 0
+        r5-ae57-7: 
+          link: r3-r5-ae57-7
+          management: 0
+          name: et-1/0/30:2.0
+          pic: et-1/0/30:2
+          type: 
+            - et
+          unit: 0
+        r5-ae57-8: 
+          link: r3-r5-ae57-8
+          management: 0
+          name: et-1/0/30:3.0
+          pic: et-1/0/30:3
+          type: 
+            - et
+          unit: 0
+        r5-ae60-1: 
+          link: r5-r6-ae60-1
+          management: 0
+          name: et-0/0/33:0.0
+          pic: et-0/0/33:0
+          type: 
+            - et
+          unit: 0
+        r5-ae60-10: 
+          link: r5-r6-ae60-10
+          management: 0
+          name: et-4/0/33:1.0
+          pic: et-4/0/33:1
+          type: 
+            - et
+          unit: 0
+        r5-ae60-11: 
+          link: r5-r6-ae60-11
+          management: 0
+          name: et-4/0/33:2.0
+          pic: et-4/0/33:2
+          type: 
+            - et
+          unit: 0
+        r5-ae60-12: 
+          link: r5-r6-ae60-12
+          management: 0
+          name: et-4/0/33:3.0
+          pic: et-4/0/33:3
+          type: 
+            - et
+          unit: 0
+        r5-ae60-13: 
+          link: r5-r6-ae60-13
+          management: 0
+          name: et-6/0/33:0.0
+          pic: et-6/0/33:0
+          type: 
+            - et
+          unit: 0
+        r5-ae60-14: 
+          link: r5-r6-ae60-14
+          management: 0
+          name: et-6/0/33:1.0
+          pic: et-6/0/33:1
+          type: 
+            - et
+          unit: 0
+        r5-ae60-15: 
+          link: r5-r6-ae60-15
+          management: 0
+          name: et-6/0/33:2.0
+          pic: et-6/0/33:2
+          type: 
+            - et
+          unit: 0
+        r5-ae60-16: 
+          link: r5-r6-ae60-16
+          management: 0
+          name: et-6/0/33:3.0
+          pic: et-6/0/33:3
+          type: 
+            - et
+          unit: 0
+        r5-ae60-2: 
+          link: r5-r6-ae60-2
+          management: 0
+          name: et-0/0/33:1.0
+          pic: et-0/0/33:1
+          type: 
+            - et
+          unit: 0
+        r5-ae60-3: 
+          link: r5-r6-ae60-3
+          management: 0
+          name: et-0/0/33:2.0
+          pic: et-0/0/33:2
+          type: 
+            - et
+          unit: 0
+        r5-ae60-4: 
+          link: r5-r6-ae60-4
+          management: 0
+          name: et-0/0/33:3.0
+          pic: et-0/0/33:3
+          type: 
+            - et
+          unit: 0
+        r5-ae60-5: 
+          link: r5-r6-ae60-5
+          management: 0
+          name: et-2/0/33:0.0
+          pic: et-2/0/33:0
+          type: 
+            - et
+          unit: 0
+        r5-ae60-6: 
+          link: r5-r6-ae60-6
+          management: 0
+          name: et-2/0/33:1.0
+          pic: et-2/0/33:1
+          type: 
+            - et
+          unit: 0
+        r5-ae60-7: 
+          link: r5-r6-ae60-7
+          management: 0
+          name: et-2/0/33:2.0
+          pic: et-2/0/33:2
+          type: 
+            - et
+          unit: 0
+        r5-ae60-8: 
+          link: r5-r6-ae60-8
+          management: 0
+          name: et-2/0/33:3.0
+          pic: et-2/0/33:3
+          type: 
+            - et
+          unit: 0
+        r5-ae60-9: 
+          link: r5-r6-ae60-9
+          management: 0
+          name: et-4/0/33:0.0
+          pic: et-4/0/33:0
+          type: 
+            - et
+          unit: 0
+        r5-ae61-1: 
+          link: r5-r7-ae61-1
+          management: 0
+          name: et-4/0/29:0.0
+          pic: et-4/0/29:0
+          type: 
+            - et
+          unit: 0
+        r5-ae61-10: 
+          link: r5-r7-ae61-10
+          management: 0
+          name: et-1/0/31:1.0
+          pic: et-1/0/31:1
+          type: 
+            - et
+          unit: 0
+        r5-ae61-11: 
+          link: r5-r7-ae61-11
+          management: 0
+          name: et-1/0/31:2.0
+          pic: et-1/0/31:2
+          type: 
+            - et
+          unit: 0
+        r5-ae61-12: 
+          link: r5-r7-ae61-12
+          management: 0
+          name: et-1/0/31:3.0
+          pic: et-1/0/31:3
+          type: 
+            - et
+          unit: 0
+        r5-ae61-2: 
+          link: r5-r7-ae61-2
+          management: 0
+          name: et-4/0/29:1.0
+          pic: et-4/0/29:1
+          type: 
+            - et
+          unit: 0
+        r5-ae61-3: 
+          link: r5-r7-ae61-3
+          management: 0
+          name: et-4/0/29:2.0
+          pic: et-4/0/29:2
+          type: 
+            - et
+          unit: 0
+        r5-ae61-4: 
+          link: r5-r7-ae61-4
+          management: 0
+          name: et-4/0/29:3.0
+          pic: et-4/0/29:3
+          type: 
+            - et
+          unit: 0
+        r5-ae61-5: 
+          link: r5-r7-ae61-5
+          management: 0
+          name: et-0/0/31:0.0
+          pic: et-0/0/31:0
+          type: 
+            - et
+          unit: 0
+        r5-ae61-6: 
+          link: r5-r7-ae61-6
+          management: 0
+          name: et-0/0/31:1.0
+          pic: et-0/0/31:1
+          type: 
+            - et
+          unit: 0
+        r5-ae61-7: 
+          link: r5-r7-ae61-7
+          management: 0
+          name: et-0/0/31:2.0
+          pic: et-0/0/31:2
+          type: 
+            - et
+          unit: 0
+        r5-ae61-8: 
+          link: r5-r7-ae61-8
+          management: 0
+          name: et-0/0/31:3.0
+          pic: et-0/0/31:3
+          type: 
+            - et
+          unit: 0
+        r5-ae61-9: 
+          link: r5-r7-ae61-9
+          management: 0
+          name: et-1/0/31:0.0
+          pic: et-1/0/31:0
+          type: 
+            - et
+          unit: 0
+        r5-rt0-1: 
+          link: r5-rt0-1
+          management: 0
+          name: et-4/0/17.0
+          pic: et-4/0/17
+          type: 
+            - et
+          unit: 0
+        r5-rt0-2: 
+          link: r5-rt0-2
+          management: 0
+          name: et-2/0/34:0.0
+          pic: et-2/0/34:0
+          type: 
+            - et
+          unit: 0
+      system: 
+        primary: 
+          controllers: 
+            re0: 
+              con-ip: 10.48.103.183
+              domain: englab.juniper.net
+              hostname: sup-tb1-geodc-1-vale8
+              isoaddr: 47.0005.80ff.f800.0000.0108.0001.0102.5502.4156.00
+              loop-ip: 10.255.24.156
+              loop-ipv6: abcd::10:255:24:156
+              mgt-intf-name: em0.0
+              mgt-ip: 10.48.46.115
+              mgt-ipv6: abcd::10:48:46:115
+              osname: JunOS
+            re1: 
+              con-ip: 10.48.103.159
+              domain: englab.juniper.net
+              hostname: sup-tb1-geodc-1-vale8-1
+              isoaddr: 47.0005.80ff.f800.0000.0108.0001.0102.5502.4156.00
+              loop-ip: 10.255.24.156
+              loop-ipv6: abcd::10:255:24:156
+              mgt-intf-name: em0.0
+              mgt-ip: 10.48.47.45
+              mgt-ipv6: abcd::10:48:47:45
+              osname: JunOS
+          fv-connect-controllers: all
+          make: juniper
+          model: ptx10008
+          name: sup-tb1-geodc-1-vale8
+          osname: JunOS
+          role: 'null'
+    r6: 
+      interfaces: 
+        r6-ae103-1: 
+          link: r4-r6-ae103-1
+          management: 0
+          name: et-0/0/1.0
+          pic: et-0/0/1
+          type: 
+            - et
+          unit: 0
+        r6-ae103-10: 
+          link: r4-r6-ae103-10
+          management: 0
+          name: et-1/0/19.0
+          pic: et-1/0/19
+          type: 
+            - et
+          unit: 0
+        r6-ae103-11: 
+          link: r4-r6-ae103-11
+          management: 0
+          name: et-0/0/5.0
+          pic: et-0/0/5
+          type: 
+            - et
+          unit: 0
+        r6-ae103-12: 
+          link: r4-r6-ae103-12
+          management: 0
+          name: et-1/0/7.0
+          pic: et-1/0/7
+          type: 
+            - et
+          unit: 0
+        r6-ae103-2: 
+          link: r4-r6-ae103-2
+          management: 0
+          name: et-1/0/5.0
+          pic: et-1/0/5
+          type: 
+            - et
+          unit: 0
+        r6-ae103-3: 
+          link: r4-r6-ae103-3
+          management: 0
+          name: et-1/0/1.0
+          pic: et-1/0/1
+          type: 
+            - et
+          unit: 0
+        r6-ae103-4: 
+          link: r4-r6-ae103-4
+          management: 0
+          name: et-2/0/5.0
+          pic: et-2/0/5
+          type: 
+            - et
+          unit: 0
+        r6-ae103-5: 
+          link: r4-r6-ae103-5
+          management: 0
+          name: et-2/0/1.0
+          pic: et-2/0/1
+          type: 
+            - et
+          unit: 0
+        r6-ae103-6: 
+          link: r4-r6-ae103-6
+          management: 0
+          name: et-3/0/5.0
+          pic: et-3/0/5
+          type: 
+            - et
+          unit: 0
+        r6-ae103-7: 
+          link: r4-r6-ae103-7
+          management: 0
+          name: et-3/0/1.0
+          pic: et-3/0/1
+          type: 
+            - et
+          unit: 0
+        r6-ae103-8: 
+          link: r4-r6-ae103-8
+          management: 0
+          name: et-4/0/5.0
+          pic: et-4/0/5
+          type: 
+            - et
+          unit: 0
+        r6-ae103-9: 
+          link: r4-r6-ae103-9
+          management: 0
+          name: et-4/0/1.0
+          pic: et-4/0/1
+          type: 
+            - et
+          unit: 0
+        r6-ae4-1: 
+          link: r6-r7-ae4-1
+          management: 0
+          name: et-3/0/30:0.0
+          pic: et-3/0/30:0
+          type: 
+            - et
+          unit: 0
+        r6-ae4-2: 
+          link: r6-r7-ae4-2
+          management: 0
+          name: et-3/0/30:1.0
+          pic: et-3/0/30:1
+          type: 
+            - et
+          unit: 0
+        r6-ae4-3: 
+          link: r6-r7-ae4-3
+          management: 0
+          name: et-3/0/30:2.0
+          pic: et-3/0/30:2
+          type: 
+            - et
+          unit: 0
+        r6-ae4-4: 
+          link: r6-r7-ae4-4
+          management: 0
+          name: et-3/0/30:3.0
+          pic: et-3/0/30:3
+          type: 
+            - et
+          unit: 0
+        r6-ae5-1: 
+          link: r6-r8-ae5-1
+          management: 0
+          name: et-0/0/10:0.0
+          pic: et-0/0/10:0
+          type: 
+            - et
+          unit: 0
+        r6-ae5-2: 
+          link: r6-r8-ae5-2
+          management: 0
+          name: et-0/0/10:1.0
+          pic: et-0/0/10:1
+          type: 
+            - et
+          unit: 0
+        r6-ae5-3: 
+          link: r6-r8-ae5-3
+          management: 0
+          name: et-0/0/10:2.0
+          pic: et-0/0/10:2
+          type: 
+            - et
+          unit: 0
+        r6-ae5-4: 
+          link: r6-r8-ae5-4
+          management: 0
+          name: et-0/0/10:3.0
+          pic: et-0/0/10:3
+          type: 
+            - et
+          unit: 0
+        r6-ae58-1: 
+          link: r4-r6-ae58-1
+          management: 0
+          name: et-3/0/28:0.0
+          pic: et-3/0/28:0
+          type: 
+            - et
+          unit: 0
+        r6-ae58-10: 
+          link: r4-r6-ae58-10
+          management: 0
+          name: et-2/0/34:1.0
+          pic: et-2/0/34:1
+          type: 
+            - et
+          unit: 0
+        r6-ae58-11: 
+          link: r4-r6-ae58-11
+          management: 0
+          name: et-2/0/34:2.0
+          pic: et-2/0/34:2
+          type: 
+            - et
+          unit: 0
+        r6-ae58-12: 
+          link: r4-r6-ae58-12
+          management: 0
+          name: et-2/0/34:3.0
+          pic: et-2/0/34:3
+          type: 
+            - et
+          unit: 0
+        r6-ae58-13: 
+          link: r4-r6-ae58-13
+          management: 0
+          name: et-0/0/35:0.0
+          pic: et-0/0/35:0
+          type: 
+            - et
+          unit: 0
+        r6-ae58-14: 
+          link: r4-r6-ae58-14
+          management: 0
+          name: et-0/0/35:1.0
+          pic: et-0/0/35:1
+          type: 
+            - et
+          unit: 0
+        r6-ae58-15: 
+          link: r4-r6-ae58-15
+          management: 0
+          name: et-0/0/35:2.0
+          pic: et-0/0/35:2
+          type: 
+            - et
+          unit: 0
+        r6-ae58-16: 
+          link: r4-r6-ae58-16
+          management: 0
+          name: et-0/0/35:3.0
+          pic: et-0/0/35:3
+          type: 
+            - et
+          unit: 0
+        r6-ae58-17: 
+          link: r4-r6-ae58-17
+          management: 0
+          name: et-1/0/35:0.0
+          pic: et-1/0/35:0
+          type: 
+            - et
+          unit: 0
+        r6-ae58-18: 
+          link: r4-r6-ae58-18
+          management: 0
+          name: et-1/0/35:1.0
+          pic: et-1/0/35:1
+          type: 
+            - et
+          unit: 0
+        r6-ae58-19: 
+          link: r4-r6-ae58-19
+          management: 0
+          name: et-1/0/35:2.0
+          pic: et-1/0/35:2
+          type: 
+            - et
+          unit: 0
+        r6-ae58-2: 
+          link: r4-r6-ae58-2
+          management: 0
+          name: et-3/0/28:1.0
+          pic: et-3/0/28:1
+          type: 
+            - et
+          unit: 0
+        r6-ae58-20: 
+          link: r4-r6-ae58-20
+          management: 0
+          name: et-1/0/35:3.0
+          pic: et-1/0/35:3
+          type: 
+            - et
+          unit: 0
+        r6-ae58-21: 
+          link: r4-r6-ae58-21
+          management: 0
+          name: et-4/0/35:0.0
+          pic: et-4/0/35:0
+          type: 
+            - et
+          unit: 0
+        r6-ae58-22: 
+          link: r4-r6-ae58-22
+          management: 0
+          name: et-4/0/35:1.0
+          pic: et-4/0/35:1
+          type: 
+            - et
+          unit: 0
+        r6-ae58-23: 
+          link: r4-r6-ae58-23
+          management: 0
+          name: et-4/0/35:2.0
+          pic: et-4/0/35:2
+          type: 
+            - et
+          unit: 0
+        r6-ae58-24: 
+          link: r4-r6-ae58-24
+          management: 0
+          name: et-4/0/35:3.0
+          pic: et-4/0/35:3
+          type: 
+            - et
+          unit: 0
+        r6-ae58-3: 
+          link: r4-r6-ae58-3
+          management: 0
+          name: et-3/0/28:2.0
+          pic: et-3/0/28:2
+          type: 
+            - et
+          unit: 0
+        r6-ae58-4: 
+          link: r4-r6-ae58-4
+          management: 0
+          name: et-3/0/28:3.0
+          pic: et-3/0/28:3
+          type: 
+            - et
+          unit: 0
+        r6-ae58-5: 
+          link: r4-r6-ae58-5
+          management: 0
+          name: et-6/0/35:0.0
+          pic: et-6/0/35:0
+          type: 
+            - et
+          unit: 0
+        r6-ae58-6: 
+          link: r4-r6-ae58-6
+          management: 0
+          name: et-6/0/35:1.0
+          pic: et-6/0/35:1
+          type: 
+            - et
+          unit: 0
+        r6-ae58-7: 
+          link: r4-r6-ae58-7
+          management: 0
+          name: et-6/0/35:2.0
+          pic: et-6/0/35:2
+          type: 
+            - et
+          unit: 0
+        r6-ae58-8: 
+          link: r4-r6-ae58-8
+          management: 0
+          name: et-6/0/35:3.0
+          pic: et-6/0/35:3
+          type: 
+            - et
+          unit: 0
+        r6-ae58-9: 
+          link: r4-r6-ae58-9
+          management: 0
+          name: et-2/0/34:0.0
+          pic: et-2/0/34:0
+          type: 
+            - et
+          unit: 0
+        r6-ae6-1: 
+          link: r6-r9-ae6-1
+          management: 0
+          name: et-0/0/9:0.0
+          pic: et-0/0/9:0
+          type: 
+            - et
+          unit: 0
+        r6-ae6-2: 
+          link: r6-r9-ae6-2
+          management: 0
+          name: et-0/0/9:1.0
+          pic: et-0/0/9:1
+          type: 
+            - et
+          unit: 0
+        r6-ae6-3: 
+          link: r6-r9-ae6-3
+          management: 0
+          name: et-0/0/9:2.0
+          pic: et-0/0/9:2
+          type: 
+            - et
+          unit: 0
+        r6-ae6-4: 
+          link: r6-r9-ae6-4
+          management: 0
+          name: et-0/0/9:3.0
+          pic: et-0/0/9:3
+          type: 
+            - et
+          unit: 0
+        r6-ae60-1: 
+          link: r5-r6-ae60-1
+          management: 0
+          name: et-0/0/33:0.0
+          pic: et-0/0/33:0
+          type: 
+            - et
+          unit: 0
+        r6-ae60-10: 
+          link: r5-r6-ae60-10
+          management: 0
+          name: et-4/0/33:1.0
+          pic: et-4/0/33:1
+          type: 
+            - et
+          unit: 0
+        r6-ae60-11: 
+          link: r5-r6-ae60-11
+          management: 0
+          name: et-4/0/33:2.0
+          pic: et-4/0/33:2
+          type: 
+            - et
+          unit: 0
+        r6-ae60-12: 
+          link: r5-r6-ae60-12
+          management: 0
+          name: et-4/0/33:3.0
+          pic: et-4/0/33:3
+          type: 
+            - et
+          unit: 0
+        r6-ae60-13: 
+          link: r5-r6-ae60-13
+          management: 0
+          name: et-6/0/33:0.0
+          pic: et-6/0/33:0
+          type: 
+            - et
+          unit: 0
+        r6-ae60-14: 
+          link: r5-r6-ae60-14
+          management: 0
+          name: et-6/0/33:1.0
+          pic: et-6/0/33:1
+          type: 
+            - et
+          unit: 0
+        r6-ae60-15: 
+          link: r5-r6-ae60-15
+          management: 0
+          name: et-6/0/33:2.0
+          pic: et-6/0/33:2
+          type: 
+            - et
+          unit: 0
+        r6-ae60-16: 
+          link: r5-r6-ae60-16
+          management: 0
+          name: et-6/0/33:3.0
+          pic: et-6/0/33:3
+          type: 
+            - et
+          unit: 0
+        r6-ae60-2: 
+          link: r5-r6-ae60-2
+          management: 0
+          name: et-0/0/33:1.0
+          pic: et-0/0/33:1
+          type: 
+            - et
+          unit: 0
+        r6-ae60-3: 
+          link: r5-r6-ae60-3
+          management: 0
+          name: et-0/0/33:2.0
+          pic: et-0/0/33:2
+          type: 
+            - et
+          unit: 0
+        r6-ae60-4: 
+          link: r5-r6-ae60-4
+          management: 0
+          name: et-0/0/33:3.0
+          pic: et-0/0/33:3
+          type: 
+            - et
+          unit: 0
+        r6-ae60-5: 
+          link: r5-r6-ae60-5
+          management: 0
+          name: et-2/0/33:0.0
+          pic: et-2/0/33:0
+          type: 
+            - et
+          unit: 0
+        r6-ae60-6: 
+          link: r5-r6-ae60-6
+          management: 0
+          name: et-2/0/33:1.0
+          pic: et-2/0/33:1
+          type: 
+            - et
+          unit: 0
+        r6-ae60-7: 
+          link: r5-r6-ae60-7
+          management: 0
+          name: et-2/0/33:2.0
+          pic: et-2/0/33:2
+          type: 
+            - et
+          unit: 0
+        r6-ae60-8: 
+          link: r5-r6-ae60-8
+          management: 0
+          name: et-2/0/33:3.0
+          pic: et-2/0/33:3
+          type: 
+            - et
+          unit: 0
+        r6-ae60-9: 
+          link: r5-r6-ae60-9
+          management: 0
+          name: et-4/0/33:0.0
+          pic: et-4/0/33:0
+          type: 
+            - et
+          unit: 0
+        r6-ae62-1: 
+          link: r6-r7-ae62-1
+          management: 0
+          name: et-0/0/34:0.0
+          pic: et-0/0/34:0
+          type: 
+            - et
+          unit: 0
+        r6-ae62-2: 
+          link: r6-r7-ae62-2
+          management: 0
+          name: et-0/0/34:1.0
+          pic: et-0/0/34:1
+          type: 
+            - et
+          unit: 0
+        r6-ae62-3: 
+          link: r6-r7-ae62-3
+          management: 0
+          name: et-0/0/34:2.0
+          pic: et-0/0/34:2
+          type: 
+            - et
+          unit: 0
+        r6-ae62-4: 
+          link: r6-r7-ae62-4
+          management: 0
+          name: et-0/0/34:3.0
+          pic: et-0/0/34:3
+          type: 
+            - et
+          unit: 0
+        r6-ae62-5: 
+          link: r6-r7-ae62-5
+          management: 0
+          name: et-3/0/27:0.0
+          pic: et-3/0/27:0
+          type: 
+            - et
+          unit: 0
+        r6-ae62-6: 
+          link: r6-r7-ae62-6
+          management: 0
+          name: et-3/0/27:1.0
+          pic: et-3/0/27:1
+          type: 
+            - et
+          unit: 0
+        r6-ae62-7: 
+          link: r6-r7-ae62-7
+          management: 0
+          name: et-3/0/27:2.0
+          pic: et-3/0/27:2
+          type: 
+            - et
+          unit: 0
+        r6-ae62-8: 
+          link: r6-r7-ae62-8
+          management: 0
+          name: et-3/0/27:3.0
+          pic: et-3/0/27:3
+          type: 
+            - et
+          unit: 0
+        r6-rt0-1: 
+          link: r6-rt0-1
+          management: 0
+          name: et-6/0/7.0
+          pic: et-6/0/7
+          type: 
+            - et
+          unit: 0
+        r6-rt0-2: 
+          link: r6-rt0-2
+          management: 0
+          name: et-0/0/32:0.0
+          pic: et-0/0/32:0
+          type: 
+            - et
+          unit: 0
+      system: 
+        primary: 
+          controllers: 
+            re0: 
+              con-ip: 10.48.103.225
+              domain: englab.juniper.net
+              hostname: sup-tb1-geodc-2-vale8
+              isoaddr: 47.0005.80ff.f800.0000.0108.0001.0102.5502.4158.00
+              loop-ip: 10.255.24.158
+              loop-ipv6: abcd::10:255:24:158
+              mgt-intf-name: em0.0
+              mgt-ip: 10.48.46.118
+              mgt-ipv6: abcd::10:48:46:118
+              osname: JunOS
+          make: juniper
+          model: ptx10008
+          name: sup-tb1-geodc-2-vale8
+          osname: JunOS
+          role: 'null'
+    r7: 
+      interfaces: 
+        r7-ae104-1: 
+          link: r5-r7-ae104-1
+          management: 0
+          name: et-5/0/2.0
+          pic: et-5/0/2
+          type: 
+            - et
+          unit: 0
+        r7-ae104-2: 
+          link: r5-r7-ae104-2
+          management: 0
+          name: et-5/0/5.0
+          pic: et-5/0/5
+          type: 
+            - et
+          unit: 0
+        r7-ae104-3: 
+          link: r5-r7-ae104-3
+          management: 0
+          name: et-4/0/2.0
+          pic: et-4/0/2
+          type: 
+            - et
+          unit: 0
+        r7-ae104-4: 
+          link: r5-r7-ae104-4
+          management: 0
+          name: et-4/0/5.0
+          pic: et-4/0/5
+          type: 
+            - et
+          unit: 0
+        r7-ae4-1: 
+          link: r6-r7-ae4-1
+          management: 0
+          name: xe-4/1/2:0.0
+          pic: xe-4/1/2:0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae4-2: 
+          link: r6-r7-ae4-2
+          management: 0
+          name: xe-4/1/2:1.0
+          pic: xe-4/1/2:1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae4-3: 
+          link: r6-r7-ae4-3
+          management: 0
+          name: xe-4/1/2:2.0
+          pic: xe-4/1/2:2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae4-4: 
+          link: r6-r7-ae4-4
+          management: 0
+          name: xe-4/1/2:3.0
+          pic: xe-4/1/2:3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae59-1: 
+          link: r4-r7-ae59-1
+          management: 0
+          name: xe-4/1/0:0.0
+          pic: xe-4/1/0:0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae59-10: 
+          link: r4-r7-ae59-10
+          management: 0
+          name: xe-5/1/0:1.0
+          pic: xe-5/1/0:1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae59-11: 
+          link: r4-r7-ae59-11
+          management: 0
+          name: xe-5/1/0:2.0
+          pic: xe-5/1/0:2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae59-12: 
+          link: r4-r7-ae59-12
+          management: 0
+          name: xe-5/1/0:3.0
+          pic: xe-5/1/0:3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae59-2: 
+          link: r4-r7-ae59-2
+          management: 0
+          name: xe-4/1/0:1.0
+          pic: xe-4/1/0:1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae59-3: 
+          link: r4-r7-ae59-3
+          management: 0
+          name: xe-4/1/0:2.0
+          pic: xe-4/1/0:2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae59-4: 
+          link: r4-r7-ae59-4
+          management: 0
+          name: xe-4/1/0:3.0
+          pic: xe-4/1/0:3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae59-5: 
+          link: r4-r7-ae59-5
+          management: 0
+          name: xe-11/0/4.0
+          pic: xe-11/0/4
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae59-6: 
+          link: r4-r7-ae59-6
+          management: 0
+          name: xe-11/0/5.0
+          pic: xe-11/0/5
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae59-7: 
+          link: r4-r7-ae59-7
+          management: 0
+          name: xe-11/0/6.0
+          pic: xe-11/0/6
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae59-8: 
+          link: r4-r7-ae59-8
+          management: 0
+          name: xe-11/0/7.0
+          pic: xe-11/0/7
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae59-9: 
+          link: r4-r7-ae59-9
+          management: 0
+          name: xe-5/1/0:0.0
+          pic: xe-5/1/0:0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae61-1: 
+          link: r5-r7-ae61-1
+          management: 0
+          name: xe-4/1/1:0.0
+          pic: xe-4/1/1:0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae61-10: 
+          link: r5-r7-ae61-10
+          management: 0
+          name: xe-11/1/1.0
+          pic: xe-11/1/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae61-11: 
+          link: r5-r7-ae61-11
+          management: 0
+          name: xe-11/1/2.0
+          pic: xe-11/1/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae61-12: 
+          link: r5-r7-ae61-12
+          management: 0
+          name: xe-11/1/3.0
+          pic: xe-11/1/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae61-2: 
+          link: r5-r7-ae61-2
+          management: 0
+          name: xe-4/1/1:1.0
+          pic: xe-4/1/1:1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae61-3: 
+          link: r5-r7-ae61-3
+          management: 0
+          name: xe-4/1/1:2.0
+          pic: xe-4/1/1:2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae61-4: 
+          link: r5-r7-ae61-4
+          management: 0
+          name: xe-4/1/1:3.0
+          pic: xe-4/1/1:3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae61-5: 
+          link: r5-r7-ae61-5
+          management: 0
+          name: xe-5/1/1:0.0
+          pic: xe-5/1/1:0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae61-6: 
+          link: r5-r7-ae61-6
+          management: 0
+          name: xe-5/1/1:1.0
+          pic: xe-5/1/1:1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae61-7: 
+          link: r5-r7-ae61-7
+          management: 0
+          name: xe-5/1/1:2.0
+          pic: xe-5/1/1:2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae61-8: 
+          link: r5-r7-ae61-8
+          management: 0
+          name: xe-5/1/1:3.0
+          pic: xe-5/1/1:3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae61-9: 
+          link: r5-r7-ae61-9
+          management: 0
+          name: xe-11/1/0.0
+          pic: xe-11/1/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae62-1: 
+          link: r6-r7-ae62-1
+          management: 0
+          name: xe-11/1/4.0
+          pic: xe-11/1/4
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae62-2: 
+          link: r6-r7-ae62-2
+          management: 0
+          name: xe-11/1/5.0
+          pic: xe-11/1/5
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae62-3: 
+          link: r6-r7-ae62-3
+          management: 0
+          name: xe-11/1/6.0
+          pic: xe-11/1/6
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae62-4: 
+          link: r6-r7-ae62-4
+          management: 0
+          name: xe-11/1/7.0
+          pic: xe-11/1/7
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae62-5: 
+          link: r6-r7-ae62-5
+          management: 0
+          name: xe-11/1/8.0
+          pic: xe-11/1/8
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae62-6: 
+          link: r6-r7-ae62-6
+          management: 0
+          name: xe-11/1/9.0
+          pic: xe-11/1/9
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae62-7: 
+          link: r6-r7-ae62-7
+          management: 0
+          name: xe-11/1/10.0
+          pic: xe-11/1/10
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae62-8: 
+          link: r6-r7-ae62-8
+          management: 0
+          name: xe-11/1/11.0
+          pic: xe-11/1/11
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae7-1: 
+          link: r7-r8-ae7-1
+          management: 0
+          name: xe-5/0/0:0.0
+          pic: xe-5/0/0:0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae7-2: 
+          link: r7-r8-ae7-2
+          management: 0
+          name: xe-5/0/0:2.0
+          pic: xe-5/0/0:2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae7-3: 
+          link: r7-r8-ae7-3
+          management: 0
+          name: xe-5/0/0:1.0
+          pic: xe-5/0/0:1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae7-4: 
+          link: r7-r8-ae7-4
+          management: 0
+          name: xe-5/0/0:3.0
+          pic: xe-5/0/0:3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae9-1: 
+          link: r7-r9-ae9-1
+          management: 0
+          name: xe-11/0/0.0
+          pic: xe-11/0/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae9-2: 
+          link: r7-r9-ae9-2
+          management: 0
+          name: xe-11/0/1.0
+          pic: xe-11/0/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae9-3: 
+          link: r7-r9-ae9-3
+          management: 0
+          name: xe-11/0/2.0
+          pic: xe-11/0/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-ae9-4: 
+          link: r7-r9-ae9-4
+          management: 0
+          name: xe-11/0/3.0
+          pic: xe-11/0/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r7-rt0-1: 
+          link: r7-rt0-1
+          management: 0
+          name: et-5/1/5.0
+          pic: et-5/1/5
+          type: 
+            - et
+          unit: 0
+        r7-rt0-2: 
+          link: r7-rt0-2
+          management: 0
+          name: et-4/1/5.0
+          pic: et-4/1/5
+          type: 
+            - et
+          unit: 0
+      system: 
+        primary: 
+          controllers: 
+            re0: 
+              con-ip: 10.48.103.181
+              domain: englab.juniper.net
+              hostname: sup-tb1-geodc-1-mx960
+              isoaddr: 47.0005.80ff.f800.0000.0108.0001.0102.5502.4154.00
+              loop-ip: 10.255.24.154
+              loop-ipv6: abcd::10:255:24:154
+              mgt-intf-name: fxp0.0
+              mgt-ip: 10.48.46.113
+              mgt-ipv6: abcd::10:48:46:113
+              osname: JunOS
+            re1: 
+              con-ip: 10.48.103.170
+              domain: englab.juniper.net
+              hostname: sup-tb1-geodc-1-mx960-1
+              isoaddr: 47.0005.80ff.f800.0000.0108.0001.0102.5502.4154.00
+              loop-ip: 10.255.24.154
+              loop-ipv6: abcd::10:255:24:154
+              mgt-intf-name: fxp0.0
+              mgt-ip: 10.48.46.225
+              mgt-ipv6: abcd::10:48:46:225
+              osname: JunOS
+          fv-tags: dut
+          make: juniper
+          model: mx960
+          name: sup-tb1-geodc-1-mx960
+          osname: JunOS
+          re_type: RE-S-1800x4
+          role: 'null'
+          scb: Enhanced MX SCB 2
+    r8: 
+      interfaces: 
+        r8-ae5-1: 
+          link: r6-r8-ae5-1
+          management: 0
+          name: xe-1/0/0.0
+          pic: xe-1/0/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r8-ae5-2: 
+          link: r6-r8-ae5-2
+          management: 0
+          name: xe-1/0/1.0
+          pic: xe-1/0/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r8-ae5-3: 
+          link: r6-r8-ae5-3
+          management: 0
+          name: xe-1/0/2.0
+          pic: xe-1/0/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r8-ae5-4: 
+          link: r6-r8-ae5-4
+          management: 0
+          name: xe-1/0/3.0
+          pic: xe-1/0/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r8-ae7-1: 
+          link: r7-r8-ae7-1
+          management: 0
+          name: xe-2/0/0.0
+          pic: xe-2/0/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r8-ae7-2: 
+          link: r7-r8-ae7-2
+          management: 0
+          name: xe-2/0/2.0
+          pic: xe-2/0/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r8-ae7-3: 
+          link: r7-r8-ae7-3
+          management: 0
+          name: xe-2/0/1.0
+          pic: xe-2/0/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r8-ae7-4: 
+          link: r7-r8-ae7-4
+          management: 0
+          name: xe-2/0/3.0
+          pic: xe-2/0/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r8-rt0-1: 
+          link: r8-rt0-1
+          management: 0
+          name: xe-2/3/7.0
+          pic: xe-2/3/7
+          type: 
+            - ether
+            - xe
+          unit: 0
+      system: 
+        primary: 
+          controllers: 
+            re0: 
+              con-ip: 10.48.103.222
+              domain: englab.juniper.net
+              hostname: sup-tb1-geodc-2-mx240
+              isoaddr: 47.0005.80ff.f800.0000.0108.0001.0102.5518.5014.00
+              loop-ip: 10.255.185.14
+              loop-ipv6: abcd::10:255:185:14
+              mgt-intf-name: fxp0.0
+              mgt-ip: 10.48.46.229
+              mgt-ipv6: abcd::10:48:46:229
+              osname: JunOS
+          make: juniper
+          model: mx240
+          name: sup-tb1-geodc-2-mx240
+          osname: JunOS
+          re_type: RE-S-1800x4
+          role: 'null'
+          scb: Enhanced MX SCB 2
+    r9: 
+      interfaces: 
+        r9-ae6-1: 
+          link: r6-r9-ae6-1
+          management: 0
+          name: xe-4/0/0.0
+          pic: xe-4/0/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r9-ae6-2: 
+          link: r6-r9-ae6-2
+          management: 0
+          name: xe-4/0/1.0
+          pic: xe-4/0/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r9-ae6-3: 
+          link: r6-r9-ae6-3
+          management: 0
+          name: xe-4/0/2.0
+          pic: xe-4/0/2
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r9-ae6-4: 
+          link: r6-r9-ae6-4
+          management: 0
+          name: xe-4/0/3.0
+          pic: xe-4/0/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r9-ae9-1: 
+          link: r7-r9-ae9-1
+          management: 0
+          name: xe-0/0/0.0
+          pic: xe-0/0/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r9-ae9-2: 
+          link: r7-r9-ae9-2
+          management: 0
+          name: xe-0/0/1.0
+          pic: xe-0/0/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r9-ae9-3: 
+          link: r7-r9-ae9-3
+          management: 0
+          name: xe-0/2/0.0
+          pic: xe-0/2/0
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r9-ae9-4: 
+          link: r7-r9-ae9-4
+          management: 0
+          name: xe-0/2/1.0
+          pic: xe-0/2/1
+          type: 
+            - ether
+            - xe
+          unit: 0
+        r9-rt0-1: 
+          link: r9-rt0-1
+          management: 0
+          name: xe-2/2/3.0
+          pic: xe-2/2/3
+          type: 
+            - ether
+            - xe
+          unit: 0
+      system: 
+        primary: 
+          controllers: 
+            re0: 
+              con-ip: 10.48.103.211
+              domain: englab.juniper.net
+              hostname: sup-tb1-geodc-2-mx480
+              isoaddr: 47.0005.80ff.f800.0000.0108.0001.0102.5502.4210.00
+              loop-ip: 10.255.24.210
+              loop-ipv6: abcd::10:255:24:210
+              mgt-intf-name: fxp0.0
+              mgt-ip: 10.48.46.151
+              mgt-ipv6: abcd::10:48:46:151
+              osname: JunOS
+            re1: 
+              con-ip: 10.48.103.212
+              domain: englab.juniper.net
+              hostname: sup-tb1-geodc-2-mx480-1
+              isoaddr: 47.0005.80ff.f800.0000.0108.0001.0102.5502.4210.00
+              loop-ip: 10.255.24.210
+              loop-ipv6: abcd::10:255:24:210
+              mgt-intf-name: fxp0.0
+              mgt-ip: 10.48.46.153
+              mgt-ipv6: abcd::10:48:46:153
+              osname: JunOS
+          make: juniper
+          model: mx480
+          name: sup-tb1-geodc-2-mx480
+          osname: JunOS
+          role: 'null'
+    rt0: 
+      interfaces: 
+        r0-rt0-1: 
+          link: r0-rt0-1
+          management: 0
+          name: 2/6
+          pic: 2/6
+          type: []
+
+        r1-rt0-1: 
+          link: r1-rt0-1
+          management: 0
+          name: 2/16
+          pic: 2/16
+          type: []
+
+        r2-rt0-1: 
+          link: r2-rt0-1
+          management: 0
+          name: 2/1
+          pic: 2/1
+          type: []
+
+        r2-rt0-2: 
+          link: r2-rt0-2
+          management: 0
+          name: 2/2
+          pic: 2/2
+          type: []
+
+        r3-rt0-1: 
+          link: r3-rt0-1
+          management: 0
+          name: 2/3
+          pic: 2/3
+          type: []
+
+        r3-rt0-2: 
+          link: r3-rt0-2
+          management: 0
+          name: 2/4
+          pic: 2/4
+          type: []
+
+        r4-rt0-1: 
+          link: r4-rt0-1
+          management: 0
+          name: 1/1
+          pic: 1/1
+          type: []
+
+        r4-rt0-2: 
+          link: r4-rt0-2
+          management: 0
+          name: 2/5
+          pic: 2/5
+          type: []
+
+        r5-rt0-1: 
+          link: r5-rt0-1
+          management: 0
+          name: 1/8
+          pic: 1/8
+          type: []
+
+        r5-rt0-2: 
+          link: r5-rt0-2
+          management: 0
+          name: 2/13
+          pic: 2/13
+          type: []
+
+        r6-rt0-1: 
+          link: r6-rt0-1
+          management: 0
+          name: 1/5
+          pic: 1/5
+          type: []
+
+        r6-rt0-2: 
+          link: r6-rt0-2
+          management: 0
+          name: 2/11
+          pic: 2/11
+          type: []
+
+        r7-rt0-1: 
+          link: r7-rt0-1
+          management: 0
+          name: 1/4
+          pic: 1/4
+          type: []
+
+        r7-rt0-2: 
+          link: r7-rt0-2
+          management: 0
+          name: 1/6
+          pic: 1/6
+          type: []
+
+        r8-rt0-1: 
+          link: r8-rt0-1
+          management: 0
+          name: 2/8
+          pic: 2/8
+          type: []
+
+        r9-rt0-1: 
+          link: r9-rt0-1
+          management: 0
+          name: 2/15
+          pic: 2/15
+          type: []
+
+      system: 
+        primary: 
+          controllers: 
+            re0: 
+              con-ip: 10.48.103.182
+              domain: englab.juniper.net
+              hostname: goog-geo-ix01
+              isoaddr: 47.0005.80ff.f800.0000.0108.0001.0102.5502.4155.00
+              loop-ip: 10.255.24.155
+              loop-ipv6: abcd::10:255:24:155
+              mgt-intf-name: eth0
+              mgt-ip: 10.48.46.150
+              mgt-ipv6: abcd::10:48:46:150
+              osname: IxOS
+          #fv-connect-password: Embe1mpls
+          #fv-connect-user: administrator
+          fv-ixia-appserver: geo-ix01-app
+          #fv-ixia-appserver-port: 9100
+          fv-ixia-appserver-port: 9901
+          fv-connect-password: Embe1mpls
+          fv-connect-user: pdtuser1
+          #fv-ixia-config-file: ixia_file.ixncfg
+         # fv-ixia-connect-to-current-session: enable
+          #fv-ixia-port-order: r0-rt0-1:r1-rt0-1:r2-rt0-1:r2-rt0-2:r3-rt0-1:r3-rt0-2:r4-rt0-1:r4-rt0-2:r5-rt0-1:r5-rt0-2:r6-rt0-1:r6-rt0-2:r7-rt0-1:r7-rt0-2:r8-rt0-1:r9-rt0-1
+          make: ixia
+          model: xgs12
+          name: goog-geo-ix01
+          osname: IxOS
+          role: 'null'
+  user_variables: 
+    uv-active-longevity-iterations: 2
+    uv-ae-dut-list: r2 r3 r4 r5 r6 r7
+    uv-aeaggressive-execute-segment: 1
+    uv-aedownfrr-execute-segment: 1 0 0 0 0
+    uv-aefpcpoweroff-execute-segment: 1 0 0 0
+    uv-aefpctrigger-execute-segment: 1 0 0 0
+    uv-aelinkflap-percentage: 50
+    uv-aelinkflapdeactivate-execute-segment: 0 0 0 1 0
+    uv-aelinkflapdelete-execute-segment: 0 0 0 1 0
+    uv-aelinkflapdisable-execute-segment: 0 0 0 1 0
+    uv-aelinkflapifd-execute-segment: 0 0 0 1 0
+    uv-aelinkflaplaser-execute-segment: 0 0 0 1 0
+    uv-aelinkmove-execute-segment: 1 0
+    uv-aepictrigger-execute-segment: 1
+    uv-aggressive-flap-duration: 60
+    uv-aggressive-flap-interval: 1
+    uv-aggressive-flap-percent: 50
+    uv-aggressive-trigger-type: ae_member_link_cfg_activate_deactivate
+    uv-benchmark-test: 0
+    uv-bgp-config: 1
+    uv-bgp-prefixv4-step-ipformat: 1.1.1.1
+    uv-bgp-prefixv6-scale-step-ipformat: 0:0:0:0:0:1:0:0
+    uv-bgp-prefixv6-step-ipformat: 0:0:0:0:1:1:1:1
+    uv-bgp-r-rt0-ebgp-adv-v4prefix1-count: 28000
+    uv-bgp-r-rt0-ebgp-adv-v4prefix2-addpath: 120.1.0.1
+    uv-bgp-r-rt0-ebgp-adv-v4prefix2-addpath-count: 20
+    uv-bgp-r-rt0-ebgp-adv-v4prefix2-rsvp-count: 94
+    uv-bgp-r-rt0-ebgp-adv-v4prefix3-rsvp-count: 188
+    uv-bgp-r-rt0-ebgp-adv-v6prefix1-count: 8000
+    uv-bgp-r-rt0-ebgp-adv-v6prefix2-addpath: 3001::120:1:0:1
+    uv-bgp-r-rt0-ebgp-adv-v6prefix2-addpath-count: 20
+    uv-bgp-r-rt0-ebgp-adv-v6prefix2-rsvp-count: 94
+    uv-bgp-r-rt0-ebgp-adv-v6prefix3-rsvp-count: 188
+    uv-bgp-r-rt0-ebgp-adv-v6prefix4-count: 20000
+    uv-bgp-r-rt0-ebgp-ifl1-count: 16
+    uv-bgp-r-rt0-ebgp-ifl2-count: 1
+    uv-bgp-r-rt0-ebgp-vlan1-start: 101
+    uv-bgp-r-rt0-ebgp-vlan2-start: 117
+    uv-bgp-r-rt0-ibgp-adv-v4prefix1-count: 25000
+    uv-bgp-r-rt0-ibgp-adv-v4prefix2-count: 25000
+    uv-bgp-r-rt0-ibgp-adv-v4prefix3-count: 2000
+    uv-bgp-r-rt0-ibgp-adv-v4prefix4-count: 2000
+    uv-bgp-r-rt0-ibgp-adv-v4prefix5-count: 300000
+    uv-bgp-r-rt0-ibgp-adv-v6prefix1-count: 1500
+    uv-bgp-r-rt0-ibgp-adv-v6prefix2-count: 1500
+    uv-bgp-r-rt0-ibgp-ifl3-count: 200
+    uv-bgp-r-rt0-ibgp-vlan3-start: 201
+    uv-bgp-r0-rt0-ebgp-adv-v4prefix1: 100.0.0.1
+    uv-bgp-r0-rt0-ebgp-adv-v4prefix2-rsvp: 100.1.0.1
+    uv-bgp-r0-rt0-ebgp-adv-v4prefix2-rsvp-pnh: 130.1.0.1
+    uv-bgp-r0-rt0-ebgp-adv-v6prefix1: 3001::100:0:0:1
+    uv-bgp-r0-rt0-ebgp-adv-v6prefix2-rsvp: 3001::100:1:0:1
+    uv-bgp-r0-rt0-ebgp-adv-v6prefix2-rsvp-pnh: 3001::130:1:0:1
+    uv-bgp-r0-rt0-ebgp-asnumber1-start: 1001
+    uv-bgp-r0-rt0-ebgp-v4addr1-start: 11.0.0.100
+    uv-bgp-r0-rt0-ebgp-v6addr1-start: 2002::11:0:0:100
+    uv-bgp-r1-rt0-ebgp-adv-v4prefix1: 101.0.0.1
+    uv-bgp-r1-rt0-ebgp-adv-v4prefix2-rsvp: 101.1.0.1
+    uv-bgp-r1-rt0-ebgp-adv-v4prefix2-rsvp-pnh: 131.1.0.1
+    uv-bgp-r1-rt0-ebgp-adv-v4prefix3-rsvp: 101.2.0.1
+    uv-bgp-r1-rt0-ebgp-adv-v4prefix3-rsvp-pnh: 131.2.0.1
+    uv-bgp-r1-rt0-ebgp-adv-v6prefix1: 3001::101:0:0:1
+    uv-bgp-r1-rt0-ebgp-adv-v6prefix2-rsvp: 3001::101:1:0:1
+    uv-bgp-r1-rt0-ebgp-adv-v6prefix2-rsvp-pnh: 3001::131:1:0:1
+    uv-bgp-r1-rt0-ebgp-adv-v6prefix3-rsvp: 3001::101:2:0:1
+    uv-bgp-r1-rt0-ebgp-adv-v6prefix3-rsvp-pnh: 3001::131:2:0:1
+    uv-bgp-r1-rt0-ebgp-asnumber1-start: 1101
+    uv-bgp-r1-rt0-ebgp-v4addr1-start: 11.1.0.100
+    uv-bgp-r1-rt0-ebgp-v6addr1-start: 2002::11:1:0:100
+    uv-bgp-r2-rt0-ebgp-adv-v4prefix-1m-scale: 122.0.0.1
+    uv-bgp-r2-rt0-ebgp-adv-v4prefix-1m-scale-count: 1000000
+    uv-bgp-r2-rt0-ebgp-adv-v4prefix1: 102.0.0.1
+    uv-bgp-r2-rt0-ebgp-adv-v4prefix2-addpath: 122.1.0.1
+    uv-bgp-r2-rt0-ebgp-adv-v4prefix2-rsvp: 102.1.0.1
+    uv-bgp-r2-rt0-ebgp-adv-v4prefix2-rsvp-pnh: 132.1.0.1
+    uv-bgp-r2-rt0-ebgp-adv-v6prefix1: 3001::102:0:0:1
+    uv-bgp-r2-rt0-ebgp-adv-v6prefix2-rsvp: 3001::102:1:0:1
+    uv-bgp-r2-rt0-ebgp-adv-v6prefix2-rsvp-pnh: 3001::132:1:0:1
+    uv-bgp-r2-rt0-ebgp-adv-v6prefix3: 3001::102:2:0:1
+    uv-bgp-r2-rt0-ebgp-asnumber1-start: 1201
+    uv-bgp-r2-rt0-ebgp-asnumber2-start: 1217
+    uv-bgp-r2-rt0-ebgp-v4addr1-start: 11.2.0.100
+    uv-bgp-r2-rt0-ebgp-v4addr2-start: 11.2.0.132
+    uv-bgp-r2-rt0-ebgp-v4addr3-start: 11.2.2.0
+    uv-bgp-r2-rt0-ebgp-v6addr1-start: 2002::11:2:0:100
+    uv-bgp-r2-rt0-ebgp-v6addr2-start: 2002::11:2:0:120
+    uv-bgp-r2-rt0-ebgp-v6addr3-start: 2002::11:1:1:0
+    uv-bgp-r2-rt0-ibgp-adv-v4prefix1: 112.0.0.1
+    uv-bgp-r2-rt0-ibgp-adv-v4prefix2: 112.1.0.1
+    uv-bgp-r2-rt0-ibgp-adv-v4prefix3: 112.2.0.1
+    uv-bgp-r2-rt0-ibgp-adv-v4prefix4: 112.3.0.1
+    uv-bgp-r2-rt0-ibgp-adv-v4prefix5: 112.4.0.1
+    uv-bgp-r2-rt0-ibgp-adv-v6prefix1: 3111::112:0:0:1
+    uv-bgp-r2-rt0-ibgp-adv-v6prefix2: 3111::112:1:0:1
+    uv-bgp-r3-rt0-ebgp-adv-v4prefix1: 103.0.0.1
+    uv-bgp-r3-rt0-ebgp-adv-v4prefix2-addpath: 123.1.0.1
+    uv-bgp-r3-rt0-ebgp-adv-v4prefix2-rsvp: 103.1.0.1
+    uv-bgp-r3-rt0-ebgp-adv-v4prefix2-rsvp-pnh: 133.1.0.1
+    uv-bgp-r3-rt0-ebgp-adv-v6prefix1: 3001::103:0:0:1
+    uv-bgp-r3-rt0-ebgp-adv-v6prefix2-rsvp: 3001::103:1:0:1
+    uv-bgp-r3-rt0-ebgp-adv-v6prefix2-rsvp-pnh: 3001::133:1:0:1
+    uv-bgp-r3-rt0-ebgp-adv-v6prefix3: 3001::103:2:0:1
+    uv-bgp-r3-rt0-ebgp-asnumber1-start: 1301
+    uv-bgp-r3-rt0-ebgp-asnumber2-start: 1317
+    uv-bgp-r3-rt0-ebgp-v4addr1-start: 11.3.0.100
+    uv-bgp-r3-rt0-ebgp-v4addr2-start: 11.3.0.132
+    uv-bgp-r3-rt0-ebgp-v4addr3-start: 11.3.2.0
+    uv-bgp-r3-rt0-ebgp-v6addr1-start: 2002::11:3:0:100
+    uv-bgp-r3-rt0-ebgp-v6addr2-start: 2002::11:3:0:120
+    uv-bgp-r3-rt0-ebgp-v6addr3-start: 2003::11:1:1:0
+    uv-bgp-r3-rt0-ibgp-adv-v4prefix1: 113.0.0.1
+    uv-bgp-r3-rt0-ibgp-adv-v4prefix2: 113.1.0.1
+    uv-bgp-r3-rt0-ibgp-adv-v4prefix3: 113.2.0.1
+    uv-bgp-r3-rt0-ibgp-adv-v4prefix4: 113.3.0.1
+    uv-bgp-r3-rt0-ibgp-adv-v6prefix1: 3111::113:0:0:1
+    uv-bgp-r3-rt0-ibgp-adv-v6prefix2: 3111::113:1:0:1
+    uv-bgp-r4-rt0-ebgp-adv-v4prefix1: 104.0.0.1
+    uv-bgp-r4-rt0-ebgp-adv-v4prefix2-addpath: 124.1.0.1
+    uv-bgp-r4-rt0-ebgp-adv-v4prefix2-rsvp: 104.1.0.1
+    uv-bgp-r4-rt0-ebgp-adv-v4prefix2-rsvp-pnh: 134.1.0.1
+    uv-bgp-r4-rt0-ebgp-adv-v6prefix1: 3001::104:0:0:1
+    uv-bgp-r4-rt0-ebgp-adv-v6prefix2-rsvp: 3001::104:1:0:1
+    uv-bgp-r4-rt0-ebgp-adv-v6prefix2-rsvp-pnh: 3001::134:1:0:1
+    uv-bgp-r4-rt0-ebgp-adv-v6prefix3: 3001::104:2:0:1
+    uv-bgp-r4-rt0-ebgp-asnumber1-start: 1401
+    uv-bgp-r4-rt0-ebgp-asnumber2-start: 1417
+    uv-bgp-r4-rt0-ebgp-v4addr1-start: 11.4.0.100
+    uv-bgp-r4-rt0-ebgp-v4addr2-start: 11.4.0.132
+    uv-bgp-r4-rt0-ebgp-v4addr3-start: 11.4.2.0
+    uv-bgp-r4-rt0-ebgp-v6addr1-start: 2002::11:4:0:100
+    uv-bgp-r4-rt0-ebgp-v6addr2-start: 2002::11:4:0:120
+    uv-bgp-r4-rt0-ebgp-v6addr3-start: 2004::11:1:1:0
+    uv-bgp-r4-rt0-ibgp-adv-v4prefix1: 114.0.0.1
+    uv-bgp-r4-rt0-ibgp-adv-v4prefix2: 114.1.0.1
+    uv-bgp-r4-rt0-ibgp-adv-v4prefix3: 114.2.0.1
+    uv-bgp-r4-rt0-ibgp-adv-v4prefix4: 114.3.0.1
+    uv-bgp-r4-rt0-ibgp-adv-v6prefix1: 3111::114:0:0:1
+    uv-bgp-r4-rt0-ibgp-adv-v6prefix2: 3111::114:1:0:1
+    uv-bgp-r5-rt0-ebgp-adv-v4prefix1: 105.0.0.1
+    uv-bgp-r5-rt0-ebgp-adv-v4prefix2-addpath: 125.1.0.1
+    uv-bgp-r5-rt0-ebgp-adv-v4prefix2-rsvp: 105.1.0.1
+    uv-bgp-r5-rt0-ebgp-adv-v4prefix2-rsvp-pnh: 135.1.0.1
+    uv-bgp-r5-rt0-ebgp-adv-v6prefix1: 3001::105:0:0:1
+    uv-bgp-r5-rt0-ebgp-adv-v6prefix2-rsvp: 3001::105:1:0:1
+    uv-bgp-r5-rt0-ebgp-adv-v6prefix2-rsvp-pnh: 3001::135:1:0:1
+    uv-bgp-r5-rt0-ebgp-adv-v6prefix3: 3001::105:2:0:1
+    uv-bgp-r5-rt0-ebgp-asnumber1-start: 1501
+    uv-bgp-r5-rt0-ebgp-asnumber2-start: 1517
+    uv-bgp-r5-rt0-ebgp-v4addr1-start: 11.5.0.100
+    uv-bgp-r5-rt0-ebgp-v4addr2-start: 11.5.0.132
+    uv-bgp-r5-rt0-ebgp-v4addr3-start: 11.5.2.0
+    uv-bgp-r5-rt0-ebgp-v6addr1-start: 2002::11:5:0:100
+    uv-bgp-r5-rt0-ebgp-v6addr2-start: 2002::11:5:0:120
+    uv-bgp-r5-rt0-ebgp-v6addr3-start: 2005::11:1:1:0
+    uv-bgp-r5-rt0-ibgp-adv-v4prefix1: 115.0.0.1
+    uv-bgp-r5-rt0-ibgp-adv-v4prefix2: 115.1.0.1
+    uv-bgp-r5-rt0-ibgp-adv-v4prefix3: 115.2.0.1
+    uv-bgp-r5-rt0-ibgp-adv-v4prefix4: 115.3.0.1
+    uv-bgp-r5-rt0-ibgp-adv-v6prefix1: 3111::115:0:0:1
+    uv-bgp-r5-rt0-ibgp-adv-v6prefix2: 3111::115:1:0:1
+    uv-bgp-r6-rt0-ebgp-adv-v4prefix1: 106.0.0.1
+    uv-bgp-r6-rt0-ebgp-adv-v4prefix2-addpath: 126.1.0.1
+    uv-bgp-r6-rt0-ebgp-adv-v4prefix2-rsvp: 106.1.0.1
+    uv-bgp-r6-rt0-ebgp-adv-v4prefix2-rsvp-pnh: 136.1.0.1
+    uv-bgp-r6-rt0-ebgp-adv-v6prefix1: 3001::106:0:0:1
+    uv-bgp-r6-rt0-ebgp-adv-v6prefix2-rsvp: 3001::106:1:0:1
+    uv-bgp-r6-rt0-ebgp-adv-v6prefix2-rsvp-pnh: 3001::136:1:0:1
+    uv-bgp-r6-rt0-ebgp-adv-v6prefix3: 3001::106:2:0:1
+    uv-bgp-r6-rt0-ebgp-asnumber1-start: 1601
+    uv-bgp-r6-rt0-ebgp-asnumber2-start: 1617
+    uv-bgp-r6-rt0-ebgp-v4addr1-start: 11.6.0.100
+    uv-bgp-r6-rt0-ebgp-v4addr2-start: 11.6.0.132
+    uv-bgp-r6-rt0-ebgp-v4addr3-start: 11.6.2.0
+    uv-bgp-r6-rt0-ebgp-v6addr1-start: 2002::11:6:0:100
+    uv-bgp-r6-rt0-ebgp-v6addr2-start: 2002::11:6:0:120
+    uv-bgp-r6-rt0-ebgp-v6addr3-start: 2006::11:1:1:0
+    uv-bgp-r6-rt0-ibgp-adv-v4prefix1: 116.0.0.1
+    uv-bgp-r6-rt0-ibgp-adv-v4prefix2: 116.1.0.1
+    uv-bgp-r6-rt0-ibgp-adv-v4prefix3: 116.2.0.1
+    uv-bgp-r6-rt0-ibgp-adv-v4prefix4: 116.3.0.1
+    uv-bgp-r6-rt0-ibgp-adv-v6prefix1: 3111::116:0:0:1
+    uv-bgp-r6-rt0-ibgp-adv-v6prefix2: 3111::116:1:0:1
+    uv-bgp-r7-rt0-ebgp-adv-v4prefix1: 107.0.0.1
+    uv-bgp-r7-rt0-ebgp-adv-v4prefix2-addpath: 127.1.0.1
+    uv-bgp-r7-rt0-ebgp-adv-v4prefix2-rsvp: 107.1.0.1
+    uv-bgp-r7-rt0-ebgp-adv-v4prefix2-rsvp-pnh: 137.1.0.1
+    uv-bgp-r7-rt0-ebgp-adv-v6prefix1: 3001::107:0:0:1
+    uv-bgp-r7-rt0-ebgp-adv-v6prefix2-rsvp: 3001::107:1:0:1
+    uv-bgp-r7-rt0-ebgp-adv-v6prefix2-rsvp-pnh: 3001::137:1:0:1
+    uv-bgp-r7-rt0-ebgp-adv-v6prefix3: 3001::107:2:0:1
+    uv-bgp-r7-rt0-ebgp-asnumber1-start: 1701
+    uv-bgp-r7-rt0-ebgp-asnumber2-start: 1717
+    uv-bgp-r7-rt0-ebgp-v4addr1-start: 11.7.0.100
+    uv-bgp-r7-rt0-ebgp-v4addr2-start: 11.7.0.132
+    uv-bgp-r7-rt0-ebgp-v4addr3-start: 11.7.2.0
+    uv-bgp-r7-rt0-ebgp-v6addr1-start: 2002::11:7:0:100
+    uv-bgp-r7-rt0-ebgp-v6addr2-start: 2002::11:7:0:120
+    uv-bgp-r7-rt0-ebgp-v6addr3-start: 2007::11:1:1:0
+    uv-bgp-r7-rt0-ibgp-adv-v4prefix1: 117.0.0.1
+    uv-bgp-r7-rt0-ibgp-adv-v4prefix2: 117.1.0.1
+    uv-bgp-r7-rt0-ibgp-adv-v4prefix3: 117.2.0.1
+    uv-bgp-r7-rt0-ibgp-adv-v4prefix4: 117.3.0.1
+    uv-bgp-r7-rt0-ibgp-adv-v6prefix1: 3111::117:0:0:1
+    uv-bgp-r7-rt0-ibgp-adv-v6prefix2: 3111::117:1:0:1
+    uv-bgp-r8-rt0-ebgp-adv-v4prefix1: 108.0.0.1
+    uv-bgp-r8-rt0-ebgp-adv-v4prefix2-rsvp: 108.1.0.1
+    uv-bgp-r8-rt0-ebgp-adv-v4prefix2-rsvp-pnh: 138.1.0.1
+    uv-bgp-r8-rt0-ebgp-adv-v4prefix3-rsvp: 108.2.0.1
+    uv-bgp-r8-rt0-ebgp-adv-v4prefix3-rsvp-pnh: 138.2.0.1
+    uv-bgp-r8-rt0-ebgp-adv-v6prefix1: 3001::108:0:0:1
+    uv-bgp-r8-rt0-ebgp-adv-v6prefix2-rsvp: 3001::108:1:0:1
+    uv-bgp-r8-rt0-ebgp-adv-v6prefix2-rsvp-pnh: 3001::138:1:0:1
+    uv-bgp-r8-rt0-ebgp-adv-v6prefix3-rsvp: 3001::108:2:0:1
+    uv-bgp-r8-rt0-ebgp-adv-v6prefix3-rsvp-pnh: 3001::138:2:0:1
+    uv-bgp-r8-rt0-ebgp-asnumber1-start: 1801
+    uv-bgp-r8-rt0-ebgp-v4addr1-start: 11.8.0.100
+    uv-bgp-r8-rt0-ebgp-v6addr1-start: 2002::11:8:0:100
+    uv-bgp-r9-rt0-ebgp-adv-v4prefix1: 109.0.0.1
+    uv-bgp-r9-rt0-ebgp-adv-v4prefix2-rsvp: 109.1.0.1
+    uv-bgp-r9-rt0-ebgp-adv-v4prefix2-rsvp-pnh: 139.1.0.1
+    uv-bgp-r9-rt0-ebgp-adv-v6prefix1: 3001::109:0:0:1
+    uv-bgp-r9-rt0-ebgp-adv-v6prefix2-rsvp: 3001::109:1:0:1
+    uv-bgp-r9-rt0-ebgp-adv-v6prefix2-rsvp-pnh: 3001::139:1:0:1
+    uv-bgp-r9-rt0-ebgp-asnumber1-start: 1901
+    uv-bgp-r9-rt0-ebgp-v4addr1-start: 11.9.0.100
+    uv-bgp-r9-rt0-ebgp-v6addr1-start: 2002::11:9:0:100
+    uv-bgp-route-flap-down-time: 60
+    uv-bgp-route-flap-duration: 3600
+    uv-bgp-route-flap-from-index: 1
+    uv-bgp-route-flap-up-time: 60
+    uv-bgp-rt0-r0-ebgp-v4addr1-start: 11.0.0.101
+    uv-bgp-rt0-r0-ebgp-v6addr1-start: 2002::11:0:0:101
+    uv-bgp-rt0-r1-ebgp-v4addr1-start: 11.1.0.101
+    uv-bgp-rt0-r1-ebgp-v6addr1-start: 2002::11:1:0:101
+    uv-bgp-rt0-r2-ebgp-v4addr1-second: 11.2.0.103
+    uv-bgp-rt0-r2-ebgp-v4addr1-start: 11.2.0.101
+    uv-bgp-rt0-r2-ebgp-v4addr2-start: 11.2.0.133
+    uv-bgp-rt0-r2-ebgp-v4addr3-start: 11.2.2.1
+    uv-bgp-rt0-r2-ebgp-v6addr1-second: 2002::11:2:0:103
+    uv-bgp-rt0-r2-ebgp-v6addr1-start: 2002::11:2:0:101
+    uv-bgp-rt0-r2-ebgp-v6addr2-start: 2002::11:2:0:121
+    uv-bgp-rt0-r2-ebgp-v6addr3-start: 2002::11:1:1:1
+    uv-bgp-rt0-r3-ebgp-v4addr1-second: 11.3.0.103
+    uv-bgp-rt0-r3-ebgp-v4addr1-start: 11.3.0.101
+    uv-bgp-rt0-r3-ebgp-v4addr2-start: 11.3.0.133
+    uv-bgp-rt0-r3-ebgp-v4addr3-start: 11.3.2.1
+    uv-bgp-rt0-r3-ebgp-v6addr1-second: 2002::11:3:0:103
+    uv-bgp-rt0-r3-ebgp-v6addr1-start: 2002::11:3:0:101
+    uv-bgp-rt0-r3-ebgp-v6addr2-start: 2002::11:3:0:121
+    uv-bgp-rt0-r3-ebgp-v6addr3-start: 2003::11:1:1:1
+    uv-bgp-rt0-r4-ebgp-v4addr1-second: 11.4.0.103
+    uv-bgp-rt0-r4-ebgp-v4addr1-start: 11.4.0.101
+    uv-bgp-rt0-r4-ebgp-v4addr2-start: 11.4.0.133
+    uv-bgp-rt0-r4-ebgp-v4addr3-start: 11.4.2.1
+    uv-bgp-rt0-r4-ebgp-v6addr1-second: 2002::11:4:0:103
+    uv-bgp-rt0-r4-ebgp-v6addr1-start: 2002::11:4:0:101
+    uv-bgp-rt0-r4-ebgp-v6addr2-start: 2002::11:4:0:121
+    uv-bgp-rt0-r4-ebgp-v6addr3-start: 2004::11:1:1:1
+    uv-bgp-rt0-r5-ebgp-v4addr1-second: 11.5.0.103
+    uv-bgp-rt0-r5-ebgp-v4addr1-start: 11.5.0.101
+    uv-bgp-rt0-r5-ebgp-v4addr2-start: 11.5.0.133
+    uv-bgp-rt0-r5-ebgp-v4addr3-start: 11.5.2.1
+    uv-bgp-rt0-r5-ebgp-v6addr1-second: 2002::11:5:0:103
+    uv-bgp-rt0-r5-ebgp-v6addr1-start: 2002::11:5:0:101
+    uv-bgp-rt0-r5-ebgp-v6addr2-start: 2002::11:5:0:121
+    uv-bgp-rt0-r5-ebgp-v6addr3-start: 2005::11:1:1:1
+    uv-bgp-rt0-r6-ebgp-v4addr1-second: 11.6.0.103
+    uv-bgp-rt0-r6-ebgp-v4addr1-start: 11.6.0.101
+    uv-bgp-rt0-r6-ebgp-v4addr2-start: 11.6.0.133
+    uv-bgp-rt0-r6-ebgp-v4addr3-start: 11.6.2.1
+    uv-bgp-rt0-r6-ebgp-v6addr1-second: 2002::11:6:0:103
+    uv-bgp-rt0-r6-ebgp-v6addr1-start: 2002::11:6:0:101
+    uv-bgp-rt0-r6-ebgp-v6addr2-start: 2002::11:6:0:121
+    uv-bgp-rt0-r6-ebgp-v6addr3-start: 2006::11:1:1:1
+    uv-bgp-rt0-r7-ebgp-v4addr1-second: 11.7.0.103
+    uv-bgp-rt0-r7-ebgp-v4addr1-start: 11.7.0.101
+    uv-bgp-rt0-r7-ebgp-v4addr2-start: 11.7.0.133
+    uv-bgp-rt0-r7-ebgp-v4addr3-start: 11.7.2.1
+    uv-bgp-rt0-r7-ebgp-v6addr1-second: 2002::11:7:0:103
+    uv-bgp-rt0-r7-ebgp-v6addr1-start: 2002::11:7:0:101
+    uv-bgp-rt0-r7-ebgp-v6addr2-start: 2002::11:7:0:121
+    uv-bgp-rt0-r7-ebgp-v6addr3-start: 2007::11:1:1:1
+    uv-bgp-rt0-r8-ebgp-v4addr1-start: 11.8.0.101
+    uv-bgp-rt0-r8-ebgp-v6addr1-start: 2002::11:8:0:101
+    uv-bgp-rt0-r9-ebgp-v4addr1-start: 11.9.0.101
+    uv-bgp-rt0-r9-ebgp-v6addr1-start: 2002::11:9:0:101
+    uv-bgp-traffic-rate: 20000
+    uv-bgp_inet0-r2-active-route-scale: 1906000
+    uv-bgp_inet0-r2-total-route-scale: 13029500
+    uv-bgp_inet0-r3-active-route-scale: 906000
+    uv-bgp_inet0-r3-total-route-scale: 12958000
+    uv-bgp_inet0-r4-active-route-scale: 1906000
+    uv-bgp_inet0-r4-total-route-scale: 5658500
+    uv-bgp_inet0-r5-active-route-scale: 1906000
+    uv-bgp_inet0-r5-total-route-scale: 5550500
+    uv-bgp_inet0-r6-active-route-scale: 1906000
+    uv-bgp_inet0-r6-total-route-scale: 6827600
+    uv-bgp_inet0-r7-active-route-scale: 906000
+    uv-bgp_inet0-r7-total-route-scale: 5156800
+    uv-bgp_inet6-r2-active-route-scale: 189000
+    uv-bgp_inet6-r2-total-route-scale: 604250
+    uv-bgp_inet6-r3-active-route-scale: 189000
+    uv-bgp_inet6-r3-total-route-scale: 637000
+    uv-bgp_inet6-r4-active-route-scale: 189000
+    uv-bgp_inet6-r4-total-route-scale: 451300
+    uv-bgp_inet6-r5-active-route-scale: 189000
+    uv-bgp_inet6-r5-total-route-scale: 445300
+    uv-bgp_inet6-r6-active-route-scale: 189000
+    uv-bgp_inet6-r6-total-route-scale: 602800
+    uv-bgp_inet6-r7-active-route-scale: 189000
+    uv-bgp_inet6-r7-total-route-scale: 635500
+    uv-bgp_proto-chk-intr: 30
+    uv-bgp_proto-chk-tout: 1800
+    uv-create-suite-config: 1
+    uv-customer-max-ecmp: 64
+    uv-direct-r2-active-route-scale: 50
+    uv-direct-r2-total-route-scale: 50
+    uv-direct-r3-active-route-scale: 50
+    uv-direct-r3-total-route-scale: 50
+    uv-direct-r4-active-route-scale: 50
+    uv-direct-r4-total-route-scale: 50
+    uv-direct-r5-active-route-scale: 50
+    uv-direct-r5-total-route-scale: 50
+    uv-direct-r6-active-route-scale: 50
+    uv-direct-r6-total-route-scale: 50
+    uv-direct-r7-active-route-scale: 50
+    uv-direct-r7-total-route-scale: 50
+    uv-dut-count: 6
+    uv-firewall-config: 1
+    uv-fw-r2-caribou-flash-dst-addr: 74.125.20.17
+    uv-fw-r2-cloud-iot-mqtt-dst-addr: 74.126.20.206
+    uv-fw-r2-cloud-iot-mqtt-v6-dst-addr: 2607:f8b0:4002:c00::ce
+    uv-fw-r2-ebgpv4-prefix-ip-start: 64.233.161.1
+    uv-fw-r2-ebgpv6-prefix-ip-start: 2607:f8b0:4001:c00::ce
+    uv-fw-r2-flyzone-tcp-dst-addr: 74.125.20.217
+    uv-fw-r2-premium-video-upload-dst-addr: 74.125.20.124
+    uv-fw-r2-rt0-2-ipv4-addr: 12.2.2.0
+    uv-fw-r2-rt0-2-ipv6-addr: 2001::12:2:2:0
+    uv-fw-r2-sftp-dropbox-dst-addr: 74.125.20.135
+    uv-fw-r3-caribou-flash-dst-addr: 64.233.161.17
+    uv-fw-r3-cloud-iot-mqtt-dst-addr: 64.233.161.206
+    uv-fw-r3-cloud-iot-mqtt-v6-dst-addr: 2607:f8b0:4001:c00::ce
+    uv-fw-r3-ebgpv4-prefix-ip-start: 74.125.20.1
+    uv-fw-r3-ebgpv6-prefix-ip-start: 2607:f8b0:4002:c00::ce
+    uv-fw-r3-flyzone-tcp-dst-addr: 64.233.161.217
+    uv-fw-r3-premium-video-upload-dst-addr: 64.233.161.124
+    uv-fw-r3-rt0-2-ipv4-addr: 12.3.2.0
+    uv-fw-r3-rt0-2-ipv6-addr: 2001::12:3:2:0
+    uv-fw-r3-sftp-dropbox-dst-addr: 64.233.161.135
+    uv-fw-r4-caribou-flash-dst-addr: 172.217.192.17
+    uv-fw-r4-cloud-iot-mqtt-dst-addr: 172.217.192.206
+    uv-fw-r4-cloud-iot-mqtt-v6-dst-addr: 2607:f8b0:400c:c00::ce
+    uv-fw-r4-ebgpv4-prefix-ip-start: 108.177.8.1
+    uv-fw-r4-ebgpv6-prefix-ip-start: 2607:f8b0:4003:c00::ce
+    uv-fw-r4-flyzone-tcp-dst-addr: 172.217.192.217
+    uv-fw-r4-premium-video-upload-dst-addr: 172.217.192.124
+    uv-fw-r4-rt0-2-ipv4-addr: 12.4.2.0
+    uv-fw-r4-rt0-2-ipv6-addr: 2001::12:4:2:0
+    uv-fw-r4-sftp-dropbox-dst-addr: 172.217.192.135
+    uv-fw-r5-caribou-flash-dst-addr: 108.177.8.17
+    uv-fw-r5-cloud-iot-mqtt-dst-addr: 108.177.8.206
+    uv-fw-r5-cloud-iot-mqtt-v6-dst-addr: 2607:f8b0:4003:c00::ce
+    uv-fw-r5-ebgpv4-prefix-ip-start: 172.217.192.1
+    uv-fw-r5-ebgpv6-prefix-ip-start: 2607:f8b0:400c:c00::ce
+    uv-fw-r5-flyzone-tcp-dst-addr: 108.177.8.217
+    uv-fw-r5-premium-video-upload-dst-addr: 108.177.8.124
+    uv-fw-r5-rt0-2-ipv4-addr: 12.5.2.0
+    uv-fw-r5-rt0-2-ipv6-addr: 2001::12:5:2:0
+    uv-fw-r5-sftp-dropbox-dst-addr: 108.177.8.135
+    uv-fw-r6-caribou-flash-dst-addr: 209.85.200.17
+    uv-fw-r6-cloud-iot-mqtt-dst-addr: 209.85.200.206
+    uv-fw-r6-cloud-iot-mqtt-v6-dst-addr: 2607:f8b0:400e:c00::ce
+    uv-fw-r6-ebgpv4-prefix-ip-start: 173.194.192.1
+    uv-fw-r6-ebgpv6-prefix-ip-start: 2607:f8b0:400d:c00::ce
+    uv-fw-r6-flyzone-tcp-dst-addr: 209.85.200.217
+    uv-fw-r6-premium-video-upload-dst-addr: 209.85.200.124
+    uv-fw-r6-rt0-2-ipv4-addr: 12.6.2.0
+    uv-fw-r6-rt0-2-ipv6-addr: 2001::12:6:2:0
+    uv-fw-r6-sftp-dropbox-dst-addr: 209.85.200.135
+    uv-fw-r7-caribou-flash-dst-addr: 173.194.192.17
+    uv-fw-r7-cloud-iot-mqtt-dst-addr: 173.194.192.206
+    uv-fw-r7-cloud-iot-mqtt-v6-dst-addr: 2607:f8b0:400d:c00::ce
+    uv-fw-r7-ebgpv4-prefix-ip-start: 209.85.200.1
+    uv-fw-r7-ebgpv6-prefix-ip-start: 2607:f8b0:400e:c00::ce
+    uv-fw-r7-flyzone-tcp-dst-addr: 173.194.192.217
+    uv-fw-r7-premium-video-upload-dst-addr: 173.194.192.124
+    uv-fw-r7-rt0-2-ipv4-addr: 12.7.2.0
+    uv-fw-r7-rt0-2-ipv6-addr: 2001::12:7:2:0
+    uv-fw-r7-sftp-dropbox-dst-addr: 173.194.192.135
+    uv-fw-rt0-r2-2-ipv4-addr: 12.2.2.1
+    uv-fw-rt0-r2-2-ipv6-addr: 2001::12:2:2:1
+    uv-fw-rt0-r3-2-ipv4-addr: 12.3.2.1
+    uv-fw-rt0-r3-2-ipv6-addr: 2001::12:3:2:1
+    uv-fw-rt0-r4-2-ipv4-addr: 12.4.2.1
+    uv-fw-rt0-r4-2-ipv6-addr: 2001::12:4:2:1
+    uv-fw-rt0-r5-2-ipv4-addr: 12.5.2.1
+    uv-fw-rt0-r5-2-ipv6-addr: 2001::12:5:2:1
+    uv-fw-rt0-r6-2-ipv4-addr: 12.6.2.1
+    uv-fw-rt0-r6-2-ipv6-addr: 2001::12:6:2:1
+    uv-fw-rt0-r7-2-ipv4-addr: 12.7.2.1
+    uv-fw-rt0-r7-2-ipv6-addr: 2001::12:7:2:1
+    uv-fw-v4-routes-per-peer: 5000
+    uv-fw-v6-routes-per-peer: 20
+    uv-global-as: 15169
+    uv-gre-decap-config: 1
+    uv-gre-decap-no-of-v4-static-lsps: 500
+    uv-gre-decap-no-of-v6-static-lsps: 500
+    uv-gre-decap-r2-r3-tunnel-dst-addr: 60.23.0.2
+    uv-gre-decap-r2-r3-tunnel-src-addr: 60.23.0.1
+    uv-gre-decap-r2-rt0-2-ipv4-addr: 12.2.3.0
+    uv-gre-decap-r2-rt0-2-ipv6-addr: 2001::12:2:3:0
+    uv-gre-decap-r2-static-route-discard: 10.255.101.1
+    uv-gre-decap-r2-static-route-network-discard: 10.255.101.0/24
+    uv-gre-decap-r2-v4-static-lsp-label-start: 1042001
+    uv-gre-decap-r2-v6-static-lsp-label-start: 1042501
+    uv-gre-decap-r3-r2-tunnel-dst-addr: 60.32.0.2
+    uv-gre-decap-r3-r2-tunnel-src-addr: 60.32.0.1
+    uv-gre-decap-r3-rt0-2-ipv4-addr: 12.3.3.0
+    uv-gre-decap-r3-rt0-2-ipv6-addr: 2001::12:3:3:0
+    uv-gre-decap-r3-static-route-discard: 10.255.102.1
+    uv-gre-decap-r3-static-route-network-discard: 10.255.102.0/24
+    uv-gre-decap-r3-v4-static-lsp-label-start: 1043001
+    uv-gre-decap-r3-v6-static-lsp-label-start: 1043501
+    uv-gre-decap-r4-r5-tunnel-dst-addr: 60.45.0.2
+    uv-gre-decap-r4-r5-tunnel-src-addr: 60.45.0.1
+    uv-gre-decap-r4-rt0-2-ipv4-addr: 12.4.3.0
+    uv-gre-decap-r4-rt0-2-ipv6-addr: 2001::12:4:3:0
+    uv-gre-decap-r4-static-route-discard: 10.255.103.1
+    uv-gre-decap-r4-static-route-network-discard: 10.255.103.0/24
+    uv-gre-decap-r4-v4-static-lsp-label-start: 1044001
+    uv-gre-decap-r4-v6-static-lsp-label-start: 1044501
+    uv-gre-decap-r5-r4-tunnel-dst-addr: 60.54.0.2
+    uv-gre-decap-r5-r4-tunnel-src-addr: 60.54.0.1
+    uv-gre-decap-r5-rt0-2-ipv4-addr: 12.5.3.0
+    uv-gre-decap-r5-rt0-2-ipv6-addr: 2001::12:5:3:0
+    uv-gre-decap-r5-static-route-discard: 10.255.104.1
+    uv-gre-decap-r5-static-route-network-discard: 10.255.104.0/24
+    uv-gre-decap-r5-v4-static-lsp-label-start: 1045001
+    uv-gre-decap-r5-v6-static-lsp-label-start: 1045501
+    uv-gre-decap-r6-r7-tunnel-dst-addr: 60.67.0.2
+    uv-gre-decap-r6-r7-tunnel-src-addr: 60.67.0.1
+    uv-gre-decap-r6-rt0-2-ipv4-addr: 12.6.3.0
+    uv-gre-decap-r6-rt0-2-ipv6-addr: 2001::12:6:3:0
+    uv-gre-decap-r6-static-route-discard: 10.255.105.1
+    uv-gre-decap-r6-static-route-network-discard: 10.255.105.0/24
+    uv-gre-decap-r6-v4-static-lsp-label-start: 1046001
+    uv-gre-decap-r6-v6-static-lsp-label-start: 1046501
+    uv-gre-decap-r7-r6-tunnel-dst-addr: 60.76.0.2
+    uv-gre-decap-r7-r6-tunnel-src-addr: 60.76.0.1
+    uv-gre-decap-r7-rt0-2-ipv4-addr: 12.7.3.0
+    uv-gre-decap-r7-rt0-2-ipv6-addr: 2001::12:7:3:0
+    uv-gre-decap-r7-static-route-discard: 10.255.106.1
+    uv-gre-decap-r7-static-route-network-discard: 10.255.106.0/24
+    uv-gre-decap-r7-v4-static-lsp-label-start: 1047001
+    uv-gre-decap-r7-v6-static-lsp-label-start: 1047501
+    uv-gre-decap-rt0-r2-2-ipv4-addr: 12.2.3.1
+    uv-gre-decap-rt0-r2-2-ipv6-addr: 2001::12:2:3:1
+    uv-gre-decap-rt0-r3-2-ipv4-addr: 12.3.3.1
+    uv-gre-decap-rt0-r3-2-ipv6-addr: 2001::12:3:3:1
+    uv-gre-decap-rt0-r4-2-ipv4-addr: 12.4.3.1
+    uv-gre-decap-rt0-r4-2-ipv6-addr: 2001::12:4:3:1
+    uv-gre-decap-rt0-r5-2-ipv4-addr: 12.5.3.1
+    uv-gre-decap-rt0-r5-2-ipv6-addr: 2001::12:5:3:1
+    uv-gre-decap-rt0-r6-2-ipv4-addr: 12.6.3.1
+    uv-gre-decap-rt0-r6-2-ipv6-addr: 2001::12:6:3:1
+    uv-gre-decap-rt0-r7-2-ipv4-addr: 12.7.3.1
+    uv-gre-decap-rt0-r7-2-ipv6-addr: 2001::12:7:3:1
+    uv-gre-encap-config: 1
+    uv-gre-encap-r2-rt0-2-ipv4-addr: 12.2.4.0
+    uv-gre-encap-r2-rt0-2-ipv6-addr: 2001::12:2:4:0
+    uv-gre-encap-r3-r2-tunnel-dst-addr: 50.32.0.2
+    uv-gre-encap-r3-r2-tunnel-src-addr: 50.32.0.1
+    uv-gre-encap-r3-rt0-2-ipv4-addr: 12.3.4.0
+    uv-gre-encap-r3-rt0-2-ipv6-addr: 2001::12:3:4:0
+    uv-gre-encap-r4-r2-tunnel-dst-addr: 50.42.0.2
+    uv-gre-encap-r4-r2-tunnel-src-addr: 50.42.0.1
+    uv-gre-encap-r4-rt0-2-ipv4-addr: 12.4.4.0
+    uv-gre-encap-r4-rt0-2-ipv6-addr: 2001::12:4:4:0
+    uv-gre-encap-r5-r7-tunnel-dst-addr: 50.57.0.2
+    uv-gre-encap-r5-r7-tunnel-src-addr: 50.57.0.1
+    uv-gre-encap-r5-rt0-2-ipv4-addr: 12.5.4.0
+    uv-gre-encap-r5-rt0-2-ipv6-addr: 2001::12:5:4:0
+    uv-gre-encap-r6-r7-tunnel-dst-addr: 50.67.0.2
+    uv-gre-encap-r6-r7-tunnel-src-addr: 50.67.0.1
+    uv-gre-encap-r6-rt0-2-ipv4-addr: 12.6.4.0
+    uv-gre-encap-r6-rt0-2-ipv6-addr: 2001::12:6:4:0
+    uv-gre-encap-r7-rt0-2-ipv4-addr: 12.7.4.0
+    uv-gre-encap-r7-rt0-2-ipv6-addr: 2001::12:7:4:0
+    uv-gre-encap-rt0-r2-2-ipv4-addr: 12.2.4.1
+    uv-gre-encap-rt0-r2-2-ipv6-addr: 2001::12:2:4:1
+    uv-gre-encap-rt0-r3-2-ipv4-addr: 12.3.4.1
+    uv-gre-encap-rt0-r3-2-ipv6-addr: 2001::12:3:4:1
+    uv-gre-encap-rt0-r4-2-ipv4-addr: 12.4.4.1
+    uv-gre-encap-rt0-r4-2-ipv6-addr: 2001::12:4:4:1
+    uv-gre-encap-rt0-r5-2-ipv4-addr: 12.5.4.1
+    uv-gre-encap-rt0-r5-2-ipv6-addr: 2001::12:5:4:1
+    uv-gre-encap-rt0-r6-2-ipv4-addr: 12.6.4.1
+    uv-gre-encap-rt0-r6-2-ipv6-addr: 2001::12:6:4:1
+    uv-gre-encap-rt0-r7-2-ipv4-addr: 12.7.4.1
+    uv-gre-encap-rt0-r7-2-ipv6-addr: 2001::12:7:4:1
+    uv-host1-1-r0-ipv4-addr: 150.1.1.6
+    uv-host1-1-r0-ipv6-addr: 2001::150:1:1:6
+    uv-host1-1-r1-ipv4-addr: 150.1.1.2
+    uv-host1-1-r1-ipv6-addr: 2001::150:1:1:2
+    uv-host2-1-r0-ipv4-addr: 150.1.1.14
+    uv-host2-1-r0-ipv6-addr: 2001::150:1:1:e
+    uv-host2-1-r1-ipv4-addr: 150.1.1.10
+    uv-host2-1-r1-ipv6-addr: 2001::150:1:1:a
+    uv-igp-avg-adj-scale: 57
+    uv-igp-bfd-enable: 'True'
+    uv-igp-bfd-minimum-interval: 50
+    uv-igp-bfd-multiplier: 3
+    uv-igp-inet0-r2-active-route-scale: 1150
+    uv-igp-inet0-r2-total-route-scale: 5550
+    uv-igp-inet0-r3-active-route-scale: 1150
+    uv-igp-inet0-r3-total-route-scale: 5550
+    uv-igp-inet0-r4-active-route-scale: 1150
+    uv-igp-inet0-r4-total-route-scale: 5550
+    uv-igp-inet0-r5-active-route-scale: 1150
+    uv-igp-inet0-r5-total-route-scale: 5550
+    uv-igp-inet0-r6-active-route-scale: 1150
+    uv-igp-inet0-r6-total-route-scale: 5550
+    uv-igp-inet0-r7-active-route-scale: 1150
+    uv-igp-inet0-r7-total-route-scale: 5550
+    uv-igp-inet6-r2-active-route-scale: 1150
+    uv-igp-inet6-r2-total-route-scale: 6250
+    uv-igp-inet6-r3-active-route-scale: 1150
+    uv-igp-inet6-r3-total-route-scale: 6250
+    uv-igp-inet6-r4-active-route-scale: 1150
+    uv-igp-inet6-r4-total-route-scale: 6250
+    uv-igp-inet6-r5-active-route-scale: 1150
+    uv-igp-inet6-r5-total-route-scale: 6250
+    uv-igp-inet6-r6-active-route-scale: 1150
+    uv-igp-inet6-r6-total-route-scale: 6250
+    uv-igp-inet6-r7-active-route-scale: 1150
+    uv-igp-inet6-r7-total-route-scale: 6250
+    uv-igp-r-rt0-isis-adv-v4prefix1-mask: 32
+    uv-igp-r-rt0-isis-adv-v4prefix1-step: 0.0.0.1
+    uv-igp-r-rt0-isis-adv-v6prefix1-mask: 128
+    uv-igp-r-rt0-isis-adv-v6prefix1-step: 0:0:0:0:0:0:0:1
+    uv-igp-r-rt0-isis-area-id: 490001
+    uv-igp-r-rt0-isis-netmask-32: 32
+    uv-igp-r-rt0-isis-netmask-32-ip: 255.255.255.255
+    uv-igp-r-rt0-isis-netmaskv6-128: 128
+    uv-igp-r-rt0-isis-netmaskv6-128-ip: ffff:ffff:ffff:ffff:ffff:ffff
+    uv-igp-r-rt0-vlan1-count: 25
+    uv-igp-r-rt0-vlan1-start: 1
+    uv-igp-r-rt0-vlan2-count: 25
+    uv-igp-r-rt0-vlan2-start: 26
+    uv-igp-r0-rt0-isis-adv-v4prefix1: 64.0.0.0
+    uv-igp-r0-rt0-isis-adv-v4prefix1-count: 1
+    uv-igp-r0-rt0-isis-adv-v4prefix2: 64.0.0.25
+    uv-igp-r0-rt0-isis-adv-v4prefix2-count: 1
+    uv-igp-r0-rt0-isis-adv-v6prefix1: 2002::64:0:0:0
+    uv-igp-r0-rt0-isis-adv-v6prefix1-count: 1
+    uv-igp-r0-rt0-isis-adv-v6prefix2: 2002::64:0:0:19
+    uv-igp-r0-rt0-isis-adv-v6prefix2-count: 1
+    uv-igp-r0-rt0-v4addr1-start: 11.0.0.0
+    uv-igp-r0-rt0-v4addr2-start: 11.0.0.50
+    uv-igp-r0-rt0-v6addr1-start: 2002::11:0:0:0
+    uv-igp-r0-rt0-v6addr2-start: 2002::11:0:0:32
+    uv-igp-r1-rt0-isis-adv-v4prefix1: 64.1.0.0
+    uv-igp-r1-rt0-isis-adv-v4prefix1-count: 1
+    uv-igp-r1-rt0-isis-adv-v4prefix2: 64.1.0.25
+    uv-igp-r1-rt0-isis-adv-v4prefix2-count: 1
+    uv-igp-r1-rt0-isis-adv-v6prefix1: 2002::64:1:0:0
+    uv-igp-r1-rt0-isis-adv-v6prefix1-count: 1
+    uv-igp-r1-rt0-isis-adv-v6prefix2: 2002::64:1:0:19
+    uv-igp-r1-rt0-isis-adv-v6prefix2-count: 1
+    uv-igp-r1-rt0-v4addr1-start: 11.1.0.0
+    uv-igp-r1-rt0-v4addr2-start: 11.1.0.50
+    uv-igp-r1-rt0-v6addr1-start: 2002::11:1:0:0
+    uv-igp-r1-rt0-v6addr2-start: 2002::11:1:0:32
+    uv-igp-r2-adj-scale: 58
+    uv-igp-r2-rt0-isis-adv-v4prefix1: 64.2.0.0
+    uv-igp-r2-rt0-isis-adv-v4prefix1-count: 1
+    uv-igp-r2-rt0-isis-adv-v4prefix2: 64.2.0.25
+    uv-igp-r2-rt0-isis-adv-v4prefix2-count: 1
+    uv-igp-r2-rt0-isis-adv-v6prefix1: 2002::64:2:0:0
+    uv-igp-r2-rt0-isis-adv-v6prefix1-count: 1
+    uv-igp-r2-rt0-isis-adv-v6prefix2: 2002::64:2:0:19
+    uv-igp-r2-rt0-isis-adv-v6prefix2-count: 1
+    uv-igp-r2-rt0-v4addr1-start: 11.2.0.0
+    uv-igp-r2-rt0-v4addr2-start: 11.2.0.50
+    uv-igp-r2-rt0-v6addr1-start: 2002::11:2:0:0
+    uv-igp-r2-rt0-v6addr2-start: 2002::11:2:0:32
+    uv-igp-r3-adj-scale: 58
+    uv-igp-r3-rt0-isis-adv-v4prefix1: 64.3.0.0
+    uv-igp-r3-rt0-isis-adv-v4prefix1-count: 1
+    uv-igp-r3-rt0-isis-adv-v4prefix2: 64.3.0.25
+    uv-igp-r3-rt0-isis-adv-v4prefix2-count: 1
+    uv-igp-r3-rt0-isis-adv-v6prefix1: 2002::64:3:0:0
+    uv-igp-r3-rt0-isis-adv-v6prefix1-count: 1
+    uv-igp-r3-rt0-isis-adv-v6prefix2: 2002::64:3:0:19
+    uv-igp-r3-rt0-isis-adv-v6prefix2-count: 1
+    uv-igp-r3-rt0-v4addr1-start: 11.3.0.0
+    uv-igp-r3-rt0-v4addr2-start: 11.3.0.50
+    uv-igp-r3-rt0-v6addr1-start: 2002::11:3:0:0
+    uv-igp-r3-rt0-v6addr2-start: 2002::11:3:0:32
+    uv-igp-r4-adj-scale: 58
+    uv-igp-r4-rt0-isis-adv-v4prefix1: 64.4.0.0
+    uv-igp-r4-rt0-isis-adv-v4prefix1-count: 1
+    uv-igp-r4-rt0-isis-adv-v4prefix2: 64.4.0.25
+    uv-igp-r4-rt0-isis-adv-v4prefix2-count: 1
+    uv-igp-r4-rt0-isis-adv-v6prefix1: 2002::64:4:0:0
+    uv-igp-r4-rt0-isis-adv-v6prefix1-count: 1
+    uv-igp-r4-rt0-isis-adv-v6prefix2: 2002::64:4:0:19
+    uv-igp-r4-rt0-isis-adv-v6prefix2-count: 1
+    uv-igp-r4-rt0-v4addr1-start: 11.4.0.0
+    uv-igp-r4-rt0-v4addr2-start: 11.4.0.50
+    uv-igp-r4-rt0-v6addr1-start: 2002::11:4:0:0
+    uv-igp-r4-rt0-v6addr2-start: 2002::11:4:0:32
+    uv-igp-r5-adj-scale: 57
+    uv-igp-r5-rt0-isis-adv-v4prefix1: 64.5.0.0
+    uv-igp-r5-rt0-isis-adv-v4prefix1-count: 1
+    uv-igp-r5-rt0-isis-adv-v4prefix2: 64.5.0.25
+    uv-igp-r5-rt0-isis-adv-v4prefix2-count: 1
+    uv-igp-r5-rt0-isis-adv-v6prefix1: 2002::64:5:0:0
+    uv-igp-r5-rt0-isis-adv-v6prefix1-count: 1
+    uv-igp-r5-rt0-isis-adv-v6prefix2: 2002::64:5:0:19
+    uv-igp-r5-rt0-isis-adv-v6prefix2-count: 1
+    uv-igp-r5-rt0-v4addr1-start: 11.5.0.0
+    uv-igp-r5-rt0-v4addr2-start: 11.5.0.50
+    uv-igp-r5-rt0-v6addr1-start: 2002::11:5:0:0
+    uv-igp-r5-rt0-v6addr2-start: 2002::11:5:0:32
+    uv-igp-r6-adj-scale: 57
+    uv-igp-r6-rt0-isis-adv-v4prefix1: 64.6.0.0
+    uv-igp-r6-rt0-isis-adv-v4prefix1-count: 1
+    uv-igp-r6-rt0-isis-adv-v4prefix2: 64.6.0.25
+    uv-igp-r6-rt0-isis-adv-v4prefix2-count: 1
+    uv-igp-r6-rt0-isis-adv-v6prefix1: 2002::64:6:0:0
+    uv-igp-r6-rt0-isis-adv-v6prefix1-count: 1
+    uv-igp-r6-rt0-isis-adv-v6prefix2: 2002::64:6:0:19
+    uv-igp-r6-rt0-isis-adv-v6prefix2-count: 1
+    uv-igp-r6-rt0-v4addr1-start: 11.6.0.0
+    uv-igp-r6-rt0-v4addr2-start: 11.6.0.50
+    uv-igp-r6-rt0-v6addr1-start: 2002::11:6:0:0
+    uv-igp-r6-rt0-v6addr2-start: 2002::11:6:0:32
+    uv-igp-r7-adj-scale: 57
+    uv-igp-r7-rt0-isis-adv-v4prefix1: 64.7.0.0
+    uv-igp-r7-rt0-isis-adv-v4prefix1-count: 1
+    uv-igp-r7-rt0-isis-adv-v4prefix2: 64.7.0.25
+    uv-igp-r7-rt0-isis-adv-v4prefix2-count: 1
+    uv-igp-r7-rt0-isis-adv-v6prefix1: 2002::64:7:0:0
+    uv-igp-r7-rt0-isis-adv-v6prefix1-count: 1
+    uv-igp-r7-rt0-isis-adv-v6prefix2: 2002::64:7:0:19
+    uv-igp-r7-rt0-isis-adv-v6prefix2-count: 1
+    uv-igp-r7-rt0-v4addr1-start: 11.7.0.0
+    uv-igp-r7-rt0-v4addr2-start: 11.7.0.50
+    uv-igp-r7-rt0-v6addr1-start: 2002::11:7:0:0
+    uv-igp-r7-rt0-v6addr2-start: 2002::11:7:0:32
+    uv-igp-r8-rt0-isis-adv-v4prefix1: 64.8.0.0
+    uv-igp-r8-rt0-isis-adv-v4prefix1-count: 1
+    uv-igp-r8-rt0-isis-adv-v4prefix2: 64.8.0.25
+    uv-igp-r8-rt0-isis-adv-v4prefix2-count: 1
+    uv-igp-r8-rt0-isis-adv-v6prefix1: 2002::64:8:0:0
+    uv-igp-r8-rt0-isis-adv-v6prefix1-count: 1
+    uv-igp-r8-rt0-isis-adv-v6prefix2: 2002::64:8:0:19
+    uv-igp-r8-rt0-isis-adv-v6prefix2-count: 1
+    uv-igp-r8-rt0-v4addr1-start: 11.8.0.0
+    uv-igp-r8-rt0-v4addr2-start: 11.8.0.50
+    uv-igp-r8-rt0-v6addr1-start: 2002::11:8:0:0
+    uv-igp-r8-rt0-v6addr2-start: 2002::11:8:0:32
+    uv-igp-r9-rt0-isis-adv-v4prefix1: 64.9.0.0
+    uv-igp-r9-rt0-isis-adv-v4prefix1-count: 1
+    uv-igp-r9-rt0-isis-adv-v4prefix2: 64.9.0.25
+    uv-igp-r9-rt0-isis-adv-v4prefix2-count: 1
+    uv-igp-r9-rt0-isis-adv-v6prefix1: 2002::64:9:0:0
+    uv-igp-r9-rt0-isis-adv-v6prefix1-count: 1
+    uv-igp-r9-rt0-isis-adv-v6prefix2: 2002::64:9:0:19
+    uv-igp-r9-rt0-isis-adv-v6prefix2-count: 1
+    uv-igp-r9-rt0-v4addr1-start: 11.9.0.0
+    uv-igp-r9-rt0-v4addr2-start: 11.9.0.50
+    uv-igp-r9-rt0-v6addr1-start: 2002::11:9:0:0
+    uv-igp-r9-rt0-v6addr2-start: 2002::11:9:0:32
+    uv-igp-rt0-r-v4addr1-netmask: 31
+    uv-igp-rt0-r-v4addr1-netmask-ip: 255.255.255.254
+    uv-igp-rt0-r-v4addr1-step: 0.0.0.2
+    uv-igp-rt0-r-v6addr1-netmask: 127
+    uv-igp-rt0-r-v6addr1-netmask-ip: ffff:ffff:ffff:ffff:ffff:fffe
+    uv-igp-rt0-r-v6addr1-scale-netmask: 64
+    uv-igp-rt0-r-v6addr1-scale-netmask-ip: 64
+    uv-igp-rt0-r-v6addr1-step: 0:0:0:0:0:0:0:2
+    uv-igp-rt0-r0-v4addr1-start: 11.0.0.1
+    uv-igp-rt0-r0-v4addr2-start: 11.0.0.51
+    uv-igp-rt0-r0-v6addr1-start: 2002::11:0:0:1
+    uv-igp-rt0-r0-v6addr2-start: 2002::11:0:0:33
+    uv-igp-rt0-r1-v4addr1-start: 11.1.0.1
+    uv-igp-rt0-r1-v4addr2-start: 11.1.0.51
+    uv-igp-rt0-r1-v6addr1-start: 2002::11:1:0:1
+    uv-igp-rt0-r1-v6addr2-start: 2002::11:1:0:33
+    uv-igp-rt0-r2-v4addr1-start: 11.2.0.1
+    uv-igp-rt0-r2-v4addr2-start: 11.2.0.51
+    uv-igp-rt0-r2-v6addr1-start: 2002::11:2:0:1
+    uv-igp-rt0-r2-v6addr2-start: 2002::11:2:0:33
+    uv-igp-rt0-r3-v4addr1-start: 11.3.0.1
+    uv-igp-rt0-r3-v4addr2-start: 11.3.0.51
+    uv-igp-rt0-r3-v6addr1-start: 2002::11:3:0:1
+    uv-igp-rt0-r3-v6addr2-start: 2002::11:3:0:33
+    uv-igp-rt0-r4-v4addr1-start: 11.4.0.1
+    uv-igp-rt0-r4-v4addr2-start: 11.4.0.51
+    uv-igp-rt0-r4-v6addr1-start: 2002::11:4:0:1
+    uv-igp-rt0-r4-v6addr2-start: 2002::11:4:0:33
+    uv-igp-rt0-r5-v4addr1-start: 11.5.0.1
+    uv-igp-rt0-r5-v4addr2-start: 11.5.0.51
+    uv-igp-rt0-r5-v6addr1-start: 2002::11:5:0:1
+    uv-igp-rt0-r5-v6addr2-start: 2002::11:5:0:33
+    uv-igp-rt0-r6-v4addr1-start: 11.6.0.1
+    uv-igp-rt0-r6-v4addr2-start: 11.6.0.51
+    uv-igp-rt0-r6-v6addr1-start: 2002::11:6:0:1
+    uv-igp-rt0-r6-v6addr2-start: 2002::11:6:0:33
+    uv-igp-rt0-r7-v4addr1-start: 11.7.0.1
+    uv-igp-rt0-r7-v4addr2-start: 11.7.0.51
+    uv-igp-rt0-r7-v6addr1-start: 2002::11:7:0:1
+    uv-igp-rt0-r7-v6addr2-start: 2002::11:7:0:33
+    uv-igp-rt0-r8-v4addr1-start: 11.8.0.1
+    uv-igp-rt0-r8-v4addr2-start: 11.8.0.51
+    uv-igp-rt0-r8-v6addr1-start: 2002::11:8:0:1
+    uv-igp-rt0-r8-v6addr2-start: 2002::11:8:0:33
+    uv-igp-rt0-r9-v4addr1-start: 11.9.0.1
+    uv-igp-rt0-r9-v4addr2-start: 11.9.0.51
+    uv-igp-rt0-r9-v6addr1-start: 2002::11:9:0:1
+    uv-igp-rt0-r9-v6addr2-start: 2002::11:9:0:33
+    uv-igp-traffic-rate: 1000
+    uv-igp_proto-chk-intr: 10
+    uv-igp_proto-chk-tout: 600
+    uv-isis-config: 1
+    uv-itr-on-traffic-fail: 30
+    uv-jflow-config: 1
+    uv-jflow-flow-active-timeout: 120
+    uv-jflow-flow-inactive-timeout: 20
+    uv-jflow-flow-server-ip: 172.20.0.190
+    uv-jflow-forwarding-class: af4
+    uv-jflow-lb-threshold: 5
+    uv-jflow-mx-v4-flow-table-size: 8
+    uv-jflow-mx-v6-flow-table-size: 3
+    uv-jflow-r2-rt0-2-ipv4-addr: 12.2.1.0
+    uv-jflow-r2-rt0-2-ipv6-addr: 2001::12:2:1:0
+    uv-jflow-r3-rt0-2-ipv4-addr: 12.3.1.0
+    uv-jflow-r3-rt0-2-ipv6-addr: 2001::12:3:1:0
+    uv-jflow-r4-rt0-2-ipv4-addr: 12.4.1.0
+    uv-jflow-r4-rt0-2-ipv6-addr: 2001::12:4:1:0
+    uv-jflow-r5-rt0-2-ipv4-addr: 12.5.1.0
+    uv-jflow-r5-rt0-2-ipv6-addr: 2001::12:5:1:0
+    uv-jflow-r6-rt0-2-ipv4-addr: 12.6.1.0
+    uv-jflow-r6-rt0-2-ipv6-addr: 2001::12:6:1:0
+    uv-jflow-r7-rt0-2-ipv4-addr: 12.7.1.0
+    uv-jflow-r7-rt0-2-ipv6-addr: 2001::12:7:1:0
+    uv-jflow-rt0-r2-2-ipv4-addr: 12.2.1.1
+    uv-jflow-rt0-r2-2-ipv6-addr: 2001::12:2:1:1
+    uv-jflow-rt0-r2-2-v4-nw-start: 72.0.0.1
+    uv-jflow-rt0-r2-2-v6-nw-start: 2001::72:0:0:1
+    uv-jflow-rt0-r3-2-ipv4-addr: 12.3.1.1
+    uv-jflow-rt0-r3-2-ipv6-addr: 2001::12:3:1:1
+    uv-jflow-rt0-r3-2-v4-nw-start: 73.0.0.1
+    uv-jflow-rt0-r3-2-v6-nw-start: 2001::73:0:0:1
+    uv-jflow-rt0-r4-2-ipv4-addr: 12.4.1.1
+    uv-jflow-rt0-r4-2-ipv6-addr: 2001::12:4:1:1
+    uv-jflow-rt0-r4-2-v4-nw-start: 74.0.0.1
+    uv-jflow-rt0-r4-2-v6-nw-start: 2001::74:0:0:1
+    uv-jflow-rt0-r5-2-ipv4-addr: 12.5.1.1
+    uv-jflow-rt0-r5-2-ipv6-addr: 2001::12:5:1:1
+    uv-jflow-rt0-r5-2-v4-nw-start: 75.0.0.1
+    uv-jflow-rt0-r5-2-v6-nw-start: 2001::75:0:0:1
+    uv-jflow-rt0-r6-2-ipv4-addr: 12.6.1.1
+    uv-jflow-rt0-r6-2-ipv6-addr: 2001::12:6:1:1
+    uv-jflow-rt0-r6-2-v4-nw-start: 76.0.0.1
+    uv-jflow-rt0-r6-2-v6-nw-start: 2001::76:0:0:1
+    uv-jflow-rt0-r7-2-ipv4-addr: 12.7.1.1
+    uv-jflow-rt0-r7-2-ipv6-addr: 2001::12:7:1:1
+    uv-jflow-rt0-r7-2-v4-nw-start: 77.0.0.1
+    uv-jflow-rt0-r7-2-v6-nw-start: 2001::77:0:0:1
+    uv-jflow-sampling-rate: 10
+    uv-jflow-traffic-rate-pps: 100000
+    uv-jflow-v4-active-flows: 50000
+    uv-jflow-v4-prefix-ip-count: 50000
+    uv-jflow-v4-tcp-dst-port-count: 1000
+    uv-jflow-v4-tcp-src-port-count: 20000
+    uv-jflow-v6-active-flows: 50000
+    uv-jflow-v6-prefix-ip-count: 50000
+    uv-jflow-v6-tcp-dst-port-count: 1000
+    uv-jflow-v6-tcp-src-port-count: 20000
+    uv-l_isis_inet0-r2-active-route-scale: 4300
+    uv-l_isis_inet0-r2-total-route-scale: 4300
+    uv-l_isis_inet0-r3-active-route-scale: 4300
+    uv-l_isis_inet0-r3-total-route-scale: 4300
+    uv-l_isis_inet0-r4-active-route-scale: 4300
+    uv-l_isis_inet0-r4-total-route-scale: 4300
+    uv-l_isis_inet0-r5-active-route-scale: 4300
+    uv-l_isis_inet0-r5-total-route-scale: 4300
+    uv-l_isis_inet0-r6-active-route-scale: 4300
+    uv-l_isis_inet0-r6-total-route-scale: 4300
+    uv-l_isis_inet0-r7-active-route-scale: 4300
+    uv-l_isis_inet0-r7-total-route-scale: 4300
+    uv-l_isis_inet6-r2-active-route-scale: 5000
+    uv-l_isis_inet6-r2-total-route-scale: 5000
+    uv-l_isis_inet6-r3-active-route-scale: 5000
+    uv-l_isis_inet6-r3-total-route-scale: 5000
+    uv-l_isis_inet6-r4-active-route-scale: 5000
+    uv-l_isis_inet6-r4-total-route-scale: 5000
+    uv-l_isis_inet6-r5-active-route-scale: 5000
+    uv-l_isis_inet6-r5-total-route-scale: 5000
+    uv-l_isis_inet6-r6-active-route-scale: 5000
+    uv-l_isis_inet6-r6-total-route-scale: 5000
+    uv-l_isis_inet6-r7-active-route-scale: 5000
+    uv-l_isis_inet6-r7-total-route-scale: 5000
+    uv-load-router-config: 0
+    uv-load-test-config: 0
+    uv-load-test-config-location: /volume/regressions/results/JUNOS/HEAD/ssmurthy/configs/TB6
+    uv-loopback-ipv4-sr-anycast-sid: 11.11.11.11
+    uv-loopback-ipv6-sr-anycast-sid: 2001::11:11:11:11
+    uv-lsp-destination-scale: 188
+    uv-lsp-scale-r0-r4: 188
+    uv-lsp-scale-r0-r8: 422
+    uv-lsp-scale-r1-r9: 422
+    uv-lsp-scale-r2-r6: 94
+    uv-lsp-scale-r2-r8: 94
+    uv-lsp-scale-r3-r7: 94
+    uv-lsp-scale-r3-r9: 94
+    uv-lsp-scale-r4-r8: 188
+    uv-lsp-scale-r5-r1: 188
+    uv-lsp-scale-r6-r0: 94
+    uv-lsp-scale-r6-r2: 94
+    uv-lsp-scale-r7-r1: 94
+    uv-lsp-scale-r7-r3: 94
+    uv-lsp-scale-r8-r0: 422
+    uv-lsp-scale-r9-r1: 422
+    uv-mpls-lsp-hipri-lopri-count: 8
+    uv-mpls-te-bgp-igp: 'True'
+    uv-nex-itr-wait-time-tr-fail: 60
+    uv-ocst-agent-sensors-count: 40
+    uv-ocst-background: 0
+    uv-ocst-cpu-max: 30
+    uv-ocst-ephemeral-config-count: 34
+    uv-ocst-jtimon: jtimon-linux-x86_64
+    uv-ocst-mx-agent-sensors-count: 41
+    uv-ocst-mx-sensor-count: 37
+    uv-ocst-output-log: output.log
+    uv-ocst-pid-host1: 999999
+    uv-ocst-pid-host2: 999999
+    uv-ocst-remote-dir: /root/ocst/
+    uv-ocst-rpd-max: 500
+    uv-ocst-sensor-count: 36
+    uv-ocst-server: host1
+    uv-ocst-server1: host2
+    uv-ocst-test: 0
+    uv-passive-longevity-duration: 3600
+    uv-pfe-r2-v4-route-scale: 1912500
+    uv-pfe-r2-v6-route-scale: 198000
+    uv-pfe-r3-v4-route-scale: 912500
+    uv-pfe-r3-v6-route-scale: 197800
+    uv-pfe-r4-v4-route-scale: 1912800
+    uv-pfe-r4-v6-route-scale: 198120
+    uv-pfe-r5-v4-route-scale: 1912500
+    uv-pfe-r5-v6-route-scale: 197800
+    uv-pfe-r6-v4-route-scale: 1912500
+    uv-pfe-r6-v6-route-scale: 197800
+    uv-pfe-r7-v4-route-scale: 912500
+    uv-pfe-r7-v6-route-scale: 198000
+    uv-r0-ae0-ipv4-addr: 10.2.0.0
+    uv-r0-ae1-ipv4-addr: 10.3.0.0
+    uv-r0-host1-1-ipv4-addr: 150.1.1.5
+    uv-r0-host1-1-ipv6-addr: 2001::150:1:1:5
+    uv-r0-host2-1-ipv4-addr: 150.1.1.13
+    uv-r0-host2-1-ipv6-addr: 2001::150:1:1:d
+    uv-r0-loopback-ipv4-primary: 1.1.1.1
+    uv-r0-loopback-ipv4-rsvp: 1.1.1.101
+    uv-r0-loopback-ipv4-sr: 1.1.1.100
+    uv-r0-loopback-ipv6-primary: 2001::1:1:1:1
+    uv-r0-loopback-ipv6-sr: 2001::1:1:1:100
+    uv-r1-ae2-ipv4-addr: 10.12.0.0
+    uv-r1-ae3-ipv4-addr: 10.13.0.0
+    uv-r1-host1-1-ipv4-addr: 150.1.1.1
+    uv-r1-host1-1-ipv6-addr: 2001::150:1:1:1
+    uv-r1-host2-1-ipv4-addr: 150.1.1.9
+    uv-r1-host2-1-ipv6-addr: 2001::150:1:1:9
+    uv-r1-loopback-ipv4-primary: 2.2.2.2
+    uv-r1-loopback-ipv4-rsvp: 2.2.2.101
+    uv-r1-loopback-ipv4-sr: 2.2.2.100
+    uv-r1-loopback-ipv6-primary: 2001::2:2:2:2
+    uv-r1-loopback-ipv6-sr: 2001::2:2:2:100
+    uv-r10-loopback-ipv4-primary: 12.12.12.12
+    uv-r10-loopback-ipv4-rsvp: 12.12.12.101
+    uv-r10-loopback-ipv4-sr: 12.12.12.100
+    uv-r10-loopback-ipv6-primary: 2001::12:12:12:12
+    uv-r10-loopback-ipv6-sr: 2001::12:12:12:100
+    uv-r2-ae0-ipv4-addr: 10.2.0.1
+    uv-r2-ae100-ipv4-addr: 10.24.1.0
+    uv-r2-ae2-ipv4-addr: 10.12.0.1
+    uv-r2-ae50-ipv4-addr: 10.23.0.0
+    uv-r2-ae51-ipv4-addr: 10.23.1.0
+    uv-r2-ae52-ipv4-addr: 10.24.0.0
+    uv-r2-ae53-ipv4-addr: 10.25.0.0
+    uv-r2-ae54-ipv4-addr: 10.25.1.0
+    uv-r2-loopback-ipv4-primary: 3.3.3.3
+    uv-r2-loopback-ipv4-rsvp: 3.3.3.101
+    uv-r2-loopback-ipv4-sr: 3.3.3.100
+    uv-r2-loopback-ipv6-primary: 2001::3:3:3:3
+    uv-r2-loopback-ipv6-sr: 2001::3:3:3:100
+    uv-r3-ae1-ipv4-addr: 10.3.0.1
+    uv-r3-ae101-ipv4-addr: 10.35.1.0
+    uv-r3-ae3-ipv4-addr: 10.13.0.1
+    uv-r3-ae50-ipv4-addr: 10.23.0.1
+    uv-r3-ae51-ipv4-addr: 10.23.1.1
+    uv-r3-ae55-ipv4-addr: 10.34.0.0
+    uv-r3-ae56-ipv4-addr: 10.34.1.0
+    uv-r3-ae57-ipv4-addr: 10.35.0.0
+    uv-r3-ae80-ipv4-addr: 10.80.0.3
+    uv-r3-loopback-ipv4-primary: 4.4.4.4
+    uv-r3-loopback-ipv4-rsvp: 4.4.4.101
+    uv-r3-loopback-ipv4-sr: 4.4.4.100
+    uv-r3-loopback-ipv6-primary: 2001::4:4:4:4
+    uv-r3-loopback-ipv6-sr: 2001::4:4:4:100
+    uv-r4-ae100-ipv4-addr: 10.24.1.1
+    uv-r4-ae102-ipv4-addr: 10.45.0.0
+    uv-r4-ae103-ipv4-addr: 10.46.1.0
+    uv-r4-ae52-ipv4-addr: 10.24.0.1
+    uv-r4-ae55-ipv4-addr: 10.34.0.1
+    uv-r4-ae56-ipv4-addr: 10.34.1.1
+    uv-r4-ae58-ipv4-addr: 10.46.0.0
+    uv-r4-ae59-ipv4-addr: 10.47.0.0
+    uv-r4-ae81-ipv4-addr: 10.80.0.4
+    uv-r4-loopback-ipv4-primary: 5.5.5.5
+    uv-r4-loopback-ipv4-rsvp: 5.5.5.101
+    uv-r4-loopback-ipv4-sr: 5.5.5.100
+    uv-r4-loopback-ipv6-primary: 2001::5:5:5:5
+    uv-r4-loopback-ipv6-sr: 2001::5:5:5:100
+    uv-r5-ae101-ipv4-addr: 10.35.1.1
+    uv-r5-ae102-ipv4-addr: 10.45.0.1
+    uv-r5-ae104-ipv4-addr: 10.57.1.0
+    uv-r5-ae53-ipv4-addr: 10.25.0.1
+    uv-r5-ae54-ipv4-addr: 10.25.1.1
+    uv-r5-ae57-ipv4-addr: 10.35.0.1
+    uv-r5-ae60-ipv4-addr: 10.56.0.0
+    uv-r5-ae61-ipv4-addr: 10.57.0.0
+    uv-r5-ae82-ipv4-addr: 10.80.0.5
+    uv-r5-loopback-ipv4-primary: 6.6.6.6
+    uv-r5-loopback-ipv4-rsvp: 6.6.6.101
+    uv-r5-loopback-ipv4-sr: 6.6.6.100
+    uv-r5-loopback-ipv6-primary: 2001::6:6:6:6
+    uv-r5-loopback-ipv6-sr: 2001::6:6:6:100
+    uv-r6-ae103-ipv4-addr: 10.46.1.1
+    uv-r6-ae180-ipv4-addr: 10.80.0.6
+    uv-r6-ae4-ipv4-addr: 10.67.0.0
+    uv-r6-ae5-ipv4-addr: 10.68.0.0
+    uv-r6-ae58-ipv4-addr: 10.46.0.1
+    uv-r6-ae6-ipv4-addr: 10.69.0.0
+    uv-r6-ae60-ipv4-addr: 10.56.0.1
+    uv-r6-ae62-ipv4-addr: 10.67.1.0
+    uv-r6-loopback-ipv4-primary: 7.7.7.7
+    uv-r6-loopback-ipv4-rsvp: 7.7.7.101
+    uv-r6-loopback-ipv4-sr: 7.7.7.100
+    uv-r6-loopback-ipv6-primary: 2001::7:7:7:7
+    uv-r6-loopback-ipv6-sr: 2001::7:7:7:100
+    uv-r7-ae104-ipv4-addr: 10.57.1.1
+    uv-r7-ae4-ipv4-addr: 10.67.0.1
+    uv-r7-ae59-ipv4-addr: 10.47.0.1
+    uv-r7-ae61-ipv4-addr: 10.57.0.1
+    uv-r7-ae62-ipv4-addr: 10.67.1.1
+    uv-r7-ae7-ipv4-addr: 10.78.0.0
+    uv-r7-ae8-ipv4-addr: 10.80.0.7
+    uv-r7-ae9-ipv4-addr: 10.79.0.0
+    uv-r7-loopback-ipv4-primary: 8.8.8.8
+    uv-r7-loopback-ipv4-rsvp: 8.8.8.101
+    uv-r7-loopback-ipv4-sr: 8.8.8.100
+    uv-r7-loopback-ipv6-primary: 2001::8:8:8:8
+    uv-r7-loopback-ipv6-sr: 2001::8:8:8:100
+    uv-r8-ae5-ipv4-addr: 10.68.0.1
+    uv-r8-ae7-ipv4-addr: 10.78.0.1
+    uv-r8-loopback-ipv4-primary: 9.9.9.9
+    uv-r8-loopback-ipv4-rsvp: 9.9.9.101
+    uv-r8-loopback-ipv4-sr: 9.9.9.100
+    uv-r8-loopback-ipv6-primary: 2001::9:9:9:9
+    uv-r8-loopback-ipv6-sr: 2001::9:9:9:100
+    uv-r9-ae6-ipv4-addr: 10.69.0.1
+    uv-r9-ae9-ipv4-addr: 10.79.0.1
+    uv-r9-loopback-ipv4-primary: 10.10.10.10
+    uv-r9-loopback-ipv4-rsvp: 10.10.10.101
+    uv-r9-loopback-ipv4-sr: 10.10.10.100
+    uv-r9-loopback-ipv6-primary: 2001::a:a:a:a
+    uv-r9-loopback-ipv6-sr: 2001::10:10:10:100
+    uv-rsvp-baseline-full-timeout: 3800
+    uv-rsvp-baseline-gc-timeout: 1800
+    uv-rsvp-baseline-test-timeout: 1200
+    uv-rsvp-config: 1
+    uv-rsvp-ecmp-lsp-lb-threshold: 20
+    uv-rsvp-lsp-ingress: 2000
+    uv-rsvp-lsp-transit: 15000
+    uv-rsvp-max-global-convergence: 10000
+    uv-rsvp-max-local-convergence: 10
+    uv-rsvp-r2-lsp-regexp: R2_to_R8_1_*
+    uv-rsvp-r3-lsp-regexp: R3_to_R9_1_*
+    uv-rsvp-r4-lsp-regexp: R4_to_R8_1_*
+    uv-rsvp-r5-lsp-regexp: R5_to_R1_1_*
+    uv-rsvp-r6-lsp-regexp: R6_to_R0_1_*
+    uv-rsvp-r7-lsp-regexp: R7_to_R1_1_*
+    uv-rsvp-traffic-rate: 20000
+    uv-segmentlist-ae-aggressive-bucket: r5-r7_ae61-ae104
+    uv-segmentlist-ae-down-frr-bucket: r2-r4_ae52 r3-r5_ae101-ae57 r4-r5_ae102 r4-r6_ae58 r6-r7_ae62
+    uv-segmentlist-ae-fpc-poweroff-bucket: r2-r4_1_ae52_1 r6-r7_4-5_ae62_0-1-4 r4-r6_4-5-6-7_ae103_1-3-4-5 r4-r6_4-5-6-7_ae58_1-3-4-5
+    uv-segmentlist-ae-fpc-trigger-bucket: r2-r4_1_ae52_1 r6-r7_4-5_ae62_0-1-4 r4-r6_4-5-6-7_ae103_1-3-4-5 r4-r6_4-5-6-7_ae58_1-3-4-5
+    uv-segmentlist-ae-link-flap-bucket: r2-r4_ae52-ae100 r3-r5_ae57-ae101 r4-r6_ae58 r5-r7_ae61 r6-r7_ae62
+    uv-segmentlist-ae-link-move-bucket: r2-r5_ae53-ae54 r3-r5_ae57-ae101
+    uv-segmentlist-ae-pic-trigger-bucket: r2-r4_8_ae100_7
+    uv-sflow-collector: 150.1.1.10
+    uv-skip-router-config: 0
+    uv-sr-config: 1
+    uv-sr-index-range: 100000
+    uv-sr-r-rt0-ifl1-count: 1
+    uv-sr-r-rt0-scale-prefix-ipv4-step: 0.0.0.17
+    uv-sr-r-rt0-scale-prefix-ipv6-step: 0:0:0:0:0:0:0:11
+    uv-sr-r-rt0-v4sid-scale: 17
+    uv-sr-r-rt0-v6sid-scale: 17
+    uv-sr-r-rt0-vlan1-start: 151
+    uv-sr-r0-loopbackv4-index: 1
+    uv-sr-r0-loopbackv6-index: 2
+    uv-sr-r0-rt0-v4addr1-start: 11.0.0.150
+    uv-sr-r0-rt0-v6addr1-start: 2002::11:0:0:150
+    uv-sr-r0-static-adj-v4sid-label-ae0: 1020001
+    uv-sr-r0-static-adj-v6sid-index-ae0: 48574
+    uv-sr-r0-v4sid-scale-prefix1: 64.0.100.0
+    uv-sr-r0-v4sid-scale-prefix2: 64.0.101.0
+    uv-sr-r0-v6sid-scale-prefix1: 2002::64:0:100:0
+    uv-sr-r0-v6sid-scale-prefix2: 2002::64:0:101:0
+    uv-sr-r1-loopbackv4-index: 3
+    uv-sr-r1-loopbackv6-index: 4
+    uv-sr-r1-rt0-v4addr1-start: 11.1.0.150
+    uv-sr-r1-rt0-v6addr1-start: 2002::11:1:0:150
+    uv-sr-r1-static-adj-v4sid-label-ae0: 1020001
+    uv-sr-r1-static-adj-v6sid-index-ae0: 48574
+    uv-sr-r1-v4sid-scale-prefix1: 64.1.100.0
+    uv-sr-r1-v4sid-scale-prefix2: 64.1.101.0
+    uv-sr-r1-v6sid-scale-prefix1: 2002::64:1:100:0
+    uv-sr-r1-v6sid-scale-prefix2: 2002::64:1:101:0
+    uv-sr-r2-loopbackv4-index: 5
+    uv-sr-r2-loopbackv6-index: 6
+    uv-sr-r2-rt0-v4addr1-start: 11.2.0.150
+    uv-sr-r2-rt0-v6addr1-start: 2002::11:2:0:150
+    uv-sr-r2-static-adj-v4sid-index-ae52: 90003
+    uv-sr-r2-static-adj-v4sid-label-ae100: 1020004
+    uv-sr-r2-static-adj-v4sid-label-ae50: 1020001
+    uv-sr-r2-static-adj-v4sid-label-ae51: 1020002
+    uv-sr-r2-static-adj-v4sid-label-ae53: 1020005
+    uv-sr-r2-static-adj-v4sid-label-ae54: 1020006
+    uv-sr-r2-static-adj-v6sid-index-ae100: 90004
+    uv-sr-r2-static-adj-v6sid-index-ae50: 90001
+    uv-sr-r2-static-adj-v6sid-index-ae51: 90002
+    uv-sr-r2-static-adj-v6sid-index-ae53: 90005
+    uv-sr-r2-static-adj-v6sid-index-ae55: 90006
+    uv-sr-r2-static-adj-v6sid-label-ae52: 1020003
+    uv-sr-r2-v4sid-scale-prefix1: 64.2.100.0
+    uv-sr-r2-v4sid-scale-prefix2: 64.2.101.0
+    uv-sr-r2-v6sid-scale-prefix1: 2002::64:2:100:0
+    uv-sr-r2-v6sid-scale-prefix2: 2002::64:2:101:0
+    uv-sr-r2r3-v4-anycast-sid: 23
+    uv-sr-r2r3-v6-anycast-sid: 24
+    uv-sr-r3-loopbackv4-index: 7
+    uv-sr-r3-loopbackv6-index: 8
+    uv-sr-r3-rt0-v4addr1-start: 11.3.0.150
+    uv-sr-r3-rt0-v6addr1-start: 2002::11:3:0:150
+    uv-sr-r3-static-adj-v4sid-index-ae55: 90013
+    uv-sr-r3-static-adj-v4sid-label-ae101: 1020016
+    uv-sr-r3-static-adj-v4sid-label-ae50: 1020011
+    uv-sr-r3-static-adj-v4sid-label-ae51: 1020012
+    uv-sr-r3-static-adj-v4sid-label-ae56: 1020014
+    uv-sr-r3-static-adj-v4sid-label-ae57: 1020015
+    uv-sr-r3-static-adj-v6sid-index-ae101: 90016
+    uv-sr-r3-static-adj-v6sid-index-ae50: 90011
+    uv-sr-r3-static-adj-v6sid-index-ae51: 90012
+    uv-sr-r3-static-adj-v6sid-index-ae56: 90014
+    uv-sr-r3-static-adj-v6sid-index-ae57: 90015
+    uv-sr-r3-static-adj-v6sid-label-ae55: 1020013
+    uv-sr-r3-v4sid-scale-prefix1: 64.3.100.0
+    uv-sr-r3-v4sid-scale-prefix2: 64.3.101.0
+    uv-sr-r3-v6sid-scale-prefix1: 2002::64:3:100:0
+    uv-sr-r3-v6sid-scale-prefix2: 2002::64:3:101:0
+    uv-sr-r4-loopbackv4-index: 9
+    uv-sr-r4-loopbackv6-index: 10
+    uv-sr-r4-rt0-v4addr1-start: 11.4.0.150
+    uv-sr-r4-rt0-v6addr1-start: 2002::11:4:0:150
+    uv-sr-r4-static-adj-v4sid-index-ae55: 90023
+    uv-sr-r4-static-adj-v4sid-label-ae102: 1020025
+    uv-sr-r4-static-adj-v4sid-label-ae104: 1020028
+    uv-sr-r4-static-adj-v4sid-label-ae52: 1020021
+    uv-sr-r4-static-adj-v4sid-label-ae58: 1020022
+    uv-sr-r4-static-adj-v4sid-label-ae59: 1020024
+    uv-sr-r4-static-adj-v4sid-label-ae60: 1020026
+    uv-sr-r4-static-adj-v4sid-label-ae61: 1020027
+    uv-sr-r4-static-adj-v6sid-index-ae102: 90025
+    uv-sr-r4-static-adj-v6sid-index-ae104: 90028
+    uv-sr-r4-static-adj-v6sid-index-ae52: 90021
+    uv-sr-r4-static-adj-v6sid-index-ae58: 90022
+    uv-sr-r4-static-adj-v6sid-index-ae59: 90024
+    uv-sr-r4-static-adj-v6sid-index-ae60: 90026
+    uv-sr-r4-static-adj-v6sid-index-ae61: 90027
+    uv-sr-r4-static-adj-v6sid-label-ae55: 1020023
+    uv-sr-r4-v4sid-scale-prefix1: 64.4.100.0
+    uv-sr-r4-v4sid-scale-prefix2: 64.4.101.0
+    uv-sr-r4-v6sid-scale-prefix1: 2002::64:4:100:0
+    uv-sr-r4-v6sid-scale-prefix2: 2002::64:4:101:0
+    uv-sr-r4r5-v4-anycast-sid: 25
+    uv-sr-r4r5-v6-anycast-sid: 26
+    uv-sr-r5-loopbackv4-index: 11
+    uv-sr-r5-loopbackv6-index: 12
+    uv-sr-r5-rt0-v4addr1-start: 11.5.0.150
+    uv-sr-r5-rt0-v6addr1-start: 2002::11:5:0:150
+    uv-sr-r5-static-adj-v4sid-index-ae57: 90033
+    uv-sr-r5-static-adj-v4sid-label-ae101: 1020034
+    uv-sr-r5-static-adj-v4sid-label-ae102: 1020035
+    uv-sr-r5-static-adj-v4sid-label-ae104: 1020038
+    uv-sr-r5-static-adj-v4sid-label-ae53: 1020031
+    uv-sr-r5-static-adj-v4sid-label-ae54: 1020032
+    uv-sr-r5-static-adj-v4sid-label-ae60: 1020036
+    uv-sr-r5-static-adj-v4sid-label-ae61: 1020037
+    uv-sr-r5-static-adj-v6sid-index-ae101: 90034
+    uv-sr-r5-static-adj-v6sid-index-ae102: 90035
+    uv-sr-r5-static-adj-v6sid-index-ae104: 90038
+    uv-sr-r5-static-adj-v6sid-index-ae53: 90031
+    uv-sr-r5-static-adj-v6sid-index-ae54: 90032
+    uv-sr-r5-static-adj-v6sid-index-ae60: 90036
+    uv-sr-r5-static-adj-v6sid-index-ae61: 90037
+    uv-sr-r5-static-adj-v6sid-label-ae57: 1020033
+    uv-sr-r5-v4sid-scale-prefix1: 64.5.100.0
+    uv-sr-r5-v4sid-scale-prefix2: 64.5.101.0
+    uv-sr-r5-v6sid-scale-prefix1: 2002::64:5:100:0
+    uv-sr-r5-v6sid-scale-prefix2: 2002::64:5:101:0
+    uv-sr-r6-loopbackv4-index: 13
+    uv-sr-r6-loopbackv6-index: 14
+    uv-sr-r6-rt0-v4addr1-start: 11.6.0.150
+    uv-sr-r6-rt0-v6addr1-start: 2002::11:6:0:150
+    uv-sr-r6-static-adj-v4sid-index-ae5: 90046
+    uv-sr-r6-static-adj-v4sid-index-ae60: 90043
+    uv-sr-r6-static-adj-v4sid-index-ae62: 90044
+    uv-sr-r6-static-adj-v4sid-label-ae103: 1020042
+    uv-sr-r6-static-adj-v4sid-label-ae4: 1020045
+    uv-sr-r6-static-adj-v4sid-label-ae58: 1020041
+    uv-sr-r6-static-adj-v4sid-label-ae6: 1020047
+    uv-sr-r6-static-adj-v6sid-index-ae103: 90042
+    uv-sr-r6-static-adj-v6sid-index-ae4: 90045
+    uv-sr-r6-static-adj-v6sid-index-ae58: 90041
+    uv-sr-r6-static-adj-v6sid-index-ae6: 90047
+    uv-sr-r6-static-adj-v6sid-label-ae5: 1020046
+    uv-sr-r6-static-adj-v6sid-label-ae60: 1020043
+    uv-sr-r6-static-adj-v6sid-label-ae62: 1020044
+    uv-sr-r6-v4sid-scale-prefix1: 64.6.100.0
+    uv-sr-r6-v4sid-scale-prefix2: 64.6.101.0
+    uv-sr-r6-v6sid-scale-prefix1: 2002::64:6:100:0
+    uv-sr-r6-v6sid-scale-prefix2: 2002::64:6:101:0
+    uv-sr-r6r7-v4-anycast-sid: 27
+    uv-sr-r6r7-v6-anycast-sid: 28
+    uv-sr-r7-loopbackv4-index: 15
+    uv-sr-r7-loopbackv6-index: 16
+    uv-sr-r7-rt0-v4addr1-start: 11.7.0.150
+    uv-sr-r7-rt0-v6addr1-start: 2002::11:7:0:150
+    uv-sr-r7-static-adj-v4sid-index-ae104: 90053
+    uv-sr-r7-static-adj-v4sid-label-ae4: 1020055
+    uv-sr-r7-static-adj-v4sid-label-ae59: 1020051
+    uv-sr-r7-static-adj-v4sid-label-ae61: 1020052
+    uv-sr-r7-static-adj-v4sid-label-ae62: 1020054
+    uv-sr-r7-static-adj-v4sid-label-ae7: 1020056
+    uv-sr-r7-static-adj-v4sid-label-ae8: 1020058
+    uv-sr-r7-static-adj-v4sid-label-ae9: 1020057
+    uv-sr-r7-static-adj-v6sid-index-ae4: 90055
+    uv-sr-r7-static-adj-v6sid-index-ae59: 90051
+    uv-sr-r7-static-adj-v6sid-index-ae61: 90052
+    uv-sr-r7-static-adj-v6sid-index-ae62: 90054
+    uv-sr-r7-static-adj-v6sid-index-ae7: 90056
+    uv-sr-r7-static-adj-v6sid-index-ae8: 90058
+    uv-sr-r7-static-adj-v6sid-index-ae9: 90057
+    uv-sr-r7-static-adj-v6sid-label-ae104: 1020053
+    uv-sr-r7-v4sid-scale-prefix1: 64.7.100.0
+    uv-sr-r7-v4sid-scale-prefix2: 64.7.101.0
+    uv-sr-r7-v6sid-scale-prefix1: 2002::64:7:100:0
+    uv-sr-r7-v6sid-scale-prefix2: 2002::64:7:101:0
+    uv-sr-r8-loopbackv4-index: 17
+    uv-sr-r8-loopbackv6-index: 18
+    uv-sr-r8-rt0-v4addr1-start: 11.8.0.150
+    uv-sr-r8-rt0-v6addr1-start: 2002::11:8:0:150
+    uv-sr-r8-v4sid-scale-prefix1: 64.8.100.0
+    uv-sr-r8-v4sid-scale-prefix2: 64.8.101.0
+    uv-sr-r8-v6sid-scale-prefix1: 2002::64:8:100:0
+    uv-sr-r8-v6sid-scale-prefix2: 2002::64:8:101:0
+    uv-sr-r9-loopbackv4-index: 19
+    uv-sr-r9-loopbackv6-index: 20
+    uv-sr-r9-rt0-v4addr1-start: 11.9.0.150
+    uv-sr-r9-rt0-v6addr1-start: 2002::11:9:0:150
+    uv-sr-r9-v4sid-scale-prefix1: 64.9.100.0
+    uv-sr-r9-v4sid-scale-prefix2: 64.9.101.0
+    uv-sr-r9-v6sid-scale-prefix1: 2002::64:9:100:0
+    uv-sr-r9-v6sid-scale-prefix2: 2002::64:9:101:0
+    uv-sr-rt0-r0-v4addr1-start: 11.0.0.151
+    uv-sr-rt0-r0-v6addr1-start: 2002::11:0:0:151
+    uv-sr-rt0-r1-v4addr1-start: 11.1.0.151
+    uv-sr-rt0-r1-v6addr1-start: 2002::11:1:0:151
+    uv-sr-rt0-r2-v4addr1-start: 11.2.0.151
+    uv-sr-rt0-r2-v6addr1-start: 2002::11:2:0:151
+    uv-sr-rt0-r3-v4addr1-start: 11.3.0.151
+    uv-sr-rt0-r3-v6addr1-start: 2002::11:3:0:151
+    uv-sr-rt0-r4-v4addr1-start: 11.4.0.151
+    uv-sr-rt0-r4-v6addr1-start: 2002::11:4:0:151
+    uv-sr-rt0-r5-v4addr1-start: 11.5.0.151
+    uv-sr-rt0-r5-v6addr1-start: 2002::11:5:0:151
+    uv-sr-rt0-r6-v4addr1-start: 11.6.0.151
+    uv-sr-rt0-r6-v6addr1-start: 2002::11:6:0:151
+    uv-sr-rt0-r7-v4addr1-start: 11.7.0.151
+    uv-sr-rt0-r7-v6addr1-start: 2002::11:7:0:151
+    uv-sr-rt0-r8-v4addr1-start: 11.8.0.151
+    uv-sr-rt0-r8-v6addr1-start: 2002::11:8:0:151
+    uv-sr-rt0-r9-v4addr1-start: 11.9.0.151
+    uv-sr-rt0-r9-v6addr1-start: 2002::11:9:0:151
+    uv-sr-scale-r2-v4-index-start: 20001
+    uv-sr-scale-r2-v6-index-start: 25001
+    uv-sr-scale-r3-v4-index-start: 30001
+    uv-sr-scale-r3-v6-index-start: 35001
+    uv-sr-scale-r4-v4-index-start: 40001
+    uv-sr-scale-r4-v6-index-start: 45001
+    uv-sr-scale-r5-v4-index-start: 50001
+    uv-sr-scale-r5-v6-index-start: 55001
+    uv-sr-scale-r6-v4-index-start: 60001
+    uv-sr-scale-r6-v6-index-start: 65001
+    uv-sr-scale-r7-v4-index-start: 70001
+    uv-sr-scale-r7-v6-index-start: 75001
+    uv-sr-srte-lsppath-count: 20
+    uv-sr-srte-r2-seglist-hop-count: 5
+    uv-sr-srte-r2-v4bindingsid-start: 1002001
+    uv-sr-srte-r2-v6bindingsid-start: 1003001
+    uv-sr-srte-r3-seglist-hop-count: 5
+    uv-sr-srte-r3-v4bindingsid-start: 1004001
+    uv-sr-srte-r3-v6bindingsid-start: 1005001
+    uv-sr-srte-r4-seglist-hop-count: 5
+    uv-sr-srte-r4-v4bindingsid-start: 1006001
+    uv-sr-srte-r4-v6bindingsid-start: 1007001
+    uv-sr-srte-r5-seglist-hop-count: 5
+    uv-sr-srte-r5-v4bindingsid-start: 1008001
+    uv-sr-srte-r5-v6bindingsid-start: 1009001
+    uv-sr-srte-r6-seglist-hop-count: 5
+    uv-sr-srte-r6-v4bindingsid-start: 1010001
+    uv-sr-srte-r6-v6bindingsid-start: 1011001
+    uv-sr-srte-r7-seglist-hop-count: 5
+    uv-sr-srte-r7-v4bindingsid-start: 1012001
+    uv-sr-srte-r7-v6bindingsid-start: 1013001
+    uv-sr-srte-seglist-count: 16
+    uv-sr-start-label: 400000
+    uv-sr-traffic-rate: 1000
+    uv-sr-v4-anycast-sid: 21
+    uv-sr-v6-anycast-sid: 22
+    uv-srte_inet6color-r2-active-route-scale: 100
+    uv-srte_inet6color-r2-total-route-scale: 100
+    uv-srte_inet6color-r3-active-route-scale: 100
+    uv-srte_inet6color-r3-total-route-scale: 100
+    uv-srte_inet6color-r4-active-route-scale: 100
+    uv-srte_inet6color-r4-total-route-scale: 100
+    uv-srte_inet6color-r5-active-route-scale: 100
+    uv-srte_inet6color-r5-total-route-scale: 100
+    uv-srte_inet6color-r6-active-route-scale: 100
+    uv-srte_inet6color-r6-total-route-scale: 100
+    uv-srte_inet6color-r7-active-route-scale: 100
+    uv-srte_inet6color-r7-total-route-scale: 100
+    uv-srte_inetcolor0-r2-active-route-scale: 100
+    uv-srte_inetcolor0-r2-total-route-scale: 100
+    uv-srte_inetcolor0-r3-active-route-scale: 100
+    uv-srte_inetcolor0-r3-total-route-scale: 100
+    uv-srte_inetcolor0-r4-active-route-scale: 100
+    uv-srte_inetcolor0-r4-total-route-scale: 100
+    uv-srte_inetcolor0-r5-active-route-scale: 100
+    uv-srte_inetcolor0-r5-total-route-scale: 100
+    uv-srte_inetcolor0-r6-active-route-scale: 100
+    uv-srte_inetcolor0-r6-total-route-scale: 100
+    uv-srte_inetcolor0-r7-active-route-scale: 100
+    uv-srte_inetcolor0-r7-total-route-scale: 100
+    uv-topology-info: "\n+----------------------------------------------------------------------------------------------------------------+\n|                                                 ROUTER TESTER                                                  |\n|                                                                                                                |\n+----------------------------------------------------------------------------------------------------------------+\n      |                       |  |                      |  |                     |  |                      |\n      |                       |  |                      |  |                     |  |                      |\n      |                       |  |                      |  |                     |  |                      |\n  +--------+               +--------+                +--------+               +--------+               +--------+\n  |        |               |        |----------------|        |---------------|        |               |        |\n  |   R0   |---------------|   R2   |                |   R4   |               |   R6   |---------------|   R8   |\n  |        |               |        |----------------|        |---------------|        |               |        |\n  +--------+              -+--------+              -+--------+            / +--------+              +--------+\n                       -/   |   |               /   /  |               /    |   |                   -/\n       -              /     |   |    -        -/  -/   |              /     |   |     -            /\n                     /      |   |  -         /   /     |             /      |   |                 /\n          -        -/       |   |           /   /      |            /       |   |               -/\n                  /         |   |         -/   /       |           /        |   |              /\n                 /          |   |      -  /  -/        |          /         |   |          -  /\n              --/           |   |        /  /          |          /         |   |            -/\n               /            |   |        /  /          |         /          |   |           / \n              /  -          |   |      -/  -/  -        |        /           |   |          /   -\n            -/              |   |     /   / -          |       /            |   |        -/      \n           /        -       |   |    /   /             |      /             |   |       /         \n          /                 |   |  -/   /              |     /              |   |      /           \n        -/                  |   | /   -/        -  -   |    /               |   |    -/             -\n       /                -   |   |/   /                 |   /                |   |   /                 \n  +--------+              -+--------+/              -+--------+               ---------+               +--------+\n  |        |               |        |----------------|        |---------------|        |               |        |\n  |   R1   |---------------|   R3   |                |   R5   |               |   R7   |---------------|   R9   |\n  |        |               |        |----------------|        |---------------|        |               |        |\n  +--------+               +--------+                +--------+               +--------+               +--------+\n      |                       |  |                      |  |                     |  |                       |\n      |                       |  |                      |  |                     |  |                       |\n      |                       |  |                      |  |                     |  |                       |\n +---------------------------------------------------------------------------------------------------------------+\n |                                                                                                               |\n |                                                ROUTER TESTER                                                  |\n +---------------------------------------------------------------------------------------------------------------+\n"
+    uv-traffic-ae-threshold: 10000
+    uv-traffic-fpc-threshold: 10000
+    uv-traffic-loss-thr: '0.1'
+    uv-traffic-threshold: 200
+    uv-v4-mask: 31
+    uv-v6-mask: 127
