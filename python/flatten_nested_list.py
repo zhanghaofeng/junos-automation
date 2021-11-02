@@ -78,15 +78,9 @@ class NestedIterator:
 
 
 if __name__ == '__main__':
-    input = [[1,1],2,[1,1]]
+    input = [[1,1],2,[1,0,[3,4,5,[7,8,9,[11,12]]],1]]
     test = NestedIterator(input)
     result = []
     while test.hasNext():
         result.append(test.next())
     print(result)
-    # print(test.getFlatList(input))
-    # print(test.result)
-    # while test.hasNext:
-    #     print(test.next)
-    # while test.next:
-    #     print(test.next)
