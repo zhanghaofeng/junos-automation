@@ -20,36 +20,46 @@ def parse_raw(input):
         prefix, path, value = '', '', ''
 
         while line:
-            if 'system_id: ' in line:
-                prefix, path, value = '', '', ''
-                line = f.readline()
-                continue
-            
-            if 'key: __prefix__' in line:
-                line = f.readline()
-                prefix = line.split('value: ')[-1].strip()
-                continue
+            try:
+                if 'system_id: ' in line:
+                    prefix, path, value = '', '', ''
+                    line = f.readline()
+                    continue
+                
+                if 'key: __prefix__' in line:
+                    line = f.readline()
+                    prefix = line.split('value: ')[-1].strip()
+                    continue
 
-            if 'key: ' in line:
-                key = line.split()[-1].strip()
-                path_raw = prefix + key
-                patter1 = re.compile('\[name=.*?\]')
-                path = patter1.sub('xxx', path_raw, count = 1)
-                #path = re.sub(r"\[neighbor-address=.*?\]", '', path)
-                pattern2 = re.compile("'.*?'")
-                path = pattern2.sub('xxx', path)
-                #path = re.sub(r"tunnel\[name=.*?\]", 'tunnel', path)
-                #path = re.sub(r"path\[name=.*?\]", 'path', path)
-                #path = re.sub(r"interface\[name=.*?\]", 'interface', path)
+                if 'key: ' in line:
+                    key = line.split()[-1].strip()
+                    path_raw = prefix + key
+                    patter1 = re.compile('\[name=.*?\]')
+                    path = patter1.sub('xxx', path_raw, count = 1)
+                    #path = re.sub(r"\[neighbor-address=.*?\]", '', path)
+                    pattern2 = re.compile("'.*?'")
+                    path = pattern2.sub('xxx', path)
+                    #path = re.sub(r"tunnel\[name=.*?\]", 'tunnel', path)
+                    #path = re.sub(r"path\[name=.*?\]", 'path', path)
+                    #path = re.sub(r"interface\[name=.*?\]", 'interface', path)
 
-                value_raw = f.readline().strip()
-                value_sampe = value_raw.split()[-1]
+                    value_raw = f.readline().strip()
+                    value_sampe = value_raw.split()[-1]
 
-                if 'value: ' in value_raw:
-                    value = value_raw.split()[2]
-                else:
-                    value = value_raw.split()[-1]
-        
+                    if re.match(r'\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}', value_raw):
+                        if 'value: ' in value_raw:
+                            value = value_raw.split()[2]
+                        else:
+                            value = value_raw.split()[-1]
+                    else:
+                        if 'value: ' in value_raw:
+                            value = value_raw.split()[0]
+                        else:
+                            value = value_raw.split()[-1]
+                            
+            except Exception as error:
+                print(f'Error pase the line {line}, with error {error}')
+
             line = f.readline()
 
             if not path: continue
