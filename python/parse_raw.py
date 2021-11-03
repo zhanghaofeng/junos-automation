@@ -50,13 +50,13 @@ def parse_raw(input):
                         if 'value: ' in value_raw:
                             value = value_raw.split()[2]
                         else:
-                            value = value_raw.split()[-1]
+                            value = value_raw.split()[-2]
                     else:
                         if 'value: ' in value_raw:
                             value = value_raw.split()[0]
                         else:
-                            value = value_raw.split()[-1]
-                            
+                            value = value_raw.split()[-2]
+
             except Exception as error:
                 print(f'Error pase the line {line}, with error {error}')
 
