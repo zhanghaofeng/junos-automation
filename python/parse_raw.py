@@ -35,7 +35,7 @@ def parse_raw(input):
                     key = line.split()[-1].strip()
                     path_raw = prefix + key
                     patter1 = re.compile('\[name=.*?\]')
-                    path = patter1.sub('xxx', path_raw, count = 1)
+                    path = patter1.sub('[name=xxx]', path_raw, count = 1)
                     #path = re.sub(r"\[neighbor-address=.*?\]", '', path)
                     pattern2 = re.compile("'.*?'")
                     path = pattern2.sub('xxx', path)
@@ -44,18 +44,17 @@ def parse_raw(input):
                     #path = re.sub(r"interface\[name=.*?\]", 'interface', path)
 
                     value_raw = f.readline().strip()
-                    value_sampe = value_raw.split()[-1]
 
                     if re.match(r'\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}', value_raw):
-                        if 'value: ' in value_raw:
-                            value = value_raw.split()[2]
-                        else:
-                            value = value_raw.split()[-2]
+                        # if 'value: ' in value_raw:
+                        value = value_raw.split()[2]
+                        # else:
+                        #     value = value_raw.split()[-2]
                     else:
-                        if 'value: ' in value_raw:
-                            value = value_raw.split()[0]
-                        else:
-                            value = value_raw.split()[-2]
+                        # if 'value: ' in value_raw:
+                        value = value_raw.split()[0]
+                        # else:
+                        #     value = value_raw.split()[-2]
 
             except Exception as error:
                 print(f'Error pase the line {line}, with error {error}')
