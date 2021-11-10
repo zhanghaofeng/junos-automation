@@ -78,9 +78,12 @@ class Solution:
 
 if __name__ == '__main__':
     myClass = Solution()
-    res = myClass.knightDialer(3)
-    for i in res:
-        print(''.join(i))
-    print(len(res))
+    # res = myClass.knightDialer(3)
+    # for i in res:
+    #     print(''.join(i))
+    # print(len(res))
     #print(''.join(i) for i in res, len(res))
-    # print(myClass.possibleNumber('ABC', 2))
+    res = []
+    for i in myClass.possibleNumber('ABC', 2):
+        res.append(i)
+    print(res)
