@@ -28,6 +28,7 @@ def main():
     seed = genSeed(filename)
     res = getQuote(filename, seed)
     while not res:
+        seed = genSeed(filename)
         res = getQuote(filename, seed)
     print(res)
 
