@@ -6,9 +6,6 @@ def genSeed(filename):
 
 def getQuote(filename, seed):
     f = open(filename)
-    fSize = os.path.getsize(filename)
-
-    seed = random.randrange(fSize)
     f.seek(seed)
     line = f.readline().strip()
 
