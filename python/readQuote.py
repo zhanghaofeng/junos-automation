@@ -25,8 +25,7 @@ def getQuote(filename, seed):
 
 def main():
     filename= 'quote.txt'
-    seed = genSeed(filename)
-    res = getQuote(filename, seed)
+    res = ''
     while not res:
         seed = genSeed(filename)
         res = getQuote(filename, seed)

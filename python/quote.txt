@@ -5,7 +5,6 @@ Dumb terminal
 %
 Parkinson's Law:  Work expands to fill the time allotted it.
 %
-%
 The Law, in its majestic equality, forbids the rich, as well as the poor,
 to sleep under the bridges, to beg in the streets, and to steal bread.
             -- Anatole France
